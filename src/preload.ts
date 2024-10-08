@@ -3,5 +3,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  getData: () => ipcRenderer.invoke('get-data')
+  getData: () => ipcRenderer.invoke('get-data'),
+  getCategories: () => ipcRenderer.invoke('get-categories'),
 });

@@ -15,6 +15,15 @@ export function Home() {
       } else {
         console.error("electronAPI n'est pas défini");
       }
+
+    window.electronAPI.getCategories().then((result) => {
+        console.log(result);
+        
+      setUsers(result);
+    }).catch((err) => {
+      console.error(err);
+    });
+      
   }, []);
 
   return (
