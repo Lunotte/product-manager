@@ -30,8 +30,10 @@ const createWindow = (): void => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if(!app.isPackaged){
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools();
+  }
 };
 
 ipcMain.handle('get-categories', () => {
@@ -39,11 +41,8 @@ ipcMain.handle('get-categories', () => {
 });
 
 ipcMain.handle('add-categorie', (_, name: string) => {
-  console.log('C’est le handler add-categorie');
-  
   return db.addCategory(name);
 });
-
 
 ipcMain.handle('get-data', (event, args) => {
   // console.log('toto');
@@ -51,15 +50,6 @@ ipcMain.handle('get-data', (event, args) => {
     id: 1,
     name: 'Toto'
   }];
-  // return new Promise((resolve, reject) => {
-  //   db.all('SELECT * FROM users', [], (err, rows) => {
-  //     if (err) {
-  //       reject(err);
-  //     } else {
-  //       resolve(rows);
-  //     }
-  //   });
-  // });
 });
 
 // This method will be called when Electron has finished
