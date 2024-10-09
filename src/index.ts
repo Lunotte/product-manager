@@ -38,9 +38,15 @@ ipcMain.handle('get-categories', () => {
   return db.getCategories();
 });
 
+ipcMain.handle('add-categorie', (_, name: string) => {
+  console.log('C’est le handler add-categorie');
+  
+  return db.addCategory(name);
+});
+
 
 ipcMain.handle('get-data', (event, args) => {
-  console.log('toto');
+  // console.log('toto');
   return [{
     id: 1,
     name: 'Toto'

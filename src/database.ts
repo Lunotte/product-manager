@@ -1,10 +1,35 @@
+const { app } = require('electron');
 const Database = require('better-sqlite3');
 const path = require('path');
 
 // Crée ou ouvre une base de données SQLite
-const db = new Database(path.join(__dirname, 'data.db'));
+// const db = new Database(path.join(__dirname, 'data.db'), { verbose: console.log });
 
-console.log(db);
+// console.log(db);
+
+// function connect() {
+//   const dbPath =
+//     process.env.NODE_ENV === "development"
+//         ? "./demo_table.db"
+//         : path.join(process.resourcesPath, "./demo_table.db")
+//   return Database(
+//     dbPath, { verbose: console.log, fileMustExist: true },
+//   );
+// }
+
+function connect() {
+
+  const dbPath = app.isPackaged
+        ? path.join(process.resourcesPath, 'database.db')
+        : path.join(__dirname, '../../', 'database.db')
+  
+  return Database(
+    dbPath, //path.join(__dirname, '../', 'database.db'),
+    { verbose: console.log, fileMustExist: true },
+  );
+}
+
+const db = connect();
 
 
 // Crée les tables si elles n'existent pas
