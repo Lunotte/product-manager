@@ -18,8 +18,9 @@ if (require('electron-squirrel-startup')) {
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    height: 600,
-    width: 800,
+    height: 1000,
+    width: 1200,
+    // autoHideMenuBar: true,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       nodeIntegration: false,  // Garder Node.js désactivé dans le rendu
@@ -38,10 +39,29 @@ const createWindow = (): void => {
 
 ipcMain.handle('get-categories', () => {
   return db.getCategories();
+  // return [{
+  //   id: 1,
+  //   name: 'Categ ?'
+  // }];
 });
 
-ipcMain.handle('add-categorie', (_, name: string) => {
-  return db.addCategory(name);
+ipcMain.handle('get-categorie', (_, id: number) => {
+  return db.getCategorie(id);
+});
+
+ipcMain.handle('add-categorie', (_, nom: string) => {
+  db.addCategory(nom);
+  return db.getCategories();
+});
+
+ipcMain.handle('update-categorie', (_, id: number, nom: string) => {
+  db.updateCategory(nom, id);
+  return db.getCategories();
+});
+
+ipcMain.handle('delete-categorie', (_, id: number) => {
+  db.deleteCategory(id);
+  return db.getCategories();
 });
 
 ipcMain.handle('get-data', (event, args) => {

@@ -19,22 +19,30 @@ const db = connect();
 db.exec(`
   CREATE TABLE IF NOT EXISTS categories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL
+    nom TEXT NOT NULL
   );
 
-  CREATE TABLE IF NOT EXISTS subcategories (
+  CREATE TABLE IF NOT EXISTS fournisseurs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    category_id INTEGER,
-    FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
+    nom TEXT NOT NULL
   );
 
-  CREATE TABLE IF NOT EXISTS products (
+  CREATE TABLE IF NOT EXISTS unites (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    price REAL NOT NULL,
-    subcategory_id INTEGER,
-    FOREIGN KEY (subcategory_id) REFERENCES subcategories (id) ON DELETE CASCADE
+    nom TEXT NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS produits (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom TEXT NOT NULL,
+    categorie_id INTEGER,
+    fournisseur_id INTEGER,
+    price_achat REAL NOT NULL,
+    price_vente REAL NOT NULL,
+    unite_id INTEGER,
+    FOREIGN KEY (categorie_id) REFERENCES categories (id) ON DELETE CASCADE,
+    FOREIGN KEY (fournisseur_id) REFERENCES fournisseurs (id) ON DELETE CASCADE,
+    FOREIGN KEY (unite_id) REFERENCES unites (id) ON DELETE CASCADE
   );
 `);
 
@@ -42,23 +50,49 @@ const dbMethods = {
   getCategories() {
     return db.prepare('SELECT * FROM categories').all();
   },
-  addCategory(name: any) {
-    const stmt = db.prepare('INSERT INTO categories (name) VALUES (?)');
-    stmt.run(name);
+  getCategorie(id: number) {
+    return db.prepare('SELECT * FROM categories WHERE id = ?').get(id);
   },
-  getSubcategories() {
-    return db.prepare('SELECT * FROM subcategories').all();
+  addCategory(nom: string) {
+    const stmt = db.prepare('INSERT INTO categories (nom) VALUES (?)');
+    const info = stmt.run(nom);
+    console.log(info);
+    
+    return info.lastInsertRowid;
   },
-  addSubcategory(name: any, categoryId: any) {
-    const stmt = db.prepare('INSERT INTO subcategories (name, category_id) VALUES (?, ?)');
-    stmt.run(name, categoryId);
+  updateCategory(nom: string, id: number) {
+    console.log(nom, id);
+    
+    const stmt = db.prepare('UPDATE categories SET nom=? WHERE id=?');
+    stmt.run(nom, id);
+  },
+  deleteCategory(id: number) {
+    const stmt = db.prepare('DELETE FROM categories WHERE id=?');
+    stmt.run(id);
+  },
+  getFournisseurs() {
+    return db.prepare('SELECT * FROM fournisseurs').all();
+  },
+  addFournisseur(nom: string) {
+    const stmt = db.prepare('INSERT INTO fournisseurs (nom) VALUES (?)');
+    stmt.run(nom);
+  },
+  getUnites() {
+    return db.prepare('SELECT * FROM unites').all();
+  },
+  addUnite(nom: string) {
+    const stmt = db.prepare('INSERT INTO unites (nom) VALUES (?)');
+    stmt.run(nom);
+  },
+  getProduits() {
+    return db.prepare("SELECT produits.id, produits.nom AS produit_nom, produits.price_achat, produits.price_vente, categories.nom AS categorie_nom, fournisseurs.nom AS fournisseur_nom, unites.nom AS unite_nom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id ").all();
   },
   getProducts() {
-    return db.prepare('SELECT * FROM products').all();
+    return db.prepare('SELECT * FROM produits').all();
   },
-  addProduct(name: any, price: any, subcategoryId: any): void {
-    const stmt = db.prepare('INSERT INTO products (name, price, subcategory_id) VALUES (?, ?, ?)');
-    stmt.run(name, price, subcategoryId);
+  addProduct(nom: string, prixAchat: number, prixVente: number, categorie_id: number, fournisseur_id: number, unite_id: number): void {
+    const stmt = db.prepare('INSERT INTO produits (nom, prix_achat, prix_vente, categorie_id, fournisseur_id, unite_id) VALUES (?, ?, ?, ?, ?, ?)');
+    stmt.run(nom, prixAchat, prixVente, categorie_id, fournisseur_id, unite_id);
   },
 };
 
