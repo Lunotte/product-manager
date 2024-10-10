@@ -1,19 +1,14 @@
-import { Button } from '@mui/material';
-import React, { useEffect, useState } from 'react';
-import CategorieDialog from './components/dialogs/IdNomDialog';
 import Categories from './components/Categories';
-import { Categorie } from './components/models/Categorie';
+import Fournisseurs from './components/Fournisseurs';
+import Unites from './components/Unites';
 
 export function Home() {
-  // const [users, setUsers] = useState([]);
-
-  // const [categorie, setCategorie] = useState();
-  const [categories, setCategories] = useState([]);
-  const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
 
   return (
     <div>
       { <Categories/> }
+      { <Fournisseurs/> }
+      { <Unites/> }
     </div>
   );
 }

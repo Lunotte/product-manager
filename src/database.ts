@@ -61,8 +61,6 @@ const dbMethods = {
     return info.lastInsertRowid;
   },
   updateCategory(nom: string, id: number) {
-    console.log(nom, id);
-    
     const stmt = db.prepare('UPDATE categories SET nom=? WHERE id=?');
     stmt.run(nom, id);
   },
@@ -77,6 +75,14 @@ const dbMethods = {
     const stmt = db.prepare('INSERT INTO fournisseurs (nom) VALUES (?)');
     stmt.run(nom);
   },
+  updateFournisseur(nom: string, id: number) {
+    const stmt = db.prepare('UPDATE fournisseurs SET nom=? WHERE id=?');
+    stmt.run(nom, id);
+  },
+  deleteFournisseur(id: number) {
+    const stmt = db.prepare('DELETE FROM fournisseurs WHERE id=?');
+    stmt.run(id);
+  },
   getUnites() {
     return db.prepare('SELECT * FROM unites').all();
   },
@@ -84,16 +90,32 @@ const dbMethods = {
     const stmt = db.prepare('INSERT INTO unites (nom) VALUES (?)');
     stmt.run(nom);
   },
-  getProduits() {
-    return db.prepare("SELECT produits.id, produits.nom AS produit_nom, produits.price_achat, produits.price_vente, categories.nom AS categorie_nom, fournisseurs.nom AS fournisseur_nom, unites.nom AS unite_nom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id ").all();
+  updateUnite(nom: string, id: number) {
+    const stmt = db.prepare('UPDATE unites SET nom=? WHERE id=?');
+    stmt.run(nom, id);
   },
-  getProducts() {
-    return db.prepare('SELECT * FROM produits').all();
+  deleteUnite(id: number) {
+    const stmt = db.prepare('DELETE FROM unites WHERE id=?');
+    stmt.run(id);
   },
-  addProduct(nom: string, prixAchat: number, prixVente: number, categorie_id: number, fournisseur_id: number, unite_id: number): void {
-    const stmt = db.prepare('INSERT INTO produits (nom, prix_achat, prix_vente, categorie_id, fournisseur_id, unite_id) VALUES (?, ?, ?, ?, ?, ?)');
-    stmt.run(nom, prixAchat, prixVente, categorie_id, fournisseur_id, unite_id);
-  },
+  // getProduits() {
+  //   return db.prepare("SELECT produits.id, produits.nom AS produit_nom, produits.price_achat, produits.price_vente, categories.nom AS categorie_nom, fournisseurs.nom AS fournisseur_nom, unites.nom AS unite_nom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id ").all();
+  // },
+  // getProducts() {
+  //   return db.prepare('SELECT * FROM produits').all();
+  // },
+  // addProduit(nom: string, prixAchat: number, prixVente: number, categorie_id: number, fournisseur_id: number, unite_id: number): void {
+  //   const stmt = db.prepare('INSERT INTO produits (nom, prix_achat, prix_vente, categorie_id, fournisseur_id, unite_id) VALUES (?, ?, ?, ?, ?, ?)');
+  //   stmt.run(nom, prixAchat, prixVente, categorie_id, fournisseur_id, unite_id);
+  // },
+  // updateProduit(nom: string, id: number) {
+  //   const stmt = db.prepare('UPDATE produits SET nom=? WHERE id=?');
+  //   stmt.run(nom, id);
+  // },
+  // deleteProduit(id: number) {
+  //   const stmt = db.prepare('DELETE produits unites WHERE id=?');
+  //   stmt.run(id);
+  // },
 };
 
 export default dbMethods;

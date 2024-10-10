@@ -57,7 +57,7 @@ const IdNomDialog: React.FC<IdNomDialogProps> = ({ open, onClose, onAdd, objetTo
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Annuler</Button>
-        <Button onClick={handleAdd}>{edition ? <span>Ajouter</span> : <span>Modifier</span> }</Button>
+        <Button onClick={handleAdd}>{edition ? <span>Modifier</span> : <span>Ajouter</span> }</Button>
       </DialogActions>
     </Dialog>
   );

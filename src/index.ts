@@ -39,10 +39,6 @@ const createWindow = (): void => {
 
 ipcMain.handle('get-categories', () => {
   return db.getCategories();
-  // return [{
-  //   id: 1,
-  //   name: 'Categ ?'
-  // }];
 });
 
 ipcMain.handle('get-categorie', (_, id: number) => {
@@ -64,13 +60,64 @@ ipcMain.handle('delete-categorie', (_, id: number) => {
   return db.getCategories();
 });
 
-ipcMain.handle('get-data', (event, args) => {
-  // console.log('toto');
-  return [{
-    id: 1,
-    name: 'Toto'
-  }];
+
+// ipcMain.handle('get-fournisseurs', () => {
+//   console.log(db);
+  
+//   return db.getFournisseurs;
+//   // return null;
+// });
+
+
+ipcMain.handle('get-fournisseurs', () => {
+  return db.getFournisseurs();
 });
+
+ipcMain.handle('add-fournisseur', (_, nom: string) => {
+  db.addFournisseur(nom);
+  return db.getFournisseurs();
+});
+
+ipcMain.handle('update-fournisseur', (_, id: number, nom: string) => {
+  db.updateFournisseur(nom, id);
+  return db.getFournisseurs();
+});
+
+ipcMain.handle('delete-fournisseur', (_, id: number) => {
+  db.deleteFournisseur(id);
+  return db.getFournisseurs();
+});
+
+
+
+ipcMain.handle('get-unites', () => {
+  return db.getUnites();
+});
+
+ipcMain.handle('add-unite', (_, nom: string) => {
+  db.addUnite(nom);
+  return db.getUnites();
+});
+
+ipcMain.handle('update-unite', (_, id: number, nom: string) => {
+  db.updateUnite(nom, id);
+  return db.getUnites();
+});
+
+ipcMain.handle('delete-unite', (_, id: number) => {
+  db.deleteUnite(id);
+  return db.getUnites();
+});
+
+
+
+// ipcMain.handle('get-data', (event, args) => {
+//   // console.log('toto');
+//   return [{
+//     id: 1,
+//     name: 'Toto'
+//   }];
+// });
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
