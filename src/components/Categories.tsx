@@ -2,6 +2,8 @@ import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, 
 import { Categorie } from "./models/Categorie";
 import { useEffect, useState } from "react";
 import IdNomDialog from "./dialogs/IdNomDialog";
+import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
+import { IdNom } from "./models/IdNom";
 
 interface CategorieProps {
     // categories: Categorie[];
@@ -12,6 +14,8 @@ const Categories: React.FC<CategorieProps> = () => {
     const [categorie, setCategorie] = useState<Categorie>();
     const [categories, setCategories] = useState<Categorie[]>([]);
     const [openCategorieDialog, setOpenCategorieDialog] = useState(false);
+    const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
     useEffect(() => {
         window.electronAPI.getCategories().then((result) => {
@@ -47,6 +51,25 @@ const Categories: React.FC<CategorieProps> = () => {
         setOpenCategorieDialog(false)
         setCategorie(null);
     }
+
+    const handleOpenDialog = (item: IdNom) => {
+        setItemToDelete(item);
+        setOpenConfirmationDelete(true);
+      };
+    
+      const handleCloseDialog = () => {
+        setOpenConfirmationDelete(false);
+      };
+    
+      const handleConfirmDelete = () => {
+        window.electronAPI.deleteCategorie(itemToDelete.id).then((result) => {
+            setCategories(result);
+        }).catch((err) => {
+            console.error(err);
+        });
+        setItemToDelete(null);
+        setOpenConfirmationDelete(false);
+      };
       
     return (
         <div>
@@ -56,6 +79,12 @@ const Categories: React.FC<CategorieProps> = () => {
                 onClose={() => closeCategorie()}
                 onAdd={handleAddCategorie}
                 objetToEdit={categorie}
+            />
+            <ConfirmDeleteDialog
+                open={openConfirmationDelete}
+                onClose={handleCloseDialog}
+                onConfirm={handleConfirmDelete}
+                itemName={itemToDelete}
             />
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -76,6 +105,7 @@ const Categories: React.FC<CategorieProps> = () => {
                         </TableCell>
                         <TableCell align="right">
                             <Button onClick={() => editCategorie(categorie)}>Maj</Button>
+                            <Button onClick={() => handleOpenDialog(categorie)}>Supprimer</Button>
                         </TableCell>
                     </TableRow>
                     ))}
