@@ -1,6 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 
 import db from './database';
+import { Categorie } from './components/models/Categorie';
+import { Produit } from './components/models/Produit';
 
 // const db = require('./src/database');
 
@@ -109,6 +111,27 @@ ipcMain.handle('delete-unite', (_, id: number) => {
   return db.getUnites();
 });
 
+
+
+
+ipcMain.handle('get-produits', () => {
+  return db.getProduits();
+});
+
+ipcMain.handle('add-produit', (_, produit: Produit) => {
+  db.addProduit(produit.nom, produit.prixAchat, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
+  return db.getProduits();
+});
+
+ipcMain.handle('update-produit', (_, produit: Produit) => {
+  db.updateProduit(produit.nom, produit.id/*produit.prixAchat, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId*/);
+  return db.getProduits();
+});
+
+ipcMain.handle('delete-produit', (_, id: number) => {
+  db.deleteProduit(id);
+  return db.getProduits();
+});
 
 
 // ipcMain.handle('get-data', (event, args) => {

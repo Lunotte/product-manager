@@ -97,7 +97,7 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
                 <TableBody>
                     {fournisseurs.map((fournisseur) => (
                     <TableRow
-                        key={fournisseur.nom}
+                        key={fournisseur.id}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                         <TableCell component="th" scope="row">

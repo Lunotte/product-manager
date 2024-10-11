@@ -15,6 +15,11 @@ export interface ElectronAPI {
     addUnite: (nom: string) => Promise<any>;
     updateUnite: (id: number, nom: string) => Promise<any>;
     deleteUnite: (id: number) => Promise<any>;
+
+    getProduits: () => Promise<any>;
+    addProduit: (produit: Produit) => Promise<any>;
+    updateProduit: (produit: Produit) => Promise<any>;
+    deleteProduit: (id: number) => Promise<any>;
 }
   
 declare global {

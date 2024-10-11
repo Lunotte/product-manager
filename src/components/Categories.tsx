@@ -97,7 +97,7 @@ const Categories: React.FC<CategorieProps> = () => {
                 <TableBody>
                     {categories.map((categorie) => (
                     <TableRow
-                        key={categorie.nom}
+                        key={categorie.id}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                         <TableCell component="th" scope="row">
