@@ -92,18 +92,18 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
 
     console.log(nom);
     console.log(prixAchat);
-    console.log(prixVente);
     console.log(taux);
+    console.log(prixVente);
     console.log(categorie);
     console.log(fournisseur);
     console.log(unite);
 
     let produit: Produit;
     if(produitToEdit) {
-      produit = {...produitToEdit, nom, prixAchat: parseInt(prixAchat), prixVente: parseInt(prixVente),
+      produit = {...produitToEdit, nom, prixAchat: parseInt(prixAchat), taux, prixVente: parseInt(prixVente),
         categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)};
     } else {
-      produit = {id: null, nom, prixAchat: parseInt(prixAchat), prixVente: parseInt(prixVente),
+      produit = {id: null, nom, prixAchat: parseInt(prixAchat), taux, prixVente: parseInt(prixVente),
         categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)};
     }
     console.log(produit);
@@ -120,7 +120,7 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
       {!edition && <DialogTitle>Ajouter</DialogTitle>}
       <DialogContent>
 
-      {message}
+        <p style={{color: 'red'}}>{message}</p>
 
 
         <TextField

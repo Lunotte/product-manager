@@ -124,12 +124,12 @@ ipcMain.handle('add-produit', (_, produit: Produit) => {
   // return getAllProduit();
   console.log('produit de index : ', produit);
   
-  db.addProduit(produit.nom, produit.prixAchat, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
+  db.addProduit(produit.nom, produit.prixAchat, produit.taux, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
   return db.getProduits();
 });
 
 ipcMain.handle('update-produit', (_, produit: Produit) => {
-  db.updateProduit(produit.nom, produit.id/*produit.prixAchat, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId*/);
+  db.updateProduit(produit.id, produit.nom, produit.prixAchat, produit.taux, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
   return db.getProduits();
 });
 
