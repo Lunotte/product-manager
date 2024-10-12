@@ -1,11 +1,11 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
 import path from 'path';
-import db from './db/database';
-import { Produit } from './models/Produit';
-import { Categorie } from './models/Categorie';
-import { Fournisseur } from './models/Fournisseur';
-import { Unite } from './models/Unite';
+import db from '../db/database';
+import { Produit } from '../models/Produit';
+import { Categorie } from '../models/Categorie';
+import { Fournisseur } from '../models/Fournisseur';
+import { Unite } from '../models/Unite';
 
 // import { addProduit, getAllProduit } from './queries/queries';
 
@@ -45,6 +45,10 @@ const createWindow = (): void => {
 };
 
 log.transports.file.resolvePathFn = () => path.join(app.getPath('userData'), 'logs/catalogue.log');
+
+ipcMain.on('log-error', (event, message) => {
+  log.error('Erreur reçue du renderer :', message);
+});
 
 ipcMain.handle('get-categories', (): Categorie[] => {
   return db.getCategories();
@@ -117,8 +121,6 @@ ipcMain.handle('rechercher-produit', (_, query: string): Produit[] => {
 ipcMain.handle('add-produit', (_, produit: Produit): Produit[] => {
   // addProduit(produit);
   // return getAllProduit();
-  console.log('produit de index : ', produit);
-  
   db.addProduit(produit.nom, produit.prixAchat, produit.taux, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
   return db.getProduits();
 });
@@ -155,6 +157,19 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+/**
+ * Capturer les exceptions non gérées dans le processus principal
+ */
+process.on('uncaughtException', (error) => {
+  log.error('Une erreur non gérée a été interceptée :', error);
+});
+
+
+process.on('unhandledRejection', (reason, promise) => {
+  log.error('Rejet de promesse non géré :', reason);
+});
+
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.

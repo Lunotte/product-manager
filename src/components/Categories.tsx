@@ -20,7 +20,6 @@ const Categories: React.FC<CategorieProps> = () => {
 
     useEffect(() => {
         window.electronAPI.getCategories().then((result) => {
-            console.log(result);
             setCategories(result);
         }).catch((err) => {
           console.error(err);

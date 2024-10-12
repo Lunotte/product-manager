@@ -11,8 +11,6 @@ function BarNavigation() {
   const navigate = useNavigate(); 
 
   const handleCloseNavMenu = (page: string) => {
-    console.log(window.location.href);
-    
     navigate(page);
   };
 

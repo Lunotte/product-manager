@@ -20,7 +20,6 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
 
     useEffect(() => {
         window.electronAPI.getFournisseurs().then((result) => {
-            console.log(result);
             setFournisseurs(result);
         }).catch((err) => {
           console.error(err);

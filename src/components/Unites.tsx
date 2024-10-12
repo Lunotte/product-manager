@@ -20,7 +20,6 @@ const Unites: React.FC<UniteProps> = () => {
 
     useEffect(() => {
         window.electronAPI.getUnites().then((result) => {
-            console.log(result);
             setUnites(result);
         }).catch((err) => {
           console.error(err);

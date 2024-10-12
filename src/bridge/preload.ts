@@ -1,11 +1,13 @@
 // See the Electron documentation for details on how to use preload scripts:
-
-import { Produit } from "./models/Produit";
-
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
-const { contextBridge, ipcRenderer } = require('electron');
+import { contextBridge, ipcRenderer } from 'electron';
+
+import { Produit } from "../models/Produit";
 
 contextBridge.exposeInMainWorld('electronAPI', {
+
+  logError: (message: string) => ipcRenderer.send('log-error', message),
+
   getCategories: () => ipcRenderer.invoke('get-categories'),
   addCategorie: (nom: string) => ipcRenderer.invoke('add-categorie', nom),
   updateCategorie: (id: number, nom: string) => ipcRenderer.invoke('update-categorie', id, nom),

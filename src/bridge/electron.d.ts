@@ -1,8 +1,11 @@
-import { Categorie } from "./models/Categorie";
-import { Fournisseur } from "./models/Fournisseur";
-import { Produit } from "./models/Produit";
+import { Categorie } from "../models/Categorie";
+import { Fournisseur } from "../models/Fournisseur";
+import { Produit } from "../models/Produit";
 
 export interface ElectronAPI {
+
+    logError: (message: string) => void;
+    
     getCategories: () => Promise<Categorie[]>;
     addCategorie: (nom: string) => Promise<Categorie[]>;
     updateCategorie: (id: number, nom: string) => Promise<Categorie[]>;
