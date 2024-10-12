@@ -18,9 +18,9 @@
       "output": "dist"
     },
     "files": [
-			"node_modules/**/*",
-			"public/**/*"
-		]
+      "node_modules/**/*",
+      "public/**/*"
+    ]
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.5.0",
@@ -62,6 +62,7 @@
     "better-sqlite3": "^11.3.0",
     "electron-squirrel-startup": "^1.0.1",
     "fs": "^0.0.1-security",
+    "knex": "^3.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sqlite3": "^5.1.7"

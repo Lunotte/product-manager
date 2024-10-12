@@ -1,8 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 
-import db from './database';
-import { Categorie } from './components/models/Categorie';
-import { Produit } from './components/models/Produit';
+import db from './db/database';
+import { Categorie } from './models/Categorie';
+import { Produit } from './models/Produit';
 
 // const db = require('./src/database');
 

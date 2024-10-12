@@ -7,7 +7,7 @@ import {
   DialogActions,
   Button
 } from '@mui/material';
-import { IdNom } from '../models/IdNom';
+import { IdNom } from '../../models/IdNom';
 
 interface ConfirmDeleteDialogProps {
     open: boolean;

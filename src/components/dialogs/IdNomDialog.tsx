@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
-import { Categorie } from '../models/Categorie';
-import { IdNom } from '../models/IdNom';
+import { Categorie } from '../../models/Categorie';
+import { IdNom } from '../../models/IdNom';
 
 interface IdNomDialogProps {
   open: boolean;

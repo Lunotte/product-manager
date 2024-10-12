@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { Categorie } from '../models/Categorie';
-import { IdNom } from '../models/IdNom';
-import { Fournisseur } from '../models/Fournisseur';
-import { Unite } from '../models/Unite';
-import { Produit } from '../models/Produit';
+import { Categorie } from '../../models/Categorie';
+import { IdNom } from '../../models/IdNom';
+import { Fournisseur } from '../../models/Fournisseur';
+import { Unite } from '../../models/Unite';
+import { Produit } from '../../models/Produit';
 
 interface EditProduitDialogProps {
   open: boolean;

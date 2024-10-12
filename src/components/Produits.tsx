@@ -1,7 +1,7 @@
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { Produit } from "./models/Produit";
+import { Produit } from "../models/Produit";
 import { useEffect, useState } from "react";
-import { IdNom } from "./models/IdNom";
+import { IdNom } from "../models/IdNom";
 import IdNomDialog from "./dialogs/IdNomDialog";
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import EditProduitDialog from "./dialogs/EditProduitDialog";

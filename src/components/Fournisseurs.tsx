@@ -1,9 +1,9 @@
 import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
-import { Fournisseur } from "./models/Fournisseur";
+import { Fournisseur } from "../models/Fournisseur";
 import { useEffect, useState } from "react";
 import IdNomDialog from "./dialogs/IdNomDialog";
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
-import { IdNom } from "./models/IdNom";
+import { IdNom } from "../models/IdNom";
 
 interface FournisseurProps {
     // fournisseurs: Fournisseur[];
