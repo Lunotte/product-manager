@@ -13,7 +13,7 @@ interface EditProduitDialogProps {
   produitToEdit?: Produit;
 }
 
-const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, produitToEdit }) => {
+const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, produitToEdit }) => {
   const [nom, setNom] = useState('');
   const [prixAchat, setPrixAchat] = useState('');
   const [prixVente, setPrixVente] = useState('');
@@ -29,25 +29,20 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
   const [edition, setEdition] = useState(true);
   const [message, setMessage] = useState('');
 
-  console.log(produitToEdit);
-
   useEffect(() => {
     window.electronAPI.getCategories().then((result) => {
-      console.log(result);
       setCategories(result);
     }).catch((err) => {
       console.error(err);
     });
 
     window.electronAPI.getFournisseurs().then((result) => {
-      console.log(result);
       setFournisseurs(result);
     }).catch((err) => {
       console.error(err);
     });
 
     window.electronAPI.getUnites().then((result) => {
-      console.log(result);
       setUnites(result);
     }).catch((err) => {
       console.error(err);
@@ -68,6 +63,15 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
     }
   }, [produitToEdit]);
 
+  useEffect(() => {
+    calculerMontantTTC();
+  }, [prixAchat, taux]);
+
+  const calculerMontantTTC = () => {
+    const prixVente = parseInt(prixAchat) * (1 + (taux / 100));
+    setPrixVente(prixVente.toFixed(2));
+  }
+
   const reset = () => {
     setNom('');
     setPrixAchat('');
@@ -78,10 +82,10 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
     setEdition(false);
   }
 
-
   const onCloseDialog = () => {
     setMessage('');
     onClose();
+    reset();
   }
 
   const handleAdd = () => {
@@ -89,14 +93,6 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
       setMessage('Veuillez saisir tous les champs');
       return;
     }
-
-    console.log(nom);
-    console.log(prixAchat);
-    console.log(taux);
-    console.log(prixVente);
-    console.log(categorie);
-    console.log(fournisseur);
-    console.log(unite);
 
     let produit: Produit;
     if(produitToEdit) {
@@ -106,15 +102,13 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
       produit = {id: null, nom, prixAchat: parseInt(prixAchat), taux, prixVente: parseInt(prixVente),
         categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)};
     }
-    console.log(produit);
-    
     onAdd(produit);
-    reset();
     onClose();
+    reset();
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} aria-modal>
 
       {edition && <DialogTitle>Modifier</DialogTitle>}
       {!edition && <DialogTitle>Ajouter</DialogTitle>}
@@ -122,10 +116,9 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
 
         <p style={{color: 'red'}}>{message}</p>
 
-
         <TextField
-          required={true}
           autoFocus
+          required={true}
           margin="dense"
           label="Nom"
           type="text"
@@ -143,6 +136,16 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
           value={prixAchat}
           onChange={(event: any) => setPrixAchat(event.target.value)}
         />
+         <TextField
+          required={true}
+          margin="dense"
+          label="Taux"
+          type="number"
+          inputMode='decimal'
+          fullWidth
+          value={taux}
+          onChange={(event: any) => setTaux(event.target.value)}
+        />
         <TextField
           required={true}
           margin="dense"
@@ -152,16 +155,6 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
           fullWidth
           value={prixVente}
           onChange={(event: any) => setPrixVente(event.target.value)}
-        />
-        <TextField
-          required={true}
-          margin="dense"
-          label="Taux"
-          type="number"
-          inputMode='decimal'
-          fullWidth
-          value={taux}
-          onChange={(event: any) => setTaux(event.target.value)}
         />
         <FormControl margin="normal" fullWidth>
           <InputLabel id="categorie-select-label">Categorie</InputLabel>
@@ -217,4 +210,4 @@ const IdNomDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, onAdd, p
   );
 };
 
-export default IdNomDialog;
+export default EditProduitDialog;

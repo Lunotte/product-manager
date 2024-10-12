@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
-import { Categorie } from '../../models/Categorie';
 import { IdNom } from '../../models/IdNom';
 
 interface IdNomDialogProps {
   open: boolean;
   onClose: () => void;
   onAdd: (objet: IdNom) => void;
-  objetToEdit?: IdNom; // Optionnel pour l'édition
+  objetToEdit?: IdNom;
 }
 
 const IdNomDialog: React.FC<IdNomDialogProps> = ({ open, onClose, onAdd, objetToEdit }) => {
   const [objetName, setObjetName] = useState('');
   const [edition, setEdition] = useState(false);
-
-  console.log(objetToEdit);
 
   useEffect(() => {
     if (objetToEdit) {
@@ -35,13 +32,13 @@ const IdNomDialog: React.FC<IdNomDialogProps> = ({ open, onClose, onAdd, objetTo
       objet = {id: null, nom: objetName};
     }
     onAdd(objet);
+    onClose();
     setObjetName('');
     setEdition(false);
-    onClose();
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} aria-modal>
       {edition && <DialogTitle>Modifier</DialogTitle>}
       {!edition && <DialogTitle>Ajouter</DialogTitle>}
       <DialogContent>
@@ -57,7 +54,7 @@ const IdNomDialog: React.FC<IdNomDialogProps> = ({ open, onClose, onAdd, objetTo
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Annuler</Button>
-        <Button onClick={handleAdd}>{edition ? <span>Modifier</span> : <span>Ajouter</span> }</Button>
+        <Button type="submit" onClick={handleAdd}>{edition ? <span>Modifier</span> : <span>Ajouter</span> }</Button>
       </DialogActions>
     </Dialog>
   );

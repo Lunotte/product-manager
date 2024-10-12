@@ -6,7 +6,6 @@ import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import { IdNom } from "../models/IdNom";
 
 interface CategorieProps {
-    // categories: Categorie[];
 } 
 
 const Categories: React.FC<CategorieProps> = () => {

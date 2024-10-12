@@ -1,25 +1,28 @@
+import { Categorie } from "./models/Categorie";
+import { Fournisseur } from "./models/Fournisseur";
+import { Produit } from "./models/Produit";
+
 export interface ElectronAPI {
-    getData: () => Promise<any>;
-    getCategories: () => Promise<any>;
-    getCategorie: (id: number) => Promise<any>;
-    addCategorie: (nom: string) => Promise<any>;
-    updateCategorie: (id: number, nom: string) => Promise<any>;
-    deleteCategorie: (id: number) => Promise<any>;
+    getCategories: () => Promise<Categorie[]>;
+    addCategorie: (nom: string) => Promise<Categorie[]>;
+    updateCategorie: (id: number, nom: string) => Promise<Categorie[]>;
+    deleteCategorie: (id: number) => Promise<Categorie[]>;
 
-    getFournisseurs: () => Promise<any>;
-    addFournisseur: (nom: string) => Promise<any>;
-    updateFournisseur: (id: number, nom: string) => Promise<any>;
-    deleteFournisseur: (id: number) => Promise<any>;
+    getFournisseurs: () => Promise<Fournisseur[]>;
+    addFournisseur: (nom: string) => Promise<Fournisseur[]>;
+    updateFournisseur: (id: number, nom: string) => Promise<Fournisseur[]>;
+    deleteFournisseur: (id: number) => Promise<Fournisseur[]>;
 
-    getUnites: () => Promise<any>;
-    addUnite: (nom: string) => Promise<any>;
-    updateUnite: (id: number, nom: string) => Promise<any>;
-    deleteUnite: (id: number) => Promise<any>;
+    getUnites: () => Promise<Unite[]>;
+    addUnite: (nom: string) => Promise<Unite[]>;
+    updateUnite: (id: number, nom: string) => Promise<Unite[]>;
+    deleteUnite: (id: number) => Promise<Unite[]>;
 
-    getProduits: () => Promise<any>;
-    addProduit: (produit: Produit) => Promise<any>;
-    updateProduit: (produit: Produit) => Promise<any>;
-    deleteProduit: (id: number) => Promise<any>;
+    getProduits: () => Promise<Produit[]>;
+    rechercherProduits: (query: string) => Promise<Produit[]>;
+    addProduit: (produit: Produit) => Promise<Produit[]>;
+    updateProduit: (produit: Produit) => Promise<Produit[]>;
+    deleteProduit: (id: number) => Promise<Produit[]>;
 }
   
 declare global {

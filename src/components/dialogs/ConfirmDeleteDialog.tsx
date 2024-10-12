@@ -18,7 +18,7 @@ interface ConfirmDeleteDialogProps {
 
 const ConfirmDeleteDialog : React.FC<ConfirmDeleteDialogProps> = ({ open, onClose, onConfirm, itemName }) => {
   return (
-    itemName && <Dialog open={open} onClose={onClose}>
+    itemName && <Dialog open={open} onClose={onClose} aria-modal>
       <DialogTitle>Confirmer la suppression</DialogTitle>
       <DialogContent>
         <DialogContentText>

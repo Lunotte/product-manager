@@ -6,9 +6,7 @@ import { Produit } from "./models/Produit";
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-  // getData: () => ipcRenderer.invoke('get-data'),
   getCategories: () => ipcRenderer.invoke('get-categories'),
-  getCategorie: (id: number) => ipcRenderer.invoke('get-categories', id),
   addCategorie: (nom: string) => ipcRenderer.invoke('add-categorie', nom),
   updateCategorie: (id: number, nom: string) => ipcRenderer.invoke('update-categorie', id, nom),
   deleteCategorie: (id: number) => ipcRenderer.invoke('delete-categorie', id),
@@ -24,6 +22,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteUnite: (id: number) => ipcRenderer.invoke('delete-unite', id),
 
   getProduits: () => ipcRenderer.invoke('get-produits'),
+  rechercherProduits: (query: string) => ipcRenderer.invoke('rechercher-produit', query),
   addProduit: (produit: Produit) => ipcRenderer.invoke('add-produit', produit),
   updateProduit: (id: number, nom: string) => ipcRenderer.invoke('update-produit', id, nom),
   deleteProduit: (id: number) => ipcRenderer.invoke('delete-produit', id),

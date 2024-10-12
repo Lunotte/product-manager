@@ -6,7 +6,6 @@ import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import { IdNom } from "../models/IdNom";
 
 interface UniteProps {
-    // unites: Unite[];
 } 
 
 const Unites: React.FC<UniteProps> = () => {

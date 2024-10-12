@@ -44,10 +44,6 @@ ipcMain.handle('get-categories', () => {
   return db.getCategories();
 });
 
-ipcMain.handle('get-categorie', (_, id: number) => {
-  return db.getCategorie(id);
-});
-
 ipcMain.handle('add-categorie', (_, nom: string) => {
   db.addCategory(nom);
   return db.getCategories();
@@ -119,6 +115,11 @@ ipcMain.handle('get-produits', () => {
   return db.getProduits();
 });
 
+ipcMain.handle('rechercher-produit', (_, query: string) => {
+  return db.rechercherProduit(query);
+});
+
+
 ipcMain.handle('add-produit', (_, produit: Produit) => {
   // addProduit(produit);
   // return getAllProduit();
@@ -138,14 +139,6 @@ ipcMain.handle('delete-produit', (_, id: number) => {
   return db.getProduits();
 });
 
-
-// ipcMain.handle('get-data', (event, args) => {
-//   // console.log('toto');
-//   return [{
-//     id: 1,
-//     name: 'Toto'
-//   }];
-// });
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
