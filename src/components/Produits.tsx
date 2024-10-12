@@ -20,6 +20,7 @@ const Produits: React.FC<ProduitProps> = () => {
     const [openProduitDialog, setOpenProduitDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
+    const [panier, setPanier] = useState<Produit[]>([]);
 
     useEffect(() => {
         window.electronAPI.getProduits().then((result) => {
@@ -87,8 +88,8 @@ const Produits: React.FC<ProduitProps> = () => {
     }
 
     const ajouterPanier = (produit: Produit) => {
-        console.log(produit);
-        
+        setPanier([...panier, produit]);
+        console.log(panier);
     }
     
     useEffect(() => {
@@ -131,7 +132,7 @@ const Produits: React.FC<ProduitProps> = () => {
                             <TableCell style={{ fontWeight: 600}} align="right">Categorie</TableCell>
                             <TableCell style={{ fontWeight: 600}} align="right">Unité</TableCell>
                             <TableCell style={{ maxWidth: 100 }} align="right">
-                                <Button variant="outlined" onClick={() => changeModeEdition()}> Mode Édition</Button>
+                                <Button variant="outlined" onClick={() => changeModeEdition()}>{modeEdition ? <>Sélection</> : <>Édition</>}</Button>
                             </TableCell>
                         </TableRow>
                     </TableHead>
