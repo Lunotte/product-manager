@@ -79,6 +79,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
     setCategorie('');
     setFournisseur('');
     setUnite('');
+    setTaux(5.5);
     setEdition(false);
   }
 
@@ -113,9 +114,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
       {edition && <DialogTitle>Modifier</DialogTitle>}
       {!edition && <DialogTitle>Ajouter</DialogTitle>}
       <DialogContent>
-
         <p style={{color: 'red'}}>{message}</p>
-
         <TextField
           autoFocus
           required={true}
@@ -156,7 +155,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
           value={prixVente}
           onChange={(event: any) => setPrixVente(event.target.value)}
         />
-        <FormControl margin="normal" fullWidth>
+        <FormControl margin="dense" fullWidth>
           <InputLabel id="categorie-select-label">Categorie</InputLabel>
           <Select
             required={true}
@@ -171,7 +170,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
             ))}
           </Select>
         </FormControl>
-        <FormControl margin="normal" fullWidth>
+        <FormControl margin="dense" fullWidth>
           <InputLabel id="fournisseur-select-label">Fournisseur</InputLabel>
           <Select
             required={true}
@@ -186,7 +185,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
             ))}
           </Select>
         </FormControl>
-        <FormControl margin="normal" fullWidth>
+        <FormControl margin="dense" fullWidth>
           <InputLabel id="unite-select-label">Unite</InputLabel>
           <Select
             required={true}
@@ -203,8 +202,8 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onCloseDialog}>Annuler</Button>
-        <Button onClick={handleAdd}>{edition ? <span>Modifier</span> : <span>Ajouter</span> }</Button>
+        <Button variant="outlined" onClick={onCloseDialog}>Annuler</Button>
+        <Button variant="outlined" onClick={handleAdd}>{edition ? <span>Modifier</span> : <span>Ajouter</span> }</Button>
       </DialogActions>
     </Dialog> 
   );

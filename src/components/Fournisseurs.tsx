@@ -1,13 +1,14 @@
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { Fournisseur } from "../models/Fournisseur";
 import { useEffect, useState } from "react";
 import IdNomDialog from "./dialogs/IdNomDialog";
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import { IdNom } from "../models/IdNom";
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-interface FournisseurProps {
-    // fournisseurs: Fournisseur[];
-} 
+interface FournisseurProps {} 
 
 const Fournisseurs: React.FC<FournisseurProps> = () => {
 
@@ -73,7 +74,9 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
       
     return (
         <div>
-            <Button onClick={() => setOpenFournisseurDialog(true)}>Ajouter Fournisseur</Button>
+            <IconButton aria-label="add" size="large" onClick={() => setOpenFournisseurDialog(true)}>
+                <AddIcon fontSize="inherit" />
+            </IconButton>
             <IdNomDialog
                 open={openFournisseurDialog}
                 onClose={() => closeFournisseur()}
@@ -90,8 +93,8 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                    <TableCell>Nom</TableCell>
-                    <TableCell align="right">Action</TableCell>
+                        <TableCell style={{ fontWeight: 600}}>Nom</TableCell>
+                        <TableCell align="right"></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -104,8 +107,12 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
                         {fournisseur.nom}
                         </TableCell>
                         <TableCell align="right">
-                            <Button onClick={() => editFournisseur(fournisseur)}>Maj</Button>
-                            <Button onClick={() => handleOpenDialog(fournisseur)}>Supprimer</Button>
+                            <IconButton aria-label="add" size="large" onClick={() => editFournisseur(fournisseur)}>
+                                <EditIcon fontSize="inherit" />
+                            </IconButton>
+                            <IconButton aria-label="add" size="large" onClick={() => handleOpenDialog(fournisseur)}>
+                                <DeleteIcon fontSize="inherit" />
+                            </IconButton>
                         </TableCell>
                     </TableRow>
                     ))}

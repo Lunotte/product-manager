@@ -1,12 +1,14 @@
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { Unite } from "../models/Unite";
 import { useEffect, useState } from "react";
 import IdNomDialog from "./dialogs/IdNomDialog";
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import { IdNom } from "../models/IdNom";
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-interface UniteProps {
-} 
+interface UniteProps {} 
 
 const Unites: React.FC<UniteProps> = () => {
 
@@ -72,7 +74,9 @@ const Unites: React.FC<UniteProps> = () => {
       
     return (
         <div>
-            <Button onClick={() => setOpenUniteDialog(true)}>Ajouter Unite</Button>
+            <IconButton aria-label="add" size="large" onClick={() => setOpenUniteDialog(true)}>
+                <AddIcon fontSize="inherit" />
+            </IconButton>
             <IdNomDialog
                 open={openUniteDialog}
                 onClose={() => closeUnite()}
@@ -89,8 +93,8 @@ const Unites: React.FC<UniteProps> = () => {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                    <TableCell>Nom</TableCell>
-                    <TableCell align="right">Action</TableCell>
+                        <TableCell style={{ fontWeight: 600}}>Nom</TableCell>
+                        <TableCell align="right"></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -103,8 +107,15 @@ const Unites: React.FC<UniteProps> = () => {
                         {unite.nom}
                         </TableCell>
                         <TableCell align="right">
-                            <Button onClick={() => editUnite(unite)}>Maj</Button>
-                            <Button onClick={() => handleOpenDialog(unite)}>Supprimer</Button>
+                            <IconButton aria-label="add" size="large" onClick={() => editUnite(unite)}>
+                                <EditIcon fontSize="inherit" />
+                            </IconButton>
+                            <IconButton aria-label="add" size="large" onClick={() => handleOpenDialog(unite)}>
+                                <DeleteIcon fontSize="inherit" />
+                            </IconButton>
+                            {/* <Button variant="outlined" onClick={() => editUnite(unite)}>Maj</Button>
+                            &nbsp;
+                            <Button variant="outlined" onClick={() => handleOpenDialog(unite)}>Supprimer</Button> */}
                         </TableCell>
                     </TableRow>
                     ))}

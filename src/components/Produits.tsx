@@ -1,15 +1,19 @@
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import { Produit } from "../models/Produit";
 import { useEffect, useState } from "react";
 import { IdNom } from "../models/IdNom";
-import IdNomDialog from "./dialogs/IdNomDialog";
+import AddIcon from '@mui/icons-material/Add';
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import EditProduitDialog from "./dialogs/EditProduitDialog";
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 
 interface ProduitProps {}
 
 const Produits: React.FC<ProduitProps> = () => {
 
+    const [modeEdition, setModeEdition] = useState(false);
     const [query, setQuery] = useState("");
     const [produit, setProduit] = useState<Produit>();
     const [produits, setProduits] = useState<Produit[]>([]);
@@ -77,6 +81,15 @@ const Produits: React.FC<ProduitProps> = () => {
             console.error(err);
         });
     };
+
+    const changeModeEdition = () => {
+        setModeEdition(!modeEdition);
+    }
+
+    const ajouterPanier = (produit: Produit) => {
+        console.log(produit);
+        
+    }
     
     useEffect(() => {
         const timeOutId = setTimeout(() => rechercherProduits(query), 500);
@@ -85,7 +98,9 @@ const Produits: React.FC<ProduitProps> = () => {
 
     return (
         <div>
-            <Button onClick={() => setOpenProduitDialog(true)}>Ajouter Produit</Button>
+            <IconButton aria-label="add" size="large" onClick={() => setOpenProduitDialog(true)}>
+                <AddIcon fontSize="inherit" />
+            </IconButton>
             <TextField 
                 margin="dense"
                 label="Rechercher"
@@ -104,17 +119,20 @@ const Produits: React.FC<ProduitProps> = () => {
                 onConfirm={handleConfirmDelete}
                 itemName={itemToDelete}
             />
-            <TableContainer component={Paper}>
-                <Table stickyHeader sx={{ minWidth: 650 }} aria-label="simple table">
+            <TableContainer component={Paper} style={{ overflowX: "initial" }}>
+                <Table stickyHeader={true} sx={{ minWidth: 650 }} aria-label="sticky table">
                     <TableHead>
                         <TableRow>
-                            <TableCell>Nom</TableCell>
-                            <TableCell align="right" >Prix achat</TableCell>
-                            <TableCell align="right">Taux</TableCell>
-                            <TableCell align="right">Prix vente</TableCell>
-                            <TableCell align="right">Fournisseur</TableCell>
-                            <TableCell align="right">Unité</TableCell>
-                            <TableCell align="right">Categorie</TableCell>
+                            <TableCell style={{ fontWeight: 600, minWidth: 200}} >Nom</TableCell>
+                            <TableCell style={{ fontWeight: 600}} align="right">Prix achat</TableCell>
+                            <TableCell style={{ fontWeight: 600}} align="right">Taux</TableCell>
+                            <TableCell style={{ fontWeight: 600}} align="right">Prix vente</TableCell>
+                            <TableCell style={{ fontWeight: 600}} align="right">Fournisseur</TableCell>
+                            <TableCell style={{ fontWeight: 600}} align="right">Categorie</TableCell>
+                            <TableCell style={{ fontWeight: 600}} align="right">Unité</TableCell>
+                            <TableCell style={{ maxWidth: 100 }} align="right">
+                                <Button variant="outlined" onClick={() => changeModeEdition()}> Mode Édition</Button>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -128,11 +146,24 @@ const Produits: React.FC<ProduitProps> = () => {
                                 <TableCell align="right">{produit.taux.toString()}</TableCell>
                                 <TableCell align="right">{produit.prixVente.toString()}</TableCell>
                                 <TableCell align="right">{produit.fournisseurNom}</TableCell>
-                                <TableCell align="right">{produit.uniteNom}</TableCell>
                                 <TableCell align="right">{produit.categorieNom}</TableCell>
+                                <TableCell align="right">{produit.uniteNom}</TableCell>
                                 <TableCell align="right">
-                                    <Button onClick={() => editProduit(produit)}>Maj</Button>
-                                    <Button onClick={() => handleOpenDialog(produit)}>Supprimer</Button>
+                                    {modeEdition && 
+                                    <>
+                                        <IconButton aria-label="add" size="large" onClick={() => editProduit(produit)}>
+                                            <EditIcon fontSize="inherit" />
+                                        </IconButton>
+                                        <IconButton aria-label="add" size="large" onClick={() => handleOpenDialog(produit)}>
+                                            <DeleteIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </>}
+                                    {!modeEdition && 
+                                    <>
+                                        <IconButton aria-label="add" size="large" onClick={() => ajouterPanier(produit)}>
+                                            <BookmarkBorderIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </>}
                                 </TableCell>
                             </TableRow>
                         ))}

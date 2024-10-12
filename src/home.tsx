@@ -5,16 +5,20 @@ import Fournisseurs from './components/Fournisseurs';
 import Produits from './components/Produits';
 import Unites from './components/Unites';
 import Configurer from './components/Configurer';
+import { Container } from '@mui/material';
 
 export function Home() {
 
   return (
     <>
       <BarNavigation/>
-      <Routes>
-        <Route path="/main_window" element={<Produits />} />
-        <Route path="/configurer" element={<Configurer />} />
-      </Routes>
+      <br/>
+      <Container>
+        <Routes>
+          <Route path="/main_window" element={<Produits />} />
+          <Route path="/configurer" element={<Configurer />} />
+        </Routes>
+      </Container>
     </>
   );
 }
