@@ -1,20 +1,20 @@
+import Database from 'better-sqlite3';
+import {app} from 'electron';
+import path from 'path';
+
 import { Categorie } from "../models/Categorie";
 import { Fournisseur } from "../models/Fournisseur";
 import { Produit } from "../models/Produit";
 import { Unite } from "../models/Unite";
 
-const { app } = require('electron');
-const Database = require('better-sqlite3');
-const path = require('path');
-
 function connect() {
-
   const dbPath = app.isPackaged
         ? path.join(app.getPath('userData'), 'database.db')
         : path.join(__dirname, '../../', 'public/database.db')
   
   return Database(
-    dbPath, { verbose: console.log, fileMustExist: false },
+    dbPath, { fileMustExist: false },
+    // dbPath, { verbose: console.log, fileMustExist: false },
   );
 }
 
@@ -66,13 +66,11 @@ db.exec(`
 
 const dbMethods = {
   getCategories(): Categorie[] {
-    return db.prepare('SELECT * FROM categories').all();
+    return db.prepare<unknown[] , Categorie>('SELECT * FROM categories').all();
   },
   addCategory(nom: string): void {
     const stmt = db.prepare('INSERT INTO categories (nom) VALUES (?)');
-    const info = stmt.run(nom);
-    
-    return info.lastInsertRowid;
+    stmt.run(nom);
   },
   updateCategory(nom: string, id: number): void {
     const stmt = db.prepare('UPDATE categories SET nom=? WHERE id=?');
@@ -83,7 +81,7 @@ const dbMethods = {
     stmt.run(id);
   },
   getFournisseurs(): Fournisseur[] {
-    return db.prepare('SELECT * FROM fournisseurs').all();
+    return db.prepare<unknown[] , Fournisseur>('SELECT * FROM fournisseurs').all();
   },
   addFournisseur(nom: string): void {
     const stmt = db.prepare('INSERT INTO fournisseurs (nom) VALUES (?)');
@@ -98,7 +96,7 @@ const dbMethods = {
     stmt.run(id);
   },
   getUnites(): Unite[] {
-    return db.prepare('SELECT * FROM unites').all();
+    return db.prepare<unknown[] , Unite>('SELECT * FROM unites').all();
   },
   addUnite(nom: string): void {
     const stmt = db.prepare('INSERT INTO unites (nom) VALUES (?)');
@@ -113,10 +111,10 @@ const dbMethods = {
     stmt.run(id);
   },
   getProduits(): Produit[] {
-    return db.prepare("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id").all();
+    return db.prepare<unknown[] , Produit>("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id").all();
   },
   rechercherProduit(query: string): Produit[] {
-    return db.prepare("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id WHERE produits.nom LIKE ?1 OR categories.nom LIKE ?1 OR fournisseurs.nom LIKE ?1").all( { 1: '%' + query + '%' });
+    return db.prepare<unknown[] , Produit>("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id WHERE produits.nom LIKE ?1 OR categories.nom LIKE ?1 OR fournisseurs.nom LIKE ?1").all( { 1: '%' + query + '%' });
   }, 
   addProduit(nom: string, prixAchat: number, taux: number, prixVente: number, categorie_id: number, fournisseur_id: number, unite_id: number): void {
     const stmt = db.prepare('INSERT INTO produits (nom, prix_achat, taux, prix_vente, categorie_id, fournisseur_id, unite_id) VALUES (?, ?, ?, ?, ?, ?, ?)');
