@@ -46,6 +46,18 @@ db.exec(`
   );
 `);
 
+try {
+  db.exec(`
+    ALTER TABLE produits
+    RENAME COLUMN price_achat TO prix_achat;
+
+    ALTER TABLE produits
+    RENAME COLUMN price_vente TO prix_vente;
+  `)
+} catch (error) {
+  console.error('La table a déjà été migrée');
+}
+
 const dbMethods = {
   getCategories() {
     return db.prepare('SELECT * FROM categories').all();
@@ -99,7 +111,7 @@ const dbMethods = {
     stmt.run(id);
   },
   getProduits() {
-    return db.prepare("SELECT produits.id, produits.nom AS produit_nom, produits.price_achat, produits.price_vente, categories.nom AS categorie_nom, fournisseurs.nom AS fournisseur_nom, unites.nom AS unite_nom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id ").all();
+    return db.prepare("SELECT produits.id, produits.nom AS produit_nom, produits.prix_achat, produits.prix_vente, categories.nom AS categorie_nom, fournisseurs.nom AS fournisseur_nom, unites.nom AS unite_nom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id ").all();
   },
   getProducts() {
     return db.prepare('SELECT * FROM produits').all();

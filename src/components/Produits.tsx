@@ -36,7 +36,7 @@ const Produits: React.FC<ProduitProps> = () => {
               console.error(err);
           });
       } else {
-          window.electronAPI.addProduit(produit.nom).then((result) => {
+          window.electronAPI.addProduit(produit).then((result) => {
               setProduits(result);
           }).catch((err) => {
               console.error(err);

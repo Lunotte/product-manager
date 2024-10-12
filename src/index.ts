@@ -3,6 +3,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import db from './db/database';
 import { Categorie } from './models/Categorie';
 import { Produit } from './models/Produit';
+// import { addProduit, getAllProduit } from './queries/queries';
 
 // const db = require('./src/database');
 
@@ -119,6 +120,10 @@ ipcMain.handle('get-produits', () => {
 });
 
 ipcMain.handle('add-produit', (_, produit: Produit) => {
+  // addProduit(produit);
+  // return getAllProduit();
+  console.log('produit de index : ', produit);
+  
   db.addProduit(produit.nom, produit.prixAchat, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
   return db.getProduits();
 });

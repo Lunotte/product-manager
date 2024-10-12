@@ -1,4 +1,7 @@
 // See the Electron documentation for details on how to use preload scripts:
+
+import { Produit } from "./models/Produit";
+
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 const { contextBridge, ipcRenderer } = require('electron');
 
@@ -21,7 +24,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   deleteUnite: (id: number) => ipcRenderer.invoke('delete-unite', id),
 
   getProduits: () => ipcRenderer.invoke('get-produits'),
-  addProduit: (nom: string) => ipcRenderer.invoke('add-produit', nom),
+  addProduit: (produit: Produit) => ipcRenderer.invoke('add-produit', produit),
   updateProduit: (id: number, nom: string) => ipcRenderer.invoke('update-produit', id, nom),
   deleteProduit: (id: number) => ipcRenderer.invoke('delete-produit', id),
 });
