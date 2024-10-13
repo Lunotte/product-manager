@@ -35,7 +35,13 @@ function BarNavigation() {
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 Configurer
-            </Button>         
+            </Button>
+            <Button
+                onClick={() => handleCloseNavMenu('/panier')}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Panier
+            </Button>
           </Box>
         </Toolbar>
       </Container>

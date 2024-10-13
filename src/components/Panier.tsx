@@ -1,0 +1,26 @@
+import { useLocation } from 'react-router-dom';
+import InvoicePageNg from './facture/InvoicePageNg';
+import { ProductLine } from './facture/data/types';
+import { Produit } from '../models/Produit';
+import { initialInvoice } from './facture/data/initialData';
+
+export function Panier() {
+
+  const location = useLocation();
+  
+  const produits: Produit[] = location.state?.produits || [];
+  const produitsInvoice = produits.map(produit => ({
+    description: produit.nom,
+    quantity: '1',
+    taxe: produit.taux.toString(),
+    rate: produit.prixAchat.toString()
+ } as ProductLine))
+
+  const facture = {...initialInvoice, productLines: produitsInvoice}
+
+  return (
+     <div style={{width: '800px'}}>
+      <InvoicePageNg data={facture}/>
+    </div>
+  );
+}

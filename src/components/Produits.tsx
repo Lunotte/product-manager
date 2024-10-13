@@ -8,6 +8,7 @@ import EditProduitDialog from "./dialogs/EditProduitDialog";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import { useNavigate } from "react-router-dom";
 
 interface ProduitProps {}
 
@@ -21,6 +22,11 @@ const Produits: React.FC<ProduitProps> = () => {
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
     const [panier, setPanier] = useState<Produit[]>([]);
+
+    const navigate = useNavigate();
+    // const goToFacture = () => {
+    //     navigate('/facture', { state: { produits } });
+    //   };
 
     useEffect(() => {
         window.electronAPI.getProduits().then((result) => {
@@ -90,6 +96,8 @@ const Produits: React.FC<ProduitProps> = () => {
     const ajouterPanier = (produit: Produit) => {
         setPanier([...panier, produit]);
         console.log(panier);
+        const produits: any = [produit];
+        navigate('/panier', { state: {produits} });
     }
     
     useEffect(() => {

@@ -38,6 +38,23 @@ const createWindow = (): void => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
+  // mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+  //   callback({
+  //     responseHeaders: {
+  //       ...details.responseHeaders,
+  //       'Content-Security-Policy': [
+  //         "default-src 'self';",
+  //         "font-src 'self' https://fonts.gstatic.com data:;",
+  //         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;",
+  //         "connect-src 'self' https://fonts.gstatic.com;",
+  //         "img-src 'self' data:;",
+  //         "script-src 'self' 'unsafe-inline' 'unsafe-eval';"
+  //       ].join(' ')
+  //     }
+  //   });
+  // });
+  
+
   if(!app.isPackaged){
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
@@ -45,6 +62,7 @@ const createWindow = (): void => {
 };
 
 log.transports.file.resolvePathFn = () => path.join(app.getPath('userData'), 'logs/catalogue.log');
+
 
 ipcMain.on('log-error', (event, message) => {
   log.error('Erreur reçue du renderer :', message);

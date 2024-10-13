@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
 import React from 'react';
 import { Home } from './components/home';
+import '../public/assets/scss/main.scss'
 
 // Capturer les erreurs non gérées dans le processus renderer
 window.onerror = (message, source, lineno, colno, error) => {

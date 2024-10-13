@@ -16,5 +16,5 @@
     },
     "jsx": "react-jsx"
   },
-  "include": ["src/**/*", "knexfile.ts"]
+  "include": ["src/**/*", "public/**/*", "knexfile.ts"]
 }
