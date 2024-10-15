@@ -2,15 +2,18 @@ import { CSSProperties } from 'react'
 import { z, TypeOf } from 'zod'
 
 export interface ProductLine {
+  date: string
   description: string
   quantity: string
-  taxe: string
+  unite: string
   rate: string
 }
 
 export const TProductLine = z.object({
+  date: z.string(),
   description: z.string(),
   quantity: z.string(),
+  unite: z.string(),
   rate: z.string(),
 })
 
@@ -36,13 +39,16 @@ export const TInvoice = z.object({
   invoiceDate: z.string(),
   invoiceDueDateLabel: z.string(),
   invoiceDueDate: z.string(),
+  productLineDate: z.string(),
   productLineDescription: z.string(),
   productLineQuantity: z.string(),
+  productLineUnite: z.string(),
   productLineQuantityRate: z.string(),
   productLineQuantityAmount: z.string(),
   productLines: z.array(TProductLine),
   subTotalLabel: z.string(),
   taxLabel: z.string(),
+  tax: z.string(),
   totalLabel: z.string(),
   currency: z.string(),
   notesLabel: z.string(),

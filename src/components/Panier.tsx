@@ -10,9 +10,10 @@ export function Panier() {
   
   const produits: Produit[] = location.state?.produits || [];
   const produitsInvoice = produits.map(produit => ({
+    date: '',
     description: produit.nom,
     quantity: '1',
-    taxe: produit.taux.toString(),
+    unite: produit.uniteNom.toString(),
     rate: produit.prixAchat.toString()
  } as ProductLine))
 

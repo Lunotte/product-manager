@@ -1,9 +1,10 @@
 import { ProductLine, Invoice } from './types'
 
 export const initialProductLine: ProductLine = {
+  date: '',
   description: '',
   quantity: '1',
-  taxe: '10',
+  unite: '',
   rate: '0.00',
 }
 
@@ -34,8 +35,10 @@ export const initialInvoice: Invoice = {
   invoiceDate: '',
   invoiceDueDateLabel: '50310 Ozeville',
   invoiceDueDate: '',
+  productLineDate: 'DATE',
   productLineDescription: 'DÉSIGNATION',
   productLineQuantity: 'QUANTITÉ',
+  productLineUnite: 'UNITÉ',
   productLineQuantityRate: 'UNITE H.T',
   productLineQuantityAmount: 'MONTANT H.T',
   productLines: [
@@ -48,7 +51,8 @@ export const initialInvoice: Invoice = {
     // { ...initialProductLine },
   ],
   subTotalLabel: 'MONTANT H.T. EN EUROS',
-  taxLabel: 'TVA (10%)',
+  taxLabel: 'TVA',
+  tax: '20',
   totalLabel: 'MONTANT T.T.C EN EUROS',
   currency: '$',
   notesLabel: 'CONDITIONS DE REGLEMENT',
