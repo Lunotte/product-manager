@@ -1,4 +1,4 @@
-import { Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Badge, Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
 import { Produit } from "../models/Produit";
 import { useEffect, useState } from "react";
 import { IdNom } from "../models/IdNom";
@@ -9,6 +9,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { useNavigate } from "react-router-dom";
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 
 interface ProduitProps {}
 
@@ -24,9 +26,6 @@ const Produits: React.FC<ProduitProps> = () => {
     const [panier, setPanier] = useState<Produit[]>([]);
 
     const navigate = useNavigate();
-    // const goToFacture = () => {
-    //     navigate('/facture', { state: { produits } });
-    //   };
 
     useEffect(() => {
         window.electronAPI.getProduits().then((result) => {
@@ -95,9 +94,14 @@ const Produits: React.FC<ProduitProps> = () => {
 
     const ajouterPanier = (produit: Produit) => {
         setPanier([...panier, produit]);
-        console.log(panier);
-        const produits: any = [produit];
-        navigate('/panier', { state: {produits} });
+    }
+
+    const goPageFacture = () => {
+        navigate('/panier', { state: {panier} });
+    }
+
+    const produitSelected = (id: number) => {
+        return panier.find(produit => produit.id === id) !== undefined;
     }
     
     useEffect(() => {
@@ -107,9 +111,19 @@ const Produits: React.FC<ProduitProps> = () => {
 
     return (
         <div>
-            <IconButton aria-label="add" size="large" onClick={() => setOpenProduitDialog(true)}>
-                <AddIcon fontSize="inherit" />
-            </IconButton>
+            <div className="flex">
+                <div className={'w-50 panier'}>
+                    <Badge badgeContent={panier.length} color="primary" style={{cursor: "pointer"}}>
+                        <Inventory2OutlinedIcon color="action" onClick={() => goPageFacture()}/>
+                    </Badge>
+                </div>
+                <div className={'w-50 right'}>
+                    <IconButton aria-label="add" size="large" onClick={() => setOpenProduitDialog(true)}>
+                        <AddIcon fontSize="inherit" />
+                    </IconButton>
+                </div>
+            </div>
+          
             <TextField 
                 margin="dense"
                 label="Rechercher"
@@ -170,7 +184,7 @@ const Produits: React.FC<ProduitProps> = () => {
                                     {!modeEdition && 
                                     <>
                                         <IconButton aria-label="add" size="large" onClick={() => ajouterPanier(produit)}>
-                                            <BookmarkBorderIcon fontSize="inherit" />
+                                            {produitSelected(produit.id) ? <BookmarkIcon fontSize="inherit" /> : <BookmarkBorderIcon fontSize="inherit" />}
                                         </IconButton>
                                     </>}
                                 </TableCell>

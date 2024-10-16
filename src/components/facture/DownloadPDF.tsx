@@ -56,18 +56,18 @@ const Download: FC<Props> = ({ data, setData }) => {
       ></PDFDownloadLink>
       <p>Save PDF</p>
 
-      {/* <button
+      <button
         onClick={handleSaveTemplate}
         aria-label="Save Template"
         title="Save Template"
-        className="download-pdf__template_download mt-40"
+        className="download-pdf__template_download mt-20"
       />
       <p className="text-small">Save Template</p>
 
-      <label className="download-pdf__template_upload">
+      <label className="download-pdf__template_upload mt-20">
         <input type="file" accept=".json,.template" onChange={handleInput} />
       </label>
-      <p className="text-small">Upload Template</p> */}
+      <p className="text-small">Upload Template</p>
     </div>
   )
 }

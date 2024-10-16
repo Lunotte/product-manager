@@ -8,7 +8,7 @@ export function Panier() {
 
   const location = useLocation();
   
-  const produits: Produit[] = location.state?.produits || [];
+  const produits: Produit[] = location.state?.panier || [];
   const produitsInvoice = produits.map(produit => ({
     date: '',
     description: produit.nom,
