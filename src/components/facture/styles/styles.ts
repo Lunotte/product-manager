@@ -47,6 +47,9 @@ const styles: CSSClasses = {
   'w-7': {
     width: '7%',
   },
+  'w-10': {
+    width: '10%',
+  },
   'w-50': {
     width: '50%',
   },
@@ -61,6 +64,10 @@ const styles: CSSClasses = {
 
   'w-60': {
     width: '60%',
+  },
+
+  'w-20': {
+    width: '20%',
   },
 
   'w-40': {
@@ -187,7 +194,13 @@ const styles: CSSClasses = {
   'center-2': {
     display: 'flex',
     margin: 'auto'
-  }
+  },
+  // 'invoice-wrapper': {
+  //   display: 'flex',
+  //   margin: 'auto',
+  //   padding: '40px 35px',
+  //   boxShadow: '0 0 17px 0 rgba(16, 40, 73, 0.09)'
+  // },
 
 }
 

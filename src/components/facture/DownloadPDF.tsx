@@ -13,6 +13,9 @@ interface Props {
 const Download: FC<Props> = ({ data, setData }) => {
   const debounced = useDebounce(data, 500)
 
+  console.log(debounced);
+  
+
   function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     if (!e.target.files?.length) return
 
@@ -43,11 +46,12 @@ const Download: FC<Props> = ({ data, setData }) => {
     FileSaver(blob, title + '.template')
   }
 
-  const title = data.invoiceTitle ? data.invoiceTitle.toLowerCase() : 'invoice'
+  const title = data.invoiceTitle ? data.invoiceTitle.toLowerCase() : 'invoice';
+
   return (
     <div className={'download-pdf '}>
       <PDFDownloadLink
-        key="pdf"
+        key={JSON.stringify(debounced)}
         document={<InvoicePage pdfMode={true} data={debounced} />}
         fileName={`${title}.pdf`}
         aria-label="Save PDF"

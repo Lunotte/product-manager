@@ -48,9 +48,10 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
       } else if (name !== 'logoWidth' && typeof value === 'string') {
         newInvoice[name] = value
       }
-      // console.log(newInvoice);
+      console.log(newInvoice);
       
       setInvoice(newInvoice)
+      console.log(newInvoice);
     }
   }
 
@@ -152,7 +153,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
               className="fs-16 bold"
               placeholder="Your Company"
               value={invoice.logo}
-              onChange={(value: any) => handleChange('companyName', value)}
+              onChange={(value: any) => handleChange('logo', value)}
               pdfMode={pdfMode}
             />
             <EditableInput
@@ -194,14 +195,14 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
               className="fs-11"
               placeholder="City, State Zip"
               value={invoice.companyCountry}
-              onChange={(value: any) => handleChange('companyAddress2', value)}
+              onChange={(value: any) => handleChange('companyCountry', value)}
               pdfMode={pdfMode}
             />
             <EditableInput
               className="fs-11"
               placeholder="City, State Zip"
               value={invoice.iban}
-              onChange={(value: any) => handleChange('companyAddress2', value)}
+              onChange={(value: any) => handleChange('iban', value)}
               pdfMode={pdfMode}
             />
           </View>
@@ -219,7 +220,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
         <View className="flex mt-20" pdfMode={pdfMode}>
           <View className="w-60" pdfMode={pdfMode}>
             <View className="flex w-100" pdfMode={pdfMode}>
-              <View className="w-20" pdfMode={pdfMode}>
+              <View className="w-40" pdfMode={pdfMode}>
                 <EditableInput
                   className="bold fs-11"
                   value={invoice.billTo}
@@ -227,7 +228,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
                   pdfMode={pdfMode}
                 />
               </View>
-              <View className="w-80" pdfMode={pdfMode}>
+              <View className="w-60" pdfMode={pdfMode}>
                 <EditableInput
                   className="bold fs-11"
                   placeholder='21/09/20833'
@@ -273,7 +274,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
         </View>
 
         <View className="mt-20 bg-dark flex" pdfMode={pdfMode}>
-          <View className="w-5 p-4-8" pdfMode={pdfMode}>
+          <View className="w-15 p-4-8" pdfMode={pdfMode}>
             <EditableInput
               className="white bold fs-10"
               value={invoice.productLineDate}
@@ -281,7 +282,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
               pdfMode={pdfMode}
             />
           </View>
-          <View className="w-48 p-4-8" pdfMode={pdfMode}>
+          <View className="w-50 p-4-8" pdfMode={pdfMode}>
             <EditableInput
               className="white bold fs-10"
               value={invoice.productLineDescription}
@@ -289,7 +290,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
               pdfMode={pdfMode}
             />
           </View>
-          <View className="w-15 p-4-8" pdfMode={pdfMode}>
+          <View className="w-20 p-4-8" pdfMode={pdfMode}>
             <EditableInput
               className="white bold right fs-10"
               value={invoice.productLineQuantity}
@@ -297,7 +298,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
               pdfMode={pdfMode}
             />
           </View>
-          <View className="w-7 p-4-8" pdfMode={pdfMode}>
+          <View className="w-15 p-4-8" pdfMode={pdfMode}>
             <EditableInput
               className="white bold right fs-10"
               value={invoice.productLineUnite}
@@ -305,7 +306,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
               pdfMode={pdfMode}
             />
           </View>
-          <View className="w-7 p-4-8" pdfMode={pdfMode}>
+          <View className="w-10 p-4-8" pdfMode={pdfMode}>
             <EditableInput
               className="white bold right fs-10"
               value={invoice.productLineQuantityRate}
@@ -328,18 +329,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
             <Text key={i}></Text>
           ) : (
             <View key={i} className="row flex" pdfMode={pdfMode}>
-              <View className="w-5" pdfMode={pdfMode}>
-                {/* <EditableCalendarInput
-                  value={productLine.date}
-                  onChange={(date) =>
-                    handleProductLineChange(
-                      i, 
-                      'date',
-                      date && !Array.isArray(date) ? format(date, dateFormat) : '',
-                    )
-                  }
-                  pdfMode={pdfMode}
-                /> */}
+              <View className="w-15 fs-11" pdfMode={pdfMode}>
                 <EditableInput
                   className="dark right"
                   value={productLine.date}
@@ -347,7 +337,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
                   pdfMode={pdfMode}
                 />
               </View>
-              <View className="w-48 p-2-8" pdfMode={pdfMode}>
+              <View className="w-50 p-2-8 fs-11" pdfMode={pdfMode}>
                 <EditableTextarea
                   className="dark"
                   rows={2}
@@ -357,7 +347,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
                   pdfMode={pdfMode}
                 />
               </View>
-              <View className="w-15 p-2-8" pdfMode={pdfMode}>
+              <View className="w-20 p-2-8 fs-11" pdfMode={pdfMode}>
                 <EditableInput
                   className="dark right"
                   value={productLine.quantity}
@@ -365,7 +355,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
                   pdfMode={pdfMode}
                 />
               </View>
-              <View className="w-7 p-2-8" pdfMode={pdfMode}>
+              <View className="w-15 p-2-8 fs-11" pdfMode={pdfMode}>
                 <EditableInput
                   className="dark right"
                   value={productLine.unite}
@@ -373,7 +363,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
                   pdfMode={pdfMode}
                 />
               </View>
-              <View className="w-7 p-5-8" pdfMode={pdfMode}>
+              <View className="w-10 p-5-8 fs-11" pdfMode={pdfMode}>
                 <EditableInput
                   className="dark right"
                   value={productLine.rate}
@@ -381,7 +371,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
                   pdfMode={pdfMode}
                 />
               </View>
-              <View className="w-18 p-2-8" pdfMode={pdfMode}>
+              <View className="w-18 p-2-8 fs-11" pdfMode={pdfMode}>
                 <Text className="dark right" pdfMode={pdfMode}>
                   {calculateAmount(productLine.quantity, productLine.rate)}
                 </Text>
@@ -411,7 +401,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
           </View>
           <View className="w-50 mt-10" pdfMode={pdfMode}>
             <View className="flex" pdfMode={pdfMode}>
-              <View className="w-70 right p-5" pdfMode={pdfMode}>
+              <View className="w-70 p-5" pdfMode={pdfMode}>
                 <EditableInput
                   className="fs-11"
                   value={invoice.subTotalLabel}
@@ -426,7 +416,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
               </View>
             </View>
             <View className="flex" pdfMode={pdfMode}>
-              <View className="w-50 right p-5" pdfMode={pdfMode}>
+              <View className="w-50 p-5" pdfMode={pdfMode}>
                 <EditableInput
                   className="fs-11"
                   value={invoice.taxLabel}
