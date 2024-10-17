@@ -79,7 +79,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
     setCategorie('');
     setFournisseur('');
     setUnite('');
-    setTaux(5.5);
+    setTaux(20);
     setEdition(false);
   }
 
