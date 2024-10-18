@@ -1,6 +1,8 @@
 import Database from 'better-sqlite3';
 import {app} from 'electron';
 import path from 'path';
+import fs from 'fs';
+import log from 'electron-log';
 
 import { Categorie } from "../models/Categorie";
 import { Fournisseur } from "../models/Fournisseur";
@@ -22,34 +24,11 @@ const db = connect();
 
 // Crée les tables si elles n'existent pas
 db.exec(`
-  CREATE TABLE IF NOT EXISTS categories (
+  CREATE TABLE IF NOT EXISTS migration_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL
-  );
-
-  CREATE TABLE IF NOT EXISTS fournisseurs (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL
-  );
-
-  CREATE TABLE IF NOT EXISTS unites (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL
-  );
-
-  CREATE TABLE IF NOT EXISTS produits (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nom TEXT NOT NULL,
-    categorie_id INTEGER,
-    fournisseur_id INTEGER,
-    prix_achat REAL NOT NULL,
-    taux REAL NOT NULL,
-    prix_vente REAL NOT NULL,
-    unite_id INTEGER,
-    FOREIGN KEY (categorie_id) REFERENCES categories (id) ON DELETE CASCADE,
-    FOREIGN KEY (fournisseur_id) REFERENCES fournisseurs (id) ON DELETE CASCADE,
-    FOREIGN KEY (unite_id) REFERENCES unites (id) ON DELETE CASCADE
-  );
+    script_name TEXT NOT NULL,
+    executed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
 `);
 
 // try {
@@ -63,6 +42,45 @@ db.exec(`
 // } catch (error) {
 //   console.error('La table a déjà été migrée', error);
 // }
+
+/**
+ * Fonction pour vérifier si un script a déjà été exécuté
+ * 
+ * @param scriptName 
+ * @returns 
+ */
+function hasScriptBeenExecuted(scriptName: string) {
+  const row = db.prepare('SELECT 1 FROM migration_history WHERE script_name = ?').get(scriptName);
+  return !!row;
+}
+
+// Fonction pour exécuter un script SQL
+function executeScript(scriptPath: string) {
+  const script = fs.readFileSync(scriptPath, 'utf8');
+  db.exec(script);
+  const scriptName = path.basename(scriptPath);
+  db.prepare('INSERT INTO migration_history (script_name) VALUES (?)').run(scriptName);
+}
+
+/**
+ * Lire les fichiers SQL dans le répertoire et les exécuter s'ils n'ont jamais été exécutés
+ */
+const scriptsDirectory = app.isPackaged
+  ? path.join(app.getAppPath(), '../','migrations')
+  : './migrations';
+  log.info('Répertoire de migration', scriptsDirectory);
+fs.readdirSync(scriptsDirectory).forEach((file: string) => {
+  const scriptPath = path.join(scriptsDirectory, file);
+  if (!hasScriptBeenExecuted(file)) {
+    log.info(`Script ${file} doit être exécuté.`);
+    executeScript(scriptPath);
+    log.info(`Script ${file} exécuté avec succès.`);
+  } else {
+    log.info(`Script ${file} a déjà été exécuté.`);
+  }
+});
+
+
 
 const dbMethods = {
   getCategories(): Categorie[] {
