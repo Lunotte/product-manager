@@ -14,9 +14,18 @@ import { rendererConfig } from './webpack.renderer.config';
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    extraResource: './migrations',
+    icon: './catalogue.ico'
   },
   rebuildConfig: {},
-  makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+  makers: [{
+    name: '@electron-forge/maker-squirrel', // pour Windows
+    config: {
+      name: 'Catalogue',
+      icon: './catalogue.ico',
+      setupIcon: './catalogue.ico',  // Icône pour le fichier d'installation
+    },
+  }, new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
   plugins: [
     new AutoUnpackNativesPlugin({}),
     new WebpackPlugin({
