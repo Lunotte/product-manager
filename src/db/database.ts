@@ -11,7 +11,7 @@ import { Unite } from "../models/Unite";
 
 function connect() {
   const dbPath = app.isPackaged
-        ? path.join(app.getPath('userData'), 'database.db')
+        ? path.join(process.resourcesPath, 'database.db')
         : path.join(__dirname, '../../', 'public/database.db')
   
   return Database(
@@ -30,18 +30,6 @@ db.exec(`
     executed_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `);
-
-// try {
-//   db.exec(`
-//     ALTER TABLE produits
-//     RENAME COLUMN price_achat TO prix_achat;
-
-//     ALTER TABLE produits
-//     RENAME COLUMN price_vente TO prix_vente;
-//   `)
-// } catch (error) {
-//   console.error('La table a déjà été migrée', error);
-// }
 
 /**
  * Fonction pour vérifier si un script a déjà été exécuté
@@ -62,24 +50,27 @@ function executeScript(scriptPath: string) {
   db.prepare('INSERT INTO migration_history (script_name) VALUES (?)').run(scriptName);
 }
 
+
 /**
  * Lire les fichiers SQL dans le répertoire et les exécuter s'ils n'ont jamais été exécutés
  */
-const scriptsDirectory = app.isPackaged
-  ? path.join(app.getAppPath(), '../','migrations')
-  : './migrations';
+export const verifierEtExecuterMigration = () => {
+  const scriptsDirectory = app.isPackaged ? path.join(process.resourcesPath,'migrations') : './migrations';
   log.info('Répertoire de migration', scriptsDirectory);
-fs.readdirSync(scriptsDirectory).forEach((file: string) => {
-  const scriptPath = path.join(scriptsDirectory, file);
-  if (!hasScriptBeenExecuted(file)) {
-    log.info(`Script ${file} doit être exécuté.`);
-    executeScript(scriptPath);
-    log.info(`Script ${file} exécuté avec succès.`);
-  } else {
-    log.info(`Script ${file} a déjà été exécuté.`);
-  }
-});
 
+  fs.readdirSync(scriptsDirectory).forEach((file: string) => {
+    const scriptPath = path.join(scriptsDirectory, file);
+    if (!hasScriptBeenExecuted(file)) {
+      log.info(`Script ${file} doit être exécuté.`);
+      
+      executeScript(scriptPath);
+      log.info(`Script ${file} exécuté avec succès.`);
+      
+    } else {
+      log.info(`Script ${file} a déjà été exécuté.`);
+    }
+  });
+}
 
 
 const dbMethods = {

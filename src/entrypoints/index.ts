@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import log from 'electron-log';
 import path from 'path';
-import db from '../db/database';
+import db, { verifierEtExecuterMigration } from '../db/database';
 import { Produit } from '../models/Produit';
 import { Categorie } from '../models/Categorie';
 import { Fournisseur } from '../models/Fournisseur';
@@ -158,7 +158,10 @@ ipcMain.handle('delete-produit', (_, id: number): Produit[] => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', () => {
+  createWindow();
+  verifierEtExecuterMigration();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
