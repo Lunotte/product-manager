@@ -48,7 +48,7 @@ export const initialInvoice: Invoice = {
   ],
   sousTotalMontantHT: 'MONTANT H.T. EN EUROS',
   taxLabel: 'TVA',
-  tax: '20',
+  tax: '20%',
   totalTTC: 'MONTANT T.T.C EN EUROS',
   conditionsReglementLabel: 'CONDITIONS DE REGLEMENT',
   conditionsReglement: 'CONDITIONS DE REGLEMENT: Sauf accord préalable, nos factures sont payables comptant, sans escompte. Tout retard de paiement entraînera une pénalité au taux pratiqué par la Banque Centrale Européenne pour ses opérations de refinancement majoré de 10 points, et au paiement d’une indemnité forfaitaire pour frais de recouvrement d’un montant de 40 € selon l’article L441-6 du Code du Commerce, ainsi qu’une clause pérale de 15% sur les sommes dues, à titre de préjudice.',

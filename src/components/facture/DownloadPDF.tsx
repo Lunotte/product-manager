@@ -51,11 +51,11 @@ const Download: FC<Props> = ({ data, setData }) => {
         key={JSON.stringify(debounced)}
         document={<InvoicePage pdfMode={true} data={debounced} />}
         fileName={`${title}.pdf`}
-        aria-label="Sauvegarder PDF"
-        title="Sauvegarder PDF"
+        aria-label="Générer PDF"
+        title="Générer PDF"
         className="download-pdf__pdf"
       ></PDFDownloadLink>
-      <p className="text-small">Sauvegarder PDF</p>
+      <p className="text-small">Générer PDF</p>
 
       <button
         onClick={handleSaveTemplate}

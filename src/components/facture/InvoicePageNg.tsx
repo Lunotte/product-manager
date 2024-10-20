@@ -118,9 +118,9 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
   }, [invoice.productLines])
 
   useEffect(() => {
-    // const match = invoice.taxLabel.match(/(\d+)%/)
-    // const taxRate = match ? parseFloat(match[1]) : 0
-    const taxRate = parseFloat(invoice.tax);
+    const match = invoice.tax.match(/(\d+)%/)
+    const taxRate = match ? parseFloat(match[1]) : 0
+    // const taxRate = parseFloat(invoice.tax);
     const saleTax = subTotal ? (subTotal * taxRate) / 100 : 0
 
     setSaleTax(saleTax)
