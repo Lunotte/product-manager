@@ -5,6 +5,7 @@ import { Produit } from "../models/Produit";
 export interface ElectronAPI {
 
     logError: (message: string) => void;
+    backup: () => void;
     
     getCategories: () => Promise<Categorie[]>;
     addCategorie: (nom: string) => Promise<Categorie[]>;

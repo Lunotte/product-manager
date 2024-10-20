@@ -14,6 +14,10 @@ function BarNavigation() {
     navigate(page);
   };
 
+  const handleBackup =() => {
+    window.electronAPI.backup();
+  }
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
@@ -41,6 +45,12 @@ function BarNavigation() {
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 Facture
+            </Button>
+            <Button
+                onClick={() => handleBackup()}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                Backup
             </Button>
           </Box>
         </Toolbar>

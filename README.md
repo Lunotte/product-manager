@@ -12,7 +12,7 @@
 ### Fonctionnel
 
 - Gestion des migrations
-- Bouton pour générer un backup de la base de données
+- Bouton pour générer un backup de la base de données (Télécharger une copie de la bdd, pas d'insert)
 
 
 ## source

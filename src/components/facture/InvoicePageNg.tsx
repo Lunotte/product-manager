@@ -199,7 +199,6 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
           <View className="w-40" pdfMode={pdfMode}>
             <EditableInput
               className="right bold fs-11"
-              placeholder="Invoice"
               value={invoice.villeLe}
               onChange={(value: any) => handleChange('villeLe', value)}
               pdfMode={pdfMode}
@@ -331,7 +330,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
                 <EditableTextarea
                   className="dark"
                   rows={2}
-                  placeholder="Enter item name/description"
+                  placeholder="Entrer nom/description"
                   value={productLine.description}
                   onChange={(value: any) => handleProductLineChange(i, 'description', value)}
                   pdfMode={pdfMode}
@@ -370,7 +369,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
                 <button
                   className="link row__remove"
                   aria-label="Remove Row"
-                  title="Remove Row"
+                  title="Supprimer ligne"
                   onClick={() => handleRemove(i)}
                 >
                   <span className="icon icon-remove bg-red"></span>
@@ -385,7 +384,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
             {!pdfMode && (
               <button className="link" onClick={handleAdd}>
                 <span className="icon icon-add bg-green mr-10"></span>
-                Add Line Item
+                Ajouter une ligne de produit
               </button>
             )}
           </View>

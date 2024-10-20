@@ -69,6 +69,7 @@
     "@react-pdf/renderer": "^3.4.5",
     "@uidotdev/usehooks": "^2.4.1",
     "better-sqlite3": "^11.3.0",
+    "electron-dl": "^4.0.0",
     "electron-log": "^5.2.0",
     "electron-squirrel-startup": "^1.0.1",
     "file-saver": "^2.0.5",
