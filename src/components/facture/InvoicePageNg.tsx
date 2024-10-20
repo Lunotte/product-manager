@@ -57,7 +57,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
       if (i === index) {
         const newProductLine = { ...productLine }
 
-        if (name === 'description') {
+        if (name === 'description' || name === 'unite') {
           newProductLine[name] = value
         }
         else if(name === 'date'){

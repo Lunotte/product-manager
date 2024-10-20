@@ -93,7 +93,15 @@ const Produits: React.FC<ProduitProps> = () => {
     }
 
     const ajouterPanier = (produit: Produit) => {
-        setPanier([...panier, produit]);
+        const indexProduit = panier.findIndex((produitPanier) => produitPanier.id === produit.id);
+
+        if (indexProduit !== -1) {
+            const nouveauPanier = [...panier];
+            nouveauPanier.splice(indexProduit, 1);
+            setPanier(nouveauPanier);
+        } else {
+            setPanier([...panier, produit]);
+        }
     }
 
     const goPageFacture = () => {
