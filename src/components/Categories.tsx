@@ -73,9 +73,11 @@ const Categories: React.FC<CategorieProps> = () => {
       
     return (
         <div>
-            <IconButton aria-label="add" size="large" onClick={() => setOpenCategorieDialog(true)}>
-                <AddIcon fontSize="inherit" />
-            </IconButton>
+            <div className={'right mr-20'}>
+                <IconButton aria-label="add" size="large" onClick={() => setOpenCategorieDialog(true)}>
+                    <AddIcon fontSize="inherit" />
+                </IconButton>
+            </div>
             <IdNomDialog
                 open={openCategorieDialog}
                 onClose={() => closeCategorie()}

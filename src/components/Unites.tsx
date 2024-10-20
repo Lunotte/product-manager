@@ -73,9 +73,11 @@ const Unites: React.FC<UniteProps> = () => {
       
     return (
         <div>
-            <IconButton aria-label="add" size="large" onClick={() => setOpenUniteDialog(true)}>
-                <AddIcon fontSize="inherit" />
-            </IconButton>
+             <div className={'right mr-20'}>
+                <IconButton aria-label="add" size="large" onClick={() => setOpenUniteDialog(true)}>
+                    <AddIcon fontSize="inherit" />
+                </IconButton>
+            </div>
             <IdNomDialog
                 open={openUniteDialog}
                 onClose={() => closeUnite()}

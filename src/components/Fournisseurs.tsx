@@ -73,9 +73,11 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
       
     return (
         <div>
-            <IconButton aria-label="add" size="large" onClick={() => setOpenFournisseurDialog(true)}>
-                <AddIcon fontSize="inherit" />
-            </IconButton>
+             <div className={'right mr-20'}>
+                <IconButton aria-label="add" size="large" onClick={() => setOpenFournisseurDialog(true)}>
+                    <AddIcon fontSize="inherit" />
+                </IconButton>
+            </div>
             <IdNomDialog
                 open={openFournisseurDialog}
                 onClose={() => closeFournisseur()}
