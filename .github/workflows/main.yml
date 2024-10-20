@@ -16,7 +16,9 @@ jobs:
           node-version: '12.x'
           always-auth: true
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install
+      - run: |
+              npm install --save-dev electron-builder-squirrel-windows@25.1.8
+              npm install
       - name: Publish
         run: npm run make
  #       run: | 
