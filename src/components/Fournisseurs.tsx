@@ -1,4 +1,4 @@
-import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material";
 import { Fournisseur } from "../models/Fournisseur";
 import { useEffect, useState } from "react";
 import IdNomDialog from "./dialogs/IdNomDialog";
@@ -74,9 +74,11 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
     return (
         <div>
              <div className={'right mr-20'}>
-                <IconButton aria-label="add" size="large" onClick={() => setOpenFournisseurDialog(true)}>
-                    <AddIcon fontSize="inherit" />
-                </IconButton>
+                <Tooltip title="Ajouter un fournisseur" arrow>
+                    <IconButton aria-label="add" size="large" onClick={() => setOpenFournisseurDialog(true)}>
+                        <AddIcon fontSize="inherit" />
+                    </IconButton>
+                </Tooltip>
             </div>
             <IdNomDialog
                 open={openFournisseurDialog}
@@ -108,12 +110,16 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
                         {fournisseur.nom}
                         </TableCell>
                         <TableCell align="right">
-                            <IconButton aria-label="add" size="large" onClick={() => editFournisseur(fournisseur)}>
-                                <EditIcon fontSize="inherit" />
-                            </IconButton>
-                            <IconButton aria-label="add" size="large" onClick={() => handleOpenDialog(fournisseur)}>
-                                <DeleteIcon fontSize="inherit" />
-                            </IconButton>
+                            <Tooltip title="Modifier un fournisseur" arrow>
+                                <IconButton aria-label="update" size="large" onClick={() => editFournisseur(fournisseur)}>
+                                    <EditIcon fontSize="inherit" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Supprimer un fournisseur" arrow>
+                                <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(fournisseur)}>
+                                    <DeleteIcon fontSize="inherit" />
+                                </IconButton>
+                            </Tooltip>
                         </TableCell>
                     </TableRow>
                     ))}

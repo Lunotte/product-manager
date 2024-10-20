@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
-import { Button } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
 function BarNavigation() {
@@ -46,12 +46,14 @@ function BarNavigation() {
               >
                 Facture
             </Button>
-            <Button
-                onClick={() => handleBackup()}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Backup
-            </Button>
+            <Tooltip title="Faire une sauvegarde" arrow>
+              <Button
+                  onClick={() => handleBackup()}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  Backup
+              </Button>
+            </Tooltip>
           </Box>
         </Toolbar>
       </Container>

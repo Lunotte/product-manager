@@ -1,4 +1,4 @@
-import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material";
 import { Unite } from "../models/Unite";
 import { useEffect, useState } from "react";
 import IdNomDialog from "./dialogs/IdNomDialog";
@@ -74,9 +74,11 @@ const Unites: React.FC<UniteProps> = () => {
     return (
         <div>
              <div className={'right mr-20'}>
-                <IconButton aria-label="add" size="large" onClick={() => setOpenUniteDialog(true)}>
-                    <AddIcon fontSize="inherit" />
-                </IconButton>
+                <Tooltip title="Ajouter une unité" arrow>
+                    <IconButton aria-label="add" size="large" onClick={() => setOpenUniteDialog(true)}>
+                        <AddIcon fontSize="inherit" />
+                    </IconButton>
+                </Tooltip>
             </div>
             <IdNomDialog
                 open={openUniteDialog}
@@ -108,15 +110,16 @@ const Unites: React.FC<UniteProps> = () => {
                         {unite.nom}
                         </TableCell>
                         <TableCell align="right">
-                            <IconButton aria-label="add" size="large" onClick={() => editUnite(unite)}>
-                                <EditIcon fontSize="inherit" />
-                            </IconButton>
-                            <IconButton aria-label="add" size="large" onClick={() => handleOpenDialog(unite)}>
-                                <DeleteIcon fontSize="inherit" />
-                            </IconButton>
-                            {/* <Button variant="outlined" onClick={() => editUnite(unite)}>Maj</Button>
-                            &nbsp;
-                            <Button variant="outlined" onClick={() => handleOpenDialog(unite)}>Supprimer</Button> */}
+                            <Tooltip title="Modifier une unité" arrow>
+                                <IconButton aria-label="update" size="large" onClick={() => editUnite(unite)}>
+                                    <EditIcon fontSize="inherit" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Supprimer une unité" arrow>
+                                <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(unite)}>
+                                    <DeleteIcon fontSize="inherit" />
+                                </IconButton>
+                            </Tooltip>
                         </TableCell>
                     </TableRow>
                     ))}

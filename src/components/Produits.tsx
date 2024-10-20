@@ -1,4 +1,4 @@
-import { Badge, Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from "@mui/material";
+import { Badge, Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
 import { Produit } from "../models/Produit";
 import { useEffect, useState } from "react";
 import { IdNom } from "../models/IdNom";
@@ -121,20 +121,25 @@ const Produits: React.FC<ProduitProps> = () => {
         <div>
             <div className="flex">
                 <div className={'w-50 panier'}>
-                    <Badge badgeContent={panier.length} color="primary" style={{cursor: "pointer"}}>
-                        <Inventory2OutlinedIcon color="action" onClick={() => goPageFacture()}/>
-                    </Badge>
+                    <Tooltip title="Panier" arrow>
+                        <Badge badgeContent={panier.length} color="primary" style={{cursor: "pointer"}}>
+                            <Inventory2OutlinedIcon color="action" onClick={() => goPageFacture()}/>
+                        </Badge>
+                    </Tooltip>
                 </div>
                 <div className={'w-50 right'}>
-                    <IconButton aria-label="add" size="large" onClick={() => setOpenProduitDialog(true)}>
-                        <AddIcon fontSize="inherit" />
-                    </IconButton>
+                    <Tooltip title="Ajouter un produit" arrow>
+                        <IconButton aria-label="add" size="large" onClick={() => setOpenProduitDialog(true)}>
+                            <AddIcon fontSize="inherit" />
+                        </IconButton>
+                    </Tooltip>
                 </div>
             </div>
           
             <TextField 
+                style={{backgroundColor:"white"}}
                 margin="dense"
-                label="Rechercher"
+                label="Rechercher par produit / catégorie / fournisseur"
                 type="text"
                 fullWidth
                 onChange={event => setQuery(event.target.value)} />
@@ -182,18 +187,24 @@ const Produits: React.FC<ProduitProps> = () => {
                                 <TableCell align="right">
                                     {modeEdition && 
                                     <>
-                                        <IconButton aria-label="add" size="large" onClick={() => editProduit(produit)}>
-                                            <EditIcon fontSize="inherit" />
-                                        </IconButton>
-                                        <IconButton aria-label="add" size="large" onClick={() => handleOpenDialog(produit)}>
-                                            <DeleteIcon fontSize="inherit" />
-                                        </IconButton>
+                                        <Tooltip title="Modifier un produit" arrow>
+                                            <IconButton aria-label="update" size="large" onClick={() => editProduit(produit)}>
+                                                <EditIcon fontSize="inherit" />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Supprimer un produit" arrow>
+                                            <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(produit)}>
+                                                <DeleteIcon fontSize="inherit" />
+                                            </IconButton>
+                                        </Tooltip>
                                     </>}
                                     {!modeEdition && 
                                     <>
-                                        <IconButton aria-label="add" size="large" onClick={() => ajouterPanier(produit)}>
-                                            {produitSelected(produit.id) ? <BookmarkIcon fontSize="inherit" /> : <BookmarkBorderIcon fontSize="inherit" />}
-                                        </IconButton>
+                                        <Tooltip title="Ajouter au panier" arrow>
+                                            <IconButton aria-label="panier" size="large" onClick={() => ajouterPanier(produit)}>
+                                                {produitSelected(produit.id) ? <BookmarkIcon fontSize="inherit" /> : <BookmarkBorderIcon fontSize="inherit" />}
+                                            </IconButton>
+                                        </Tooltip>
                                     </>}
                                 </TableCell>
                             </TableRow>

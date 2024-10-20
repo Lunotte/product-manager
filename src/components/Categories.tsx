@@ -1,4 +1,4 @@
-import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material";
 import { Categorie } from "../models/Categorie";
 import { useEffect, useState } from "react";
 import IdNomDialog from "./dialogs/IdNomDialog";
@@ -74,9 +74,12 @@ const Categories: React.FC<CategorieProps> = () => {
     return (
         <div>
             <div className={'right mr-20'}>
-                <IconButton aria-label="add" size="large" onClick={() => setOpenCategorieDialog(true)}>
-                    <AddIcon fontSize="inherit" />
-                </IconButton>
+                <Tooltip title="Ajouter une catégorie" arrow>
+                    <IconButton aria-label="add" size="large" onClick={() => setOpenCategorieDialog(true)}>
+                        <AddIcon fontSize="inherit" />
+                    </IconButton>
+                </Tooltip>
+                
             </div>
             <IdNomDialog
                 open={openCategorieDialog}
@@ -108,12 +111,16 @@ const Categories: React.FC<CategorieProps> = () => {
                         {categorie.nom}
                         </TableCell>
                         <TableCell align="right">
-                            <IconButton aria-label="add" size="large" onClick={() => editCategorie(categorie)}>
-                                <EditIcon fontSize="inherit" />
-                            </IconButton>
-                            <IconButton aria-label="add" size="large" onClick={() => handleOpenDialog(categorie)}>
-                                <DeleteIcon fontSize="inherit" />
-                            </IconButton>
+                            <Tooltip title="Modifier une catégorie" arrow>
+                                <IconButton aria-label="update" size="large" onClick={() => editCategorie(categorie)}>
+                                    <EditIcon fontSize="inherit" />
+                                </IconButton>
+                            </Tooltip>
+                            <Tooltip title="Supprimer une catégorie" arrow>
+                                <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(categorie)}>
+                                    <DeleteIcon fontSize="inherit" />
+                                </IconButton>
+                            </Tooltip>
                         </TableCell>
                     </TableRow>
                     ))}
