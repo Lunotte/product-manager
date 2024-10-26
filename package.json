@@ -38,7 +38,7 @@
             "darwin"
           ]
         }
-      ]
+      ],
       "publishers": [
         {
           "name": "@electron-forge/publisher-github",
