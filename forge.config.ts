@@ -26,6 +26,17 @@ const config: ForgeConfig = {
       setupIcon: './catalogue.ico',  // Icône pour le fichier d'installation
     },
   }, new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+  publishers:[
+    {
+      "name": "@electron-forge/publisher-github",
+      "config": {
+        "repository": {
+          "owner": "Lunotte",
+          "name": "product-manager"
+        }
+      }
+    }
+  ],
   plugins: [
     new AutoUnpackNativesPlugin({}),
     new WebpackPlugin({
