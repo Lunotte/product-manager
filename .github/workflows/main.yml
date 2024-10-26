@@ -6,7 +6,7 @@ on:
 jobs:
   job_publish:
     name: Publish if merged
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - run: echo merged and ready to publish
       - uses: actions/checkout@v3
@@ -16,10 +16,10 @@ jobs:
           node-version: '12.x'
           always-auth: true
           registry-url: 'https://registry.npmjs.org'
-      - run: |
-              npm install --save-dev electron-builder-squirrel-windows@25.1.8
-              npm install
-      - name: Publish
+      - name: Install dependencies
+        run: npm install
+#              npm install --save-dev electron-builder-squirrel-windows@25.1.8
+      - name: Build
         run: npm run make
  #       run: | 
 #              echo ${{ secrets.NPM_TOKEN }}
