@@ -1,11 +1,11 @@
-name: Publish in npm
+name: Release
 on:
   push:
     branches: Livraison
 
 jobs:
   job_publish:
-    name: Publish if merged
+    name: Release if build
     runs-on: windows-latest
     steps:
       - run: echo merged and ready to publish
