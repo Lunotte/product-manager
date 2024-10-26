@@ -24,9 +24,7 @@ const config: ForgeConfig = {
       name: 'Catalogue',
       icon: './catalogue.ico',
       setupIcon: './catalogue.ico'  // Icône pour le fichier d'installation
-    },
-    draft: false, // Publication directe sans draft
-    prerelease: false // Optionnel : configure si la release est une pré-version
+    }
   }, new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
   publishers:[
     {
@@ -35,7 +33,9 @@ const config: ForgeConfig = {
         "repository": {
           "owner": "Lunotte",
           "name": "product-manager"
-        }
+        },
+        "draft": false, // Publication directe sans draft
+        "prerelease": false // Optionnel : configure si la release est une pré-version
       }
     }
   ],
