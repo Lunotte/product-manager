@@ -24,6 +24,21 @@
   },
   "config": {
     "forge": {
+      "packagerConfig": {},
+       "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "product-manage"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        }
+      ]
       "publishers": [
         {
           "name": "@electron-forge/publisher-github",
