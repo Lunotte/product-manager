@@ -6,22 +6,18 @@ on:
 jobs:
   job_publish:
     name: Publish if merged
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - run: echo merged and ready to publish
       - uses: actions/checkout@v3
-      # Setup .npmrc file to publish to npm
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@master
         with:
-          node-version: '12.x'
-          always-auth: true
-          registry-url: 'https://registry.npmjs.org'
-      - run: npm install
-      - name: Publish
+          node-version: 21
+      - name: Install dependencies
+        run: npm install
+      - name: Build
         run: npm run make
- #       run: | 
-#              echo ${{ secrets.NPM_TOKEN }}
-#              echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > .npmrc
-#              npm publish --access public --ignore-scripts
-#        env:
-#          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run publish
