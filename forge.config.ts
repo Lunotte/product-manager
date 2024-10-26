@@ -25,7 +25,7 @@ const config: ForgeConfig = {
       icon: './catalogue.ico',
       setupIcon: './catalogue.ico'  // Icône pour le fichier d'installation
     }
-  }, new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+  }, new MakerZIP({}, ['win32']), new MakerRpm({}), new MakerDeb({})],
   publishers:[
     {
       "name": "@electron-forge/publisher-github",
