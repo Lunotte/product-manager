@@ -35,7 +35,7 @@ export const initialInvoice: Invoice = {
   productLineDescription: 'DÉSIGNATION',
   productLineQuantity: 'QUANTITÉ',
   productLineUnite: 'UNITÉ',
-  productLineUniteHT: 'UNITE H.T',
+  productLineUniteHT: 'PRIX NET H.T',
   productLineMontantHT: 'MONTANT H.T',
   productLines: [
     // {
