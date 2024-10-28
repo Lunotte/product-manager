@@ -182,25 +182,28 @@ const styles: CSSClasses = {
   logo: {
     display: 'block',
   },
-
   'pied-page': {
-    fontSize: '9px'
+    marginBottom: '10px'
   },
-
-  'pied-page-2': {
-    fontSize: '9px',
+  'footer-position': {
+    position: 'absolute',
+    bottom: 20,
+    left: 35,
+    right: 35,
     textAlign: 'center'
   },
-  'center-2': {
-    display: 'flex',
-    margin: 'auto'
+  'footer': {
+    position: 'absolute',
+    bottom: 20,
+    left: 35,
+    right: 35,
+    fontSize: '9px',
   },
-  // 'invoice-wrapper': {
-  //   display: 'flex',
-  //   margin: 'auto',
-  //   padding: '40px 35px',
-  //   boxShadow: '0 0 17px 0 rgba(16, 40, 73, 0.09)'
-  // },
+  'footer-center': {
+      width: 400,
+      left: 50,
+      textAlign: 'center'
+  }
 
 }
 

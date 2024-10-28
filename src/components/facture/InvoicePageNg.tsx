@@ -12,6 +12,7 @@ import Download from './DownloadPDF'
 import EditableCalendarInput from './EditableCalendarInput'
 // import EditableCalendarInput from './EditableCalendarInput'
 import { format } from 'date-fns/format'
+import Footer from './Footer'
 
 Font.register({
   family: 'Nunito',
@@ -448,26 +449,8 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
           </View>
         </View>
 
-        <View className="mt-20" pdfMode={pdfMode}>
-          <EditableTextarea
-            className="w-100 pied-page"
-            rows={3}
-            value={invoice.conditionsReglement}
-            onChange={(value: any) => handleChange('conditionsReglement', value)}
-            pdfMode={pdfMode}
-          />
-        </View>
-        <View className="mt-10 w-100 bg-gray" pdfMode={pdfMode}>
-          <View className="w-70 center-2" pdfMode={pdfMode}>
-            <EditableTextarea
-              className="pied-page-2"
-              rows={2}
-              value={invoice.term}
-              onChange={(value: any) => handleChange('term', value)}
-              pdfMode={pdfMode}
-            />
-          </View>
-        </View>
+        <Footer pdfMode={pdfMode} conditionsReglement={invoice.conditionsReglement} term={invoice.term}></Footer>
+
       </Page>
     </Document>
   )
