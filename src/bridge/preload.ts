@@ -3,6 +3,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
 import { Produit } from "../models/Produit";
+import { Contact } from '../models/Contact';
 
 contextBridge.exposeInMainWorld('electronAPI', {
 
@@ -27,6 +28,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getProduits: () => ipcRenderer.invoke('get-produits'),
   rechercherProduits: (query: string) => ipcRenderer.invoke('rechercher-produit', query),
   addProduit: (produit: Produit) => ipcRenderer.invoke('add-produit', produit),
-  updateProduit: (id: number, nom: string) => ipcRenderer.invoke('update-produit', id, nom),
+  updateProduit: (produit: Produit) => ipcRenderer.invoke('update-produit', produit),
   deleteProduit: (id: number) => ipcRenderer.invoke('delete-produit', id),
+
+  getContacts: () => ipcRenderer.invoke('get-contacts'),
+  addContact: (contact: Contact) => ipcRenderer.invoke('add-contact', contact),
+  updateContact: (contact: Contact) => ipcRenderer.invoke('update-contact', contact),
+  deleteContact: (id: number) => ipcRenderer.invoke('delete-contact', id),
 });

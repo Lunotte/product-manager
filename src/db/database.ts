@@ -8,6 +8,7 @@ import { Categorie } from "../models/Categorie";
 import { Fournisseur } from "../models/Fournisseur";
 import { Produit } from "../models/Produit";
 import { Unite } from "../models/Unite";
+import { Contact } from '../models/Contact';
 
 function connect() {
   const dbPath = app.isPackaged
@@ -135,6 +136,22 @@ const dbMethods = {
   },
   deleteProduit(id: number): void {
     const stmt = db.prepare('DELETE FROM produits WHERE id=?');
+    stmt.run(id);
+  },
+
+  getContacts(): Contact[] {
+    return db.prepare<unknown[] , Contact>('SELECT * FROM contacts').all();
+  },
+  addContact(nom: string, adresse: string, adresse_bis: string, cp: number, ville: string): void {
+    const stmt = db.prepare('INSERT INTO contacts (nom, adresse, adresse_bis, cp, ville) VALUES (?, ?, ?, ?, ?)');
+    stmt.run(nom, adresse, adresse_bis, cp, ville);
+  },
+  updateContact(nom: string, adresse: string, adresse_bis: string, cp: number, ville: string, id: number): void {
+    const stmt = db.prepare('UPDATE contacts SET nom=?, adresse=?, adresse_bis=?, cp=?, ville=? WHERE id=?');
+    stmt.run(nom, adresse, adresse_bis, cp, ville, id);
+  },
+  deleteContact(id: number): void {
+    const stmt = db.prepare('DELETE FROM contacts WHERE id=?');
     stmt.run(id);
   },
 };

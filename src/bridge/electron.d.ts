@@ -1,3 +1,4 @@
+import { Contact } from "src/models/Contact";
 import { Categorie } from "../models/Categorie";
 import { Fournisseur } from "../models/Fournisseur";
 import { Produit } from "../models/Produit";
@@ -27,6 +28,11 @@ export interface ElectronAPI {
     addProduit: (produit: Produit) => Promise<Produit[]>;
     updateProduit: (produit: Produit) => Promise<Produit[]>;
     deleteProduit: (id: number) => Promise<Produit[]>;
+
+    getContacts: () => Promise<Contact[]>;
+    addContact: (contact: Contact) => Promise<Contact[]>;
+    updateContact: (contact: Contact) => Promise<Contact[]>;
+    deleteContact: (id: number) => Promise<Contact[]>;
 }
   
 declare global {
