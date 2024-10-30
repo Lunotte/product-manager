@@ -210,7 +210,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
         <View className="flex mt-20" pdfMode={pdfMode}>
           <View className="w-60" pdfMode={pdfMode}>
             <View className="flex w-100" pdfMode={pdfMode}>
-              <View className="w-25" pdfMode={pdfMode}>
+              <View className="w-17" pdfMode={pdfMode}>
                 <EditableInput
                   className="bold fs-11"
                   value={invoice.numFactureLabel}
