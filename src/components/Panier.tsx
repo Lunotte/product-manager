@@ -3,13 +3,16 @@ import InvoicePageNg from './facture/InvoicePageNg';
 import { ProductLine } from './facture/data/types';
 import { Produit } from '../models/Produit';
 import { initialInvoice } from './facture/data/initialData';
+import { useContext } from 'react';
+import { ProduitContext } from './home';
 
 export function Panier() {
 
+  const {produitsGlobal} = useContext(ProduitContext);
   const location = useLocation();
   
-  const produits: Produit[] = location.state?.panier || [];
-  const produitsInvoice = produits.map(produit => ({
+  // const produits: Produit[] = location.state?.panier || [];
+  const produitsInvoice = produitsGlobal.map((produit: Produit) => ({
     date: '',
     description: produit.nom,
     quantity: '1',
