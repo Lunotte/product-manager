@@ -71,7 +71,6 @@ ipcMain.on('backup', async (_) => {
     shell.openPath(dossierTelechargement); 
 	} catch (error) {
 		if (error instanceof CancelError) {
-			console.info('item.cancel() was called');
       log.info('item.cancel() was called :', error);
 		} else {
       log.error('Erreur pendant le téléchargement du backup :', error);

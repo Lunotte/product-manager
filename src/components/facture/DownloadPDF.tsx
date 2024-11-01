@@ -26,14 +26,13 @@ const Download: FC<Props> = ({ data, setData }) => {
           }
           const d = JSON.parse(str)
           const dParsed = TInvoice.parse(d)
-          console.info('parsed correctly')
           setData(dParsed)
         } catch (e) {
-          console.error(e)
+          window.electronAPI.logError(e);
           return
         }
       })
-      .catch((err) => console.error(err))
+      .catch((err) => window.electronAPI.logError(err))
   }
 
   function handleSaveTemplate() {

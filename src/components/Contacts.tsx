@@ -20,7 +20,7 @@ const Contacts = () => {
         window.electronAPI.getContacts().then((result) => {
             setContacts(result);
         }).catch((err) => {
-          console.error(err);
+          window.electronAPI.logError(err);
         });
     }, []);
 
@@ -30,13 +30,13 @@ const Contacts = () => {
             window.electronAPI.updateContact(contact).then((result) => {
                 setContacts(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addContact(contact).then((result) => {
                 setContacts(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         }
     };
@@ -64,7 +64,7 @@ const Contacts = () => {
         window.electronAPI.deleteContact(itemToDelete.id).then((result) => {
             setContacts(result);
         }).catch((err) => {
-            console.error(err);
+            window.electronAPI.logError(err);
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);

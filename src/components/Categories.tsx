@@ -22,7 +22,7 @@ const Categories: React.FC<CategorieProps> = () => {
         window.electronAPI.getCategories().then((result) => {
             setCategories(result);
         }).catch((err) => {
-          console.error(err);
+          window.electronAPI.logError(err);
         });
     }, []);
 
@@ -31,13 +31,13 @@ const Categories: React.FC<CategorieProps> = () => {
             window.electronAPI.updateCategorie(categorie.id, categorie.nom).then((result) => {
                 setCategories(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addCategorie(categorie.nom).then((result) => {
                 setCategories(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         }
     };
@@ -65,7 +65,7 @@ const Categories: React.FC<CategorieProps> = () => {
         window.electronAPI.deleteCategorie(itemToDelete.id).then((result) => {
             setCategories(result);
         }).catch((err) => {
-            console.error(err);
+            window.electronAPI.logError(err);
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);

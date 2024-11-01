@@ -33,19 +33,19 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
     window.electronAPI.getCategories().then((result) => {
       setCategories(result);
     }).catch((err) => {
-      console.error(err);
+      window.electronAPI.logError(err);
     });
 
     window.electronAPI.getFournisseurs().then((result) => {
       setFournisseurs(result);
     }).catch((err) => {
-      console.error(err);
+      window.electronAPI.logError(err);
     });
 
     window.electronAPI.getUnites().then((result) => {
       setUnites(result);
     }).catch((err) => {
-      console.error(err);
+      window.electronAPI.logError(err);
     });
   }, []);
 

@@ -34,7 +34,8 @@ const Produits: React.FC<ProduitProps> = () => {
         window.electronAPI.getProduits().then((result) => {
             setProduits(result);
         }).catch((err) => {
-            console.error(err);
+            window.electronAPI.logError(err);
+            window.electronAPI.logError(err);
         });
     }, []);
 
@@ -43,13 +44,13 @@ const Produits: React.FC<ProduitProps> = () => {
             window.electronAPI.updateProduit(produit).then((result) => {
                 setProduits(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addProduit(produit).then((result) => {
                 setProduits(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         }
     };
@@ -77,7 +78,7 @@ const Produits: React.FC<ProduitProps> = () => {
         window.electronAPI.deleteProduit(itemToDelete.id).then((result) => {
             setProduits(result);
         }).catch((err) => {
-            console.error(err);
+            window.electronAPI.logError(err);
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
@@ -87,7 +88,7 @@ const Produits: React.FC<ProduitProps> = () => {
         window.electronAPI.rechercherProduits(query).then((result) => {
             setProduits(result);
         }).catch((err) => {
-            console.error(err);
+            window.electronAPI.logError(err);
         });
     };
 

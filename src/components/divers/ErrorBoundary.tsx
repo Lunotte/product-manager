@@ -27,7 +27,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Capture l'erreur et ses informations supplémentaires
-    console.error('Erreur capturée par ErrorBoundary:', error, errorInfo);
+    const message = 'Erreur capturée par ErrorBoundary: '.concat(' \n\r Error Message : ').concat(error.message).concat(' \n\r Error Info : ').concat(errorInfo.componentStack);
+    window.electronAPI.logError(message);
     this.setState({ error, errorInfo });
   }
 

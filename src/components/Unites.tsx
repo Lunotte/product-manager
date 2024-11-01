@@ -22,7 +22,7 @@ const Unites: React.FC<UniteProps> = () => {
         window.electronAPI.getUnites().then((result) => {
             setUnites(result);
         }).catch((err) => {
-          console.error(err);
+            window.electronAPI.logError(err);
         });
     }, []);
 
@@ -31,13 +31,13 @@ const Unites: React.FC<UniteProps> = () => {
             window.electronAPI.updateUnite(unite.id, unite.nom).then((result) => {
                 setUnites(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addUnite(unite.nom).then((result) => {
                 setUnites(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         }
     };
@@ -65,7 +65,7 @@ const Unites: React.FC<UniteProps> = () => {
         window.electronAPI.deleteUnite(itemToDelete.id).then((result) => {
             setUnites(result);
         }).catch((err) => {
-            console.error(err);
+            window.electronAPI.logError(err);
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);

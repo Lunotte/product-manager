@@ -98,7 +98,6 @@ export const crudHandlers = () => {
     });
 
     ipcMain.handle('update-contact', (_, contact: Contact): Contact[] => {
-        console.log(contact);
         db.updateContact(contact.nom, contact.adresse, contact.adresse_bis, contact.cp, contact.ville, contact.id);
         return db.getContacts();
     });
