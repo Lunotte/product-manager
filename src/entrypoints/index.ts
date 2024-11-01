@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import log from 'electron-log';
 import path from 'path';
-import { verifierEtExecuterMigration } from '../db/database';
+import { dbPath, verifierEtExecuterMigration } from '../db/database';
 
 import {download, CancelError} from 'electron-dl';
 
@@ -58,21 +58,23 @@ const createWindow = (): void => {
   }
 };
 
+// Chemin de sauvegarde des logs
 log.transports.file.resolvePathFn = () => path.join(app.getPath('userData'), 'logs/catalogue.log');
 
 
-ipcMain.on('backup', async (event) => {
+ipcMain.on('backup', async (_) => {
 	const win = BrowserWindow.getFocusedWindow();
 	try {
     log.info('Téléchargement du backup');
     const dossierTelechargement = app.getPath('downloads');
-    await download(win, path.join(dossierTelechargement, 'database.db'));
+    await download(win, dbPath());
     shell.openPath(dossierTelechargement); 
 	} catch (error) {
 		if (error instanceof CancelError) {
 			console.info('item.cancel() was called');
+      log.info('item.cancel() was called :', error);
 		} else {
-			console.error(error);
+      log.error('Erreur pendant le téléchargement du backup :', error);
 		}
 	}
 });

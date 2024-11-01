@@ -8,7 +8,7 @@ import { Contact } from '../models/Contact';
 contextBridge.exposeInMainWorld('electronAPI', {
 
   logError: (message: string) => ipcRenderer.send('log-error', message),
-  backup: (url: string) => ipcRenderer.send('backup', url),
+  backup: () => ipcRenderer.send('backup'),
 
   getCategories: () => ipcRenderer.invoke('get-categories'),
   addCategorie: (nom: string) => ipcRenderer.invoke('add-categorie', nom),

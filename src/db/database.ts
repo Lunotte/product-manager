@@ -10,13 +10,15 @@ import { Produit } from "../models/Produit";
 import { Unite } from "../models/Unite";
 import { Contact } from '../models/Contact';
 
-function connect() {
-  const dbPath = app.isPackaged
+export const dbPath = () => {
+  return app.isPackaged
         ? path.join(process.resourcesPath, 'database.db')
         : path.join(__dirname, '../../', 'public/database.db')
-  
+}
+
+function connect() {  
   return Database(
-    dbPath, { fileMustExist: false },
+    dbPath(), { fileMustExist: false },
     // dbPath, { verbose: console.log, fileMustExist: false },
   );
 }
