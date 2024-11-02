@@ -55,13 +55,13 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
     const handleOpenDialog = (item: IdNom) => {
         setItemToDelete(item);
         setOpenConfirmationDelete(true);
-      };
+    };
     
-      const handleCloseDialog = () => {
+    const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
-      };
+    };
     
-      const handleConfirmDelete = () => {
+    const handleConfirmDelete = () => {
         window.electronAPI.deleteFournisseur(itemToDelete.id).then((result) => {
             setFournisseurs(result);
         }).catch((err) => {
@@ -69,7 +69,7 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
-      };
+    };
       
     return (
         <div>

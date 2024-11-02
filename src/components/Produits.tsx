@@ -35,7 +35,6 @@ const Produits: React.FC<ProduitProps> = () => {
             setProduits(result);
         }).catch((err) => {
             window.electronAPI.logError(err);
-            window.electronAPI.logError(err);
         });
     }, []);
 

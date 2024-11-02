@@ -54,11 +54,11 @@ const Contacts = () => {
     const handleOpenDialog = (item: IdNom) => {
         setItemToDelete(item);
         setOpenConfirmationDelete(true);
-      };
+    };
     
-      const handleCloseDialog = () => {
+    const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
-      };
+    };
     
       const handleConfirmDelete = () => {
         window.electronAPI.deleteContact(itemToDelete.id).then((result) => {

@@ -57,11 +57,11 @@ const Categories: React.FC<CategorieProps> = () => {
         setOpenConfirmationDelete(true);
       };
     
-      const handleCloseDialog = () => {
+    const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
-      };
+    };
     
-      const handleConfirmDelete = () => {
+    const handleConfirmDelete = () => {
         window.electronAPI.deleteCategorie(itemToDelete.id).then((result) => {
             setCategories(result);
         }).catch((err) => {
@@ -69,7 +69,7 @@ const Categories: React.FC<CategorieProps> = () => {
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
-      };
+    };
       
     return (
         <div>

@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, Profiler } from 'react'
+import { FC, useState, useEffect, Profiler, useContext } from 'react'
 import { Invoice, ProductLine } from './data/types'
 import { initialInvoice, initialProductLine } from './data/initialData'
 import EditableInput from './EditableInput'
@@ -9,10 +9,9 @@ import View from './View'
 import Text from './Text'
 import { Font } from '@react-pdf/renderer'
 import Download from './DownloadPDF'
-import EditableCalendarInput from './EditableCalendarInput'
-// import EditableCalendarInput from './EditableCalendarInput'
-import { format } from 'date-fns/format'
 import Footer from './Footer'
+import ContactPdf from './ContactPdf'
+import { Contact } from '../../models/Contact'
 
 Font.register({
   family: 'Nunito',
@@ -27,18 +26,16 @@ Font.register({
 
 interface Props {
   data?: Invoice,
-  // produits: Produit[],
+  contact?: Contact,
   pdfMode?: boolean
   onChange?: (invoice: Invoice) => void
 }
 
-const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
+const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
 
   const [invoice, setInvoice] = useState<Invoice>(data ? { ...data } : { ...initialInvoice })
   const [subTotal, setSubTotal] = useState<number>()
   const [saleTax, setSaleTax] = useState<number>()
-
-  const dateFormat = 'MMM dd, yyyy';
 
   const handleChange = (name: keyof Invoice, value: string | number) => {
     if (name !== 'productLines') {
@@ -86,13 +83,11 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
 
   const handleRemove = (i: number) => {
     const productLines = invoice.productLines.filter((_: any, index: any) => index !== i)
-
     setInvoice({ ...invoice, productLines })
   }
 
   const handleAdd = () => {
     const productLines = [...invoice.productLines, { ...initialProductLine }]
-
     setInvoice({ ...invoice, productLines })
   }
 
@@ -134,6 +129,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
   }, [onChange, invoice])
 
   return (
+    <>
     <Document pdfMode={pdfMode}>
       <Page className="invoice-wrapper" pdfMode={pdfMode}>
         {!pdfMode && <Download data={invoice} setData={(d: any) => setInvoice(d)} />}
@@ -210,7 +206,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
         <View className="flex mt-20" pdfMode={pdfMode}>
           <View className="w-60" pdfMode={pdfMode}>
             <View className="flex w-100" pdfMode={pdfMode}>
-              <View className="w-17" pdfMode={pdfMode}>
+              <View className="w-20" pdfMode={pdfMode}>
                 <EditableInput
                   className="bold fs-11"
                   value={invoice.numFactureLabel}
@@ -218,7 +214,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
                   pdfMode={pdfMode}
                 />
               </View>
-              <View className="w-60" pdfMode={pdfMode}>
+              <View className="w-40" pdfMode={pdfMode}>
                 <EditableInput
                   className="bold left fs-11"
                   placeholder='21/09/20833'
@@ -229,37 +225,11 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
               </View>
             </View>
           </View>
-          <View className="w-40" pdfMode={pdfMode}>
-            <View className="flex" pdfMode={pdfMode}>
-              <View className="w-100" pdfMode={pdfMode}>
-                <EditableInput
-                  className="bold right fs-11"
-                  value={invoice.quiCreeFacture}
-                  onChange={(value: any) => handleChange('quiCreeFacture', value)}
-                  pdfMode={pdfMode}
-                />
-              </View>
-            </View>
-            <View className="flex" pdfMode={pdfMode}>
-              <View className="w-100" pdfMode={pdfMode}>
-                <EditableInput
-                  className="bold right fs-11"
-                  value={invoice.adresseQuiFacture}
-                  onChange={(value: any) => handleChange('adresseQuiFacture', value)}
-                  pdfMode={pdfMode}
-                />
-              </View>
-            </View>
-            <View className="flex" pdfMode={pdfMode}>
-              <View className="w-100" pdfMode={pdfMode}>
-                <EditableInput
-                  className="bold right fs-11"
-                  value={invoice.adresse2QuiFacture}
-                  onChange={(value: any) => handleChange('adresse2QuiFacture', value)}
-                  pdfMode={pdfMode}
-                />
-              </View>
-            </View>
+          <View className="w-35" pdfMode={pdfMode}>
+            <ContactPdf className="flex" value={contact?.nom} pdfMode={pdfMode} />
+            <ContactPdf className="flex" value={contact?.adresse} pdfMode={pdfMode} />
+            {contact?.adresse_bis && <ContactPdf className="flex" value={contact?.adresse_bis} pdfMode={pdfMode} />}
+            <ContactPdf className="flex" value={contact?.cp.toString().concat(' ').concat(contact?.ville)} pdfMode={pdfMode} />
           </View>
         </View>
 
@@ -453,6 +423,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange }) => {
 
       </Page>
     </Document>
+    </>
   )
 }
 

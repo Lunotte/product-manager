@@ -1,9 +1,10 @@
-import React, { FC } from 'react'
+import React, { FC, useContext } from 'react'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import { Invoice, TInvoice } from './data/types'
 import { useDebounce } from '@uidotdev/usehooks'
 import InvoicePage from './InvoicePageNg'
 import FileSaver from 'file-saver'
+import { ContactContext } from '../home'
 
 interface Props {
   data: Invoice
@@ -11,6 +12,8 @@ interface Props {
 }
 
 const Download: FC<Props> = ({ data, setData }) => {
+
+  const {contactGlobal} = useContext(ContactContext);
   const debounced = useDebounce(data, 500)
 
   function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
@@ -48,7 +51,7 @@ const Download: FC<Props> = ({ data, setData }) => {
     <div className={'download-pdf '}>
       <PDFDownloadLink
         key={JSON.stringify(debounced)}
-        document={<InvoicePage pdfMode={true} data={debounced} />}
+        document={<InvoicePage pdfMode={true} data={debounced} contact={contactGlobal?.contact}/>}
         fileName={`${title}.pdf`}
         aria-label="Générer PDF"
         title="Générer PDF"

@@ -57,11 +57,11 @@ const Unites: React.FC<UniteProps> = () => {
         setOpenConfirmationDelete(true);
       };
     
-      const handleCloseDialog = () => {
+    const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
-      };
+    };
     
-      const handleConfirmDelete = () => {
+    const handleConfirmDelete = () => {
         window.electronAPI.deleteUnite(itemToDelete.id).then((result) => {
             setUnites(result);
         }).catch((err) => {
@@ -69,7 +69,7 @@ const Unites: React.FC<UniteProps> = () => {
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
-      };
+    };
       
     return (
         <div>
