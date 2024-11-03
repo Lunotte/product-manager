@@ -226,7 +226,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
             </View>
           </View>
           <View className="w-35" pdfMode={pdfMode}>
-            <ContactPdf className="flex" value={contact?.nom} pdfMode={pdfMode} />
+            <ContactPdf className="flex" value={contact?.nom_complet} pdfMode={pdfMode} />
             <ContactPdf className="flex" value={contact?.adresse} pdfMode={pdfMode} />
             {contact?.adresse_bis && <ContactPdf className="flex" value={contact?.adresse_bis} pdfMode={pdfMode} />}
             <ContactPdf className="flex" value={contact?.cp.toString().concat(' ').concat(contact?.ville)} pdfMode={pdfMode} />

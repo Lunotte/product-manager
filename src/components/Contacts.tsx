@@ -25,7 +25,7 @@ const Contacts = () => {
     }, []);
 
     const handleAddContact = (contact: Contact) => {
-        
+        console.log(contact);
         if(contact.id){
             window.electronAPI.updateContact(contact).then((result) => {
                 setContacts(result);
@@ -95,12 +95,14 @@ const Contacts = () => {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
+                        <TableCell style={{ fontWeight: 600}}>Civilité</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Nom</TableCell>
+                        <TableCell style={{ fontWeight: 600}}>Prénom</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Adresse</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Adresse Complémentaire</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Code Postal</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Ville</TableCell>
-                        <TableCell align="right"></TableCell>
+                        <TableCell></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -110,12 +112,14 @@ const Contacts = () => {
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                         <TableCell component="th" scope="row">
-                            {contact.nom}
+                            {contact.civilite}
                         </TableCell>
-                        <TableCell align="right">{contact.adresse}</TableCell>
-                        <TableCell align="right">{contact.adresse_bis}</TableCell>
-                        <TableCell align="right">{contact.cp.toString()}</TableCell>
-                        <TableCell align="right">{contact.ville}</TableCell>
+                        <TableCell>{contact.nom}</TableCell>
+                        <TableCell>{contact.prenom}</TableCell>
+                        <TableCell>{contact.adresse}</TableCell>
+                        <TableCell>{contact.adresse_bis}</TableCell>
+                        <TableCell>{contact.cp.toString()}</TableCell>
+                        <TableCell>{contact.ville}</TableCell>
                         <TableCell align="right">
                             <Tooltip title="Modifier une unité" arrow>
                                 <IconButton aria-label="update" size="large" onClick={() => editContact(contact)}>

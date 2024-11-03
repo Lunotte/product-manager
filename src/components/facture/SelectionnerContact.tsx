@@ -19,7 +19,10 @@ const SelectionnerContact: FC<{}> = () => {
   }, []);
 
   const selectedValues = useCallback((contacts: Contact[]) => {
-      const contactsOptions = contacts.map((contact) => ({label: contact.nom, value: contact.id}))
+    console.log(contacts);
+    
+      const contactsOptions = contacts.map((contact) => ({label: contact.nom_complet, value: contact.id}))
+      console.log(contactsOptions);
       setContactsOptions(contactsOptions);
     },
     [contactsOptions],

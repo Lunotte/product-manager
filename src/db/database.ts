@@ -143,15 +143,15 @@ const dbMethods = {
   },
 
   getContacts(): Contact[] {
-    return db.prepare<unknown[] , Contact>('SELECT * FROM contacts').all();
+    return db.prepare<unknown[] , Contact>('SELECT * FROM contacts ORDER BY nom ASC, prenom ASC').all();
   },
-  addContact(nom: string, adresse: string, adresse_bis: string, cp: number, ville: string): void {
-    const stmt = db.prepare('INSERT INTO contacts (nom, adresse, adresse_bis, cp, ville) VALUES (?, ?, ?, ?, ?)');
-    stmt.run(nom, adresse, adresse_bis, cp, ville);
+  addContact(civilite: string, nom: string, prenom: string, nom_complet: string, adresse: string, adresse_bis: string, cp: number, ville: string): void {
+    const stmt = db.prepare('INSERT INTO contacts (civilite, nom, prenom, nom_complet, adresse, adresse_bis, cp, ville) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+    stmt.run(civilite, nom, prenom, nom_complet, adresse, adresse_bis, cp, ville);
   },
-  updateContact(nom: string, adresse: string, adresse_bis: string, cp: number, ville: string, id: number): void {
-    const stmt = db.prepare('UPDATE contacts SET nom=?, adresse=?, adresse_bis=?, cp=?, ville=? WHERE id=?');
-    stmt.run(nom, adresse, adresse_bis, cp, ville, id);
+  updateContact(civilite: string, nom: string, prenom: string, nom_complet: string, adresse: string, adresse_bis: string, cp: number, ville: string, id: number): void {
+    const stmt = db.prepare('UPDATE contacts SET civilite=?, nom=?, prenom=?, nom_complet=?, adresse=?, adresse_bis=?, cp=?, ville=? WHERE id=?');
+    stmt.run(civilite, nom, prenom, nom_complet, adresse, adresse_bis, cp, ville, id);
   },
   deleteContact(id: number): void {
     const stmt = db.prepare('DELETE FROM contacts WHERE id=?');
