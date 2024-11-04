@@ -33,19 +33,19 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
     window.electronAPI.getCategories().then((result) => {
       setCategories(result);
     }).catch((err) => {
-      console.error(err);
+      window.electronAPI.logError(err);
     });
 
     window.electronAPI.getFournisseurs().then((result) => {
       setFournisseurs(result);
     }).catch((err) => {
-      console.error(err);
+      window.electronAPI.logError(err);
     });
 
     window.electronAPI.getUnites().then((result) => {
       setUnites(result);
     }).catch((err) => {
-      console.error(err);
+      window.electronAPI.logError(err);
     });
   }, []);
 
@@ -68,7 +68,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
   }, [prixAchat, taux]);
 
   const calculerMontantTTC = () => {
-    const prixVente = parseInt(prixAchat) * (1 + (taux / 100));
+    const prixVente = parseFloat(prixAchat) * (1 + (taux / 100));
     setPrixVente(prixVente.toFixed(2));
   }
 
@@ -97,10 +97,10 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
 
     let produit: Produit;
     if(produitToEdit) {
-      produit = {...produitToEdit, nom, prixAchat: parseInt(prixAchat), taux, prixVente: parseInt(prixVente),
+      produit = {...produitToEdit, nom, prixAchat: parseFloat(prixAchat), taux, prixVente: parseFloat(prixVente),
         categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)};
     } else {
-      produit = {id: null, nom, prixAchat: parseInt(prixAchat), taux, prixVente: parseInt(prixVente),
+      produit = {id: null, nom, prixAchat: parseFloat(prixAchat), taux, prixVente: parseFloat(prixVente),
         categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)};
     }
     onAdd(produit);

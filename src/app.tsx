@@ -13,7 +13,6 @@ window.onerror = (message, source, lineno, colno, error) => {
    Colonne: ${colno}
    Erreur: ${error?.stack || error}`;  // Si `error` est défini, affiche le stack trace sinon juste l'objet error.
 
-   console.error(errorLog);
    window.electronAPI.logError(errorLog);
  };
  
@@ -21,7 +20,6 @@ window.onerror = (message, source, lineno, colno, error) => {
    const rejectionLog = `Rejet de promesse non géré :
    Raison: ${event.reason?.message || event.reason}`;
  
-   console.error(rejectionLog);
    window.electronAPI.logError(rejectionLog);
  };
 

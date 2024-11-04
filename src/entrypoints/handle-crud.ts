@@ -4,6 +4,7 @@ import { Categorie } from '../models/Categorie';
 import { Fournisseur } from '../models/Fournisseur';
 import { Unite } from '../models/Unite';
 import db from '../db/database';
+import { Contact } from '../models/Contact';
 
 export const crudHandlers = () => {
     ipcMain.handle('get-categories', (): Categorie[] => {
@@ -84,5 +85,25 @@ export const crudHandlers = () => {
     ipcMain.handle('delete-produit', (_, id: number): Produit[] => {
         db.deleteProduit(id);
         return db.getProduits();
-    })
+    });
+
+
+    ipcMain.handle('get-contacts', (): Contact[] => {
+        return db.getContacts();
+    });
+
+    ipcMain.handle('add-contact', (_, contact: Contact): Contact[] => {
+        db.addContact(contact.civilite, contact.nom, contact.prenom, contact.nom_complet, contact.adresse, contact.adresse_bis, contact.cp, contact.ville);
+        return db.getContacts();
+    });
+
+    ipcMain.handle('update-contact', (_, contact: Contact): Contact[] => {
+        db.updateContact(contact.civilite, contact.nom, contact.prenom, contact.nom_complet, contact.adresse, contact.adresse_bis, contact.cp, contact.ville, contact.id);
+        return db.getContacts();
+    });
+
+    ipcMain.handle('delete-contact', (_, id: number): Contact[] => {
+        db.deleteContact(id);
+        return db.getContacts();
+    });
 };

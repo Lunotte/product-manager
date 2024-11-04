@@ -22,7 +22,7 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
         window.electronAPI.getFournisseurs().then((result) => {
             setFournisseurs(result);
         }).catch((err) => {
-          console.error(err);
+          window.electronAPI.logError(err);
         });
     }, []);
 
@@ -31,13 +31,13 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
             window.electronAPI.updateFournisseur(fournisseur.id, fournisseur.nom).then((result) => {
                 setFournisseurs(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addFournisseur(fournisseur.nom).then((result) => {
                 setFournisseurs(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         }
     };
@@ -55,21 +55,21 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
     const handleOpenDialog = (item: IdNom) => {
         setItemToDelete(item);
         setOpenConfirmationDelete(true);
-      };
+    };
     
-      const handleCloseDialog = () => {
+    const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
-      };
+    };
     
-      const handleConfirmDelete = () => {
+    const handleConfirmDelete = () => {
         window.electronAPI.deleteFournisseur(itemToDelete.id).then((result) => {
             setFournisseurs(result);
         }).catch((err) => {
-            console.error(err);
+            window.electronAPI.logError(err);
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
-      };
+    };
       
     return (
         <div>

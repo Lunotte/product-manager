@@ -6,6 +6,7 @@ import EditProduitDialog from './dialogs/EditProduitDialog';
 import Categories from './Categories';
 import Fournisseurs from './Fournisseurs';
 import Unites from './Unites';
+import Contacts from './Contacts';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -50,6 +51,7 @@ export default function Configurer() {
                 <Tab label="Catégories" {...a11yProps(0)} />
                 <Tab label="Fournisseurs" {...a11yProps(1)} />
                 <Tab label="Unités" {...a11yProps(2)} />
+                <Tab label="Contacts" {...a11yProps(3)} />
             </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
@@ -60,6 +62,9 @@ export default function Configurer() {
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
             <Unites/>
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={3}>
+            <Contacts/> 
         </CustomTabPanel>
     </Box>
   );

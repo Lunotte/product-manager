@@ -1,90 +1,88 @@
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material";
-import { Unite } from "../models/Unite";
+import { Contact } from "../models/Contact";
 import { useEffect, useState } from "react";
-import IdNomDialog from "./dialogs/IdNomDialog";
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import { IdNom } from "../models/IdNom";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditContactDialog from "./dialogs/EditContactDialog";
 
-interface UniteProps {} 
+const Contacts = () => {
 
-const Unites: React.FC<UniteProps> = () => {
-
-    const [unite, setUnite] = useState<Unite>();
-    const [unites, setUnites] = useState<Unite[]>([]);
-    const [openUniteDialog, setOpenUniteDialog] = useState(false);
+    const [contact, setContact] = useState<Contact>();
+    const [contacts, setContacts] = useState<Contact[]>([]);
+    const [openContactDialog, setOpenContactDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
     useEffect(() => {
-        window.electronAPI.getUnites().then((result) => {
-            setUnites(result);
+        window.electronAPI.getContacts().then((result) => {
+            setContacts(result);
         }).catch((err) => {
-            window.electronAPI.logError(err);
+          window.electronAPI.logError(err);
         });
     }, []);
 
-    const handleAddUnite = (unite: Unite) => {
-        if(unite.id){
-            window.electronAPI.updateUnite(unite.id, unite.nom).then((result) => {
-                setUnites(result);
+    const handleAddContact = (contact: Contact) => {
+        if(contact.id){
+            window.electronAPI.updateContact(contact).then((result) => {
+                setContacts(result);
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
-            window.electronAPI.addUnite(unite.nom).then((result) => {
-                setUnites(result);
+            window.electronAPI.addContact(contact).then((result) => {
+                setContacts(result);
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         }
     };
 
-    const editUnite = (cat: Unite) => {
-        setOpenUniteDialog(true);
-        setUnite(cat);
+    const editContact = (contact: Contact) => {
+        setOpenContactDialog(true);
+        setContact(contact);
     }
 
-    const closeUnite = () => {
-        setOpenUniteDialog(false)
-        setUnite(null);
+    const closeContact = () => {
+        setOpenContactDialog(false)
+        setContact(null);
     }
 
     const handleOpenDialog = (item: IdNom) => {
         setItemToDelete(item);
         setOpenConfirmationDelete(true);
-      };
+    };
     
     const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
     };
     
-    const handleConfirmDelete = () => {
-        window.electronAPI.deleteUnite(itemToDelete.id).then((result) => {
-            setUnites(result);
+      const handleConfirmDelete = () => {
+        window.electronAPI.deleteContact(itemToDelete.id).then((result) => {
+            setContacts(result);
         }).catch((err) => {
             window.electronAPI.logError(err);
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
-    };
+      };
       
     return (
         <div>
              <div className={'right mr-20'}>
                 <Tooltip title="Ajouter une unité" arrow>
-                    <IconButton aria-label="add" size="large" onClick={() => setOpenUniteDialog(true)}>
+                    <IconButton aria-label="add" size="large" onClick={() => setOpenContactDialog(true)}>
                         <AddIcon fontSize="inherit" />
                     </IconButton>
                 </Tooltip>
             </div>
-            <IdNomDialog
-                open={openUniteDialog}
-                onClose={() => closeUnite()}
-                onAdd={handleAddUnite}
-                objetToEdit={unite}
+            <EditContactDialog
+                open={openContactDialog}
+                onClose={() => closeContact()}
+                onAdd={handleAddContact}
+                contactToEdit={contact}
             />
             <ConfirmDeleteDialog
                 open={openConfirmationDelete}
@@ -96,27 +94,39 @@ const Unites: React.FC<UniteProps> = () => {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
+                        <TableCell style={{ fontWeight: 600}}>Civilité</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Nom</TableCell>
-                        <TableCell align="right"></TableCell>
+                        <TableCell style={{ fontWeight: 600}}>Prénom</TableCell>
+                        <TableCell style={{ fontWeight: 600}}>Adresse</TableCell>
+                        <TableCell style={{ fontWeight: 600}}>Adresse Complémentaire</TableCell>
+                        <TableCell style={{ fontWeight: 600}}>Code Postal</TableCell>
+                        <TableCell style={{ fontWeight: 600}}>Ville</TableCell>
+                        <TableCell></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {unites.map((unite) => (
+                    {contacts.map((contact) => (
                     <TableRow
-                        key={unite.nom}
+                        key={contact.nom}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
                         <TableCell component="th" scope="row">
-                        {unite.nom}
+                            {contact.civilite}
                         </TableCell>
+                        <TableCell>{contact.nom}</TableCell>
+                        <TableCell>{contact.prenom}</TableCell>
+                        <TableCell>{contact.adresse}</TableCell>
+                        <TableCell>{contact.adresse_bis}</TableCell>
+                        <TableCell>{contact.cp.toString()}</TableCell>
+                        <TableCell>{contact.ville}</TableCell>
                         <TableCell align="right">
                             <Tooltip title="Modifier une unité" arrow>
-                                <IconButton aria-label="update" size="large" onClick={() => editUnite(unite)}>
+                                <IconButton aria-label="update" size="large" onClick={() => editContact(contact)}>
                                     <EditIcon fontSize="inherit" />
                                 </IconButton>
                             </Tooltip>
                             <Tooltip title="Supprimer une unité" arrow>
-                                <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(unite)}>
+                                <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(contact)}>
                                     <DeleteIcon fontSize="inherit" />
                                 </IconButton>
                             </Tooltip>
@@ -130,4 +140,4 @@ const Unites: React.FC<UniteProps> = () => {
     );
   }
 
-  export default Unites;
+  export default Contacts;

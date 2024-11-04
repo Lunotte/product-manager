@@ -1,6 +1,6 @@
 import { Badge, Button, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
 import { Produit } from "../models/Produit";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { IdNom } from "../models/IdNom";
 import AddIcon from '@mui/icons-material/Add';
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
@@ -11,19 +11,22 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import { useNavigate } from "react-router-dom";
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import ClearIcon from '@mui/icons-material/Clear';
+import { ProduitContext } from "./home";
 
 interface ProduitProps {}
 
 const Produits: React.FC<ProduitProps> = () => {
 
-    const [modeEdition, setModeEdition] = useState(false);
+    const {produitsGlobal, setProduitsGlobal} = useContext(ProduitContext);
+
+    const [modeEdition, setModeEdition] = useState(false); 
     const [query, setQuery] = useState("");
     const [produit, setProduit] = useState<Produit>();
     const [produits, setProduits] = useState<Produit[]>([]);
     const [openProduitDialog, setOpenProduitDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
-    const [panier, setPanier] = useState<Produit[]>([]);
 
     const navigate = useNavigate();
 
@@ -31,7 +34,7 @@ const Produits: React.FC<ProduitProps> = () => {
         window.electronAPI.getProduits().then((result) => {
             setProduits(result);
         }).catch((err) => {
-            console.error(err);
+            window.electronAPI.logError(err);
         });
     }, []);
 
@@ -40,13 +43,13 @@ const Produits: React.FC<ProduitProps> = () => {
             window.electronAPI.updateProduit(produit).then((result) => {
                 setProduits(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addProduit(produit).then((result) => {
                 setProduits(result);
             }).catch((err) => {
-                console.error(err);
+                window.electronAPI.logError(err);
             });
         }
     };
@@ -74,7 +77,7 @@ const Produits: React.FC<ProduitProps> = () => {
         window.electronAPI.deleteProduit(itemToDelete.id).then((result) => {
             setProduits(result);
         }).catch((err) => {
-            console.error(err);
+            window.electronAPI.logError(err);
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
@@ -84,7 +87,7 @@ const Produits: React.FC<ProduitProps> = () => {
         window.electronAPI.rechercherProduits(query).then((result) => {
             setProduits(result);
         }).catch((err) => {
-            console.error(err);
+            window.electronAPI.logError(err);
         });
     };
 
@@ -93,23 +96,28 @@ const Produits: React.FC<ProduitProps> = () => {
     }
 
     const ajouterPanier = (produit: Produit) => {
-        const indexProduit = panier.findIndex((produitPanier) => produitPanier.id === produit.id);
+        const indexProduit = produitsGlobal.findIndex((produitPanier: Produit) => produitPanier.id === produit.id);
 
         if (indexProduit !== -1) {
-            const nouveauPanier = [...panier];
+            const nouveauPanier = [...produitsGlobal];
             nouveauPanier.splice(indexProduit, 1);
-            setPanier(nouveauPanier);
+            setProduitsGlobal(nouveauPanier);
         } else {
-            setPanier([...panier, produit]);
+            const produits = [...produitsGlobal, produit];
+            setProduitsGlobal(produits);
         }
     }
 
+    const viderPanier = () => {
+        setProduitsGlobal([]);
+    }
+
     const goPageFacture = () => {
-        navigate('/panier', { state: {panier} });
+        navigate('/panier');
     }
 
     const produitSelected = (id: number) => {
-        return panier.find(produit => produit.id === id) !== undefined;
+        return produitsGlobal.find((produit: Produit) => produit.id === id) !== undefined;
     }
     
     useEffect(() => {
@@ -122,12 +130,17 @@ const Produits: React.FC<ProduitProps> = () => {
             <div className="flex">
                 <div className={'w-50 panier'}>
                     <Tooltip title="Panier" arrow>
-                        <Badge badgeContent={panier.length} color="primary" style={{cursor: "pointer"}}>
+                        <Badge badgeContent={produitsGlobal.length} color="primary" style={{cursor: "pointer"}}>
                             <Inventory2OutlinedIcon color="action" onClick={() => goPageFacture()}/>
                         </Badge>
                     </Tooltip>
                 </div>
                 <div className={'w-50 right'}>
+                    <Tooltip title="Vider le panier" arrow>
+                        <IconButton aria-label="panier" size="large" onClick={() => viderPanier()}>
+                           <ClearIcon fontSize="inherit" />
+                        </IconButton>
+                    </Tooltip>
                     <Tooltip title="Ajouter un produit" arrow>
                         <IconButton aria-label="add" size="large" onClick={() => setOpenProduitDialog(true)}>
                             <AddIcon fontSize="inherit" />
@@ -178,9 +191,9 @@ const Produits: React.FC<ProduitProps> = () => {
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">{produit.nom}</TableCell>
-                                <TableCell align="right">{produit.prixAchat.toString()}</TableCell>
+                                <TableCell align="right">{produit.prixAchat.toFixed(2)}</TableCell>
                                 <TableCell align="right">{produit.taux.toString()}</TableCell>
-                                <TableCell align="right">{produit.prixVente.toString()}</TableCell>
+                                <TableCell align="right">{produit.prixVente.toFixed(2)}</TableCell>
                                 <TableCell align="right">{produit.fournisseurNom}</TableCell>
                                 <TableCell align="right">{produit.categorieNom}</TableCell>
                                 <TableCell align="right">{produit.uniteNom}</TableCell>

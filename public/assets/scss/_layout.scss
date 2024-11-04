@@ -42,6 +42,10 @@
   width: 40%;
 }
 
+.w-35 {
+  width: 35%;
+}
+
 .w-30 {
   width: 30%;
 }
@@ -53,7 +57,9 @@
 .w-20 {
   width: 20%;
 }
-
+.w-25 {
+  width: 25%;
+}
 .w-17 {
   width: 17%;
 }
@@ -83,15 +89,14 @@
 }
 
 .pied-page {
-  font-size: 11px;
-}
-
-.pied-page-2 {
   font-size: 9px;
-  text-align: center;
 }
 
-.center-2 {
-  display: 'flex';
-  margin: 'auto';
+.footer {
+  margin-top: 300px;
+}
+
+.footer-center {
+  text-align: center;
+  font-size: 9px;
 }
