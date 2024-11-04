@@ -209,7 +209,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
         </View>
 
         <View className="flex mt-20" pdfMode={pdfMode}>
-          <View className="w-60" pdfMode={pdfMode}>
+          <View className="w-70" pdfMode={pdfMode}>
             <View className="flex w-100" pdfMode={pdfMode}>
               <View className="w-17" pdfMode={pdfMode}>
                 <EditableInput
@@ -230,7 +230,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
               </View>
             </View>
           </View>
-          <View className="w-40" pdfMode={pdfMode}>
+          <View className="w-30" pdfMode={pdfMode}>
               <ContactPdf className="flex" value={contact?.nom_complet} pdfMode={pdfMode} />
               <ContactPdf className="flex" value={contact?.adresse} pdfMode={pdfMode} />
               {contact?.adresse_bis && <ContactPdf className="flex" value={contact?.adresse_bis} pdfMode={pdfMode} />}
