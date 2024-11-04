@@ -1,4 +1,4 @@
-import React, { FC, useContext } from 'react'
+import React, { FC, useContext, useMemo } from 'react'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import { Invoice, TInvoice } from './data/types'
 import { useDebounce } from '@uidotdev/usehooks'
@@ -44,15 +44,37 @@ const Download: FC<Props> = ({ data, setData }) => {
     })
     FileSaver(blob, title + '.template')
   }
+  
+  // const title = data.numFacture ? `${data.numFactureLabel} ${data.numFacture}` : data.numFactureLabel;
 
-  const title = data.numFacture ? `Facture n°${data.numFacture}` : 'facture';
+  /**
+   * Si un numéro de facture est défini et si on a un client qui a été défini = numFactureLabel + numFacture + nomComplet,
+   * sinon numFctureLabel + numFacture
+   * Sinon si client défini alors concat numFactureLabel + numFacture, sinon seulement numFactureLabel
+   *  
+   * @returns Le titre concaténé aux éléments accessibles
+   */
+  const title = () => {
+    if(data.numFacture) {
+      if(contactGlobal && contactGlobal.contact) {
+        return `${data.numFactureLabel}${data.numFacture} - ${contactGlobal.contact.nom_complet}`; 
+      } else {
+        return `${data.numFactureLabel}${data.numFacture}`;
+      }
+    } else {
+      if(contactGlobal && contactGlobal.contact) {
+        return `${data.numFactureLabel} - ${contactGlobal.contact.nom_complet}`; 
+      }
+      return data.numFactureLabel;
+    }
+  }
 
   return (
     <div className={'download-pdf '}>
       <PDFDownloadLink
         key={JSON.stringify(debounced)}
         document={<InvoicePage pdfMode={true} data={debounced} contact={contactGlobal?.contact}/>}
-        fileName={`${title}.pdf`}
+        fileName={`${title()}.pdf`}
         aria-label="Générer PDF"
         title="Générer PDF"
         className="download-pdf__pdf"

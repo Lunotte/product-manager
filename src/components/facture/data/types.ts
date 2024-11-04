@@ -29,6 +29,7 @@ export const TInvoice = z.object({
   numeroSiret: z.string(),
   numTvaIntercom: z.string(),
   iban: z.string(),
+  swift: z.string(),
   numFactureLabel: z.string(),
   numFacture: z.string(),
   productLineDate: z.string(),

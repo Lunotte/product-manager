@@ -71,11 +71,15 @@ const styles: CSSClasses = {
   'w-20': {
     width: '20%',
   },
-
+  'w-25': {
+    width: '25%',
+  },
   'w-40': {
     width: '40%',
   },
-
+  'w-42': {
+    width: '42%',
+  },
   'w-48': {
     width: '48%',
   },
@@ -95,7 +99,9 @@ const styles: CSSClasses = {
   'w-18': {
     width: '18%',
   },
-
+  'w-19': {
+    width: '19%',
+  },
   row: {
     borderBottom: `1px solid ${colorGray}`,
   },
@@ -151,13 +157,13 @@ const styles: CSSClasses = {
     fontSize: '16px',
   },
 
-  'fs-11': {
-    fontSize: '11px',
-  },
+  // 'fs-11': {
+  //   fontSize: '11px',
+  // },
 
-  'fs-10': {
-    fontSize: '10px',
-  },
+  // 'fs-10': {
+  //   fontSize: '10px',
+  // },
 
   'fs-9': {
     fontSize: '9px',
@@ -172,7 +178,7 @@ const styles: CSSClasses = {
 
   page: {
     fontFamily: 'Nunito',
-    fontSize: '13px',
+    fontSize: '10px',
     color: '#555',
     padding: '40px 35px',
   },

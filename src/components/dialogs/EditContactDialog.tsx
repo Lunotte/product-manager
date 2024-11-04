@@ -66,8 +66,6 @@ const EditContactDialog: React.FC<EditContactDialogProps> = ({ open, onClose, on
     } else {
       contact = {id: null, civilite, nom, prenom, adresse, nom_complet: nomComplet, adresse_bis, cp: parseInt(cp), ville};
     }
-    console.log(contact);
-    
     onAdd(contact);
     onClose();
     reset();

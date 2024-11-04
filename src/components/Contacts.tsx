@@ -25,7 +25,6 @@ const Contacts = () => {
     }, []);
 
     const handleAddContact = (contact: Contact) => {
-        console.log(contact);
         if(contact.id){
             window.electronAPI.updateContact(contact).then((result) => {
                 setContacts(result);

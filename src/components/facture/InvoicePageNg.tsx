@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, Profiler, useContext } from 'react'
+import { FC, useState, useEffect } from 'react'
 import { Invoice, ProductLine } from './data/types'
 import { initialInvoice, initialProductLine } from './data/initialData'
 import EditableInput from './EditableInput'
@@ -32,7 +32,7 @@ interface Props {
 }
 
 const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
-
+  
   const [invoice, setInvoice] = useState<Invoice>(data ? { ...data } : { ...initialInvoice })
   const [subTotal, setSubTotal] = useState<number>()
   const [saleTax, setSaleTax] = useState<number>()
@@ -51,7 +51,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
   }
 
   const handleProductLineChange = (index: number, name: keyof ProductLine, value: string) => {
-    const productLines = invoice.productLines.map((productLine: any, i: any) => {
+    const productLines = invoice.productLines.map((productLine: any, i: number) => {
       if (i === index) {
         const newProductLine = { ...productLine }
 
@@ -62,14 +62,12 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
           newProductLine[name] = value.toString()
         }
         else {
-          if (
-            value[value.length - 1] === '.' ||
+          if (value[value.length - 1] === '.' ||
             (value[value.length - 1] === '0' && value.includes('.'))
           ) {
             newProductLine[name] = value
           } else {
             const n = parseFloat(value)
-
             newProductLine[name] = (n ? n : 0).toString()
           }
         }
@@ -82,7 +80,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
   }
 
   const handleRemove = (i: number) => {
-    const productLines = invoice.productLines.filter((_: any, index: any) => index !== i)
+    const productLines = invoice.productLines.filter((_: any, index: number) => index !== i)
     setInvoice({ ...invoice, productLines })
   }
 
@@ -132,7 +130,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
     <>
     <Document pdfMode={pdfMode}>
       <Page className="invoice-wrapper" pdfMode={pdfMode}>
-        {!pdfMode && <Download data={invoice} setData={(d: any) => setInvoice(d)} />}
+        {!pdfMode && <Download data={invoice} setData={(data: Invoice) => setInvoice(data)} />}
 
         <View className="flex" pdfMode={pdfMode}>
           <View className="w-60" pdfMode={pdfMode}>
@@ -140,56 +138,63 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
               className="fs-16 bold"
               placeholder="Logo ou non d’entreprise"
               value={invoice.societe}
-              onChange={(value: any) => handleChange('societe', value)}
+              onChange={(value: string) => handleChange('societe', value)}
               pdfMode={pdfMode}
             />
             <EditableInput
               className="fs-11"
               placeholder="La rue"
               value={invoice.entrepriseRue}
-              onChange={(value: any) => handleChange('entrepriseRue', value)}
+              onChange={(value: string) => handleChange('entrepriseRue', value)}
               pdfMode={pdfMode}
             />
             <EditableInput
               className="fs-11"
               placeholder="Le code postal"
               value={invoice.entrepriseCp}
-              onChange={(value: any) => handleChange('entrepriseCp', value)}
+              onChange={(value: string | number) => handleChange('entrepriseCp', value)}
               pdfMode={pdfMode}
             />
             <EditableInput
               className="fs-11"
               placeholder="Coordonnées Téléphonique"
               value={invoice.coordonneesTelephonique}
-              onChange={(value: any) => handleChange('coordonneesTelephonique', value)}
+              onChange={(value: string) => handleChange('coordonneesTelephonique', value)}
               pdfMode={pdfMode}
             />
             <EditableInput
               className="fs-11"
               placeholder="Adresse email"
               value={invoice.entrepriseMail}
-              onChange={(value: any) => handleChange('entrepriseMail', value)}
+              onChange={(value: string) => handleChange('entrepriseMail', value)}
               pdfMode={pdfMode}
             />
             <EditableInput
               className="fs-11"
               placeholder="Siret"
               value={invoice.numeroSiret}
-              onChange={(value: any) => handleChange('numeroSiret', value)}
+              onChange={(value: string | number) => handleChange('numeroSiret', value)}
               pdfMode={pdfMode}
             />
             <EditableInput
               className="fs-11"
               placeholder="Numéro Tva Intercommunautaire"
               value={invoice.numTvaIntercom}
-              onChange={(value: any) => handleChange('numTvaIntercom', value)}
+              onChange={(value: string | number) => handleChange('numTvaIntercom', value)}
               pdfMode={pdfMode}
             />
             <EditableInput
               className="fs-11"
               placeholder="Iban"
               value={invoice.iban}
-              onChange={(value: any) => handleChange('iban', value)}
+              onChange={(value: string | number) => handleChange('iban', value)}
+              pdfMode={pdfMode}
+            />
+            <EditableInput
+              className="fs-11"
+              placeholder="Swift"
+              value={invoice.swift}
+              onChange={(value: string | number) => handleChange('swift', value)}
               pdfMode={pdfMode}
             />
           </View>
@@ -197,7 +202,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
             <EditableInput
               className="right bold fs-11"
               value={invoice.villeLe}
-              onChange={(value: any) => handleChange('villeLe', value)}
+              onChange={(value: string) => handleChange('villeLe', value)}
               pdfMode={pdfMode}
             />
           </View>
@@ -206,30 +211,30 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
         <View className="flex mt-20" pdfMode={pdfMode}>
           <View className="w-60" pdfMode={pdfMode}>
             <View className="flex w-100" pdfMode={pdfMode}>
-              <View className="w-20" pdfMode={pdfMode}>
+              <View className="w-17" pdfMode={pdfMode}>
                 <EditableInput
-                  className="bold fs-11"
+                  className=""
                   value={invoice.numFactureLabel}
-                  onChange={(value: any) => handleChange('numFactureLabel', value)}
+                  onChange={(value: string) => handleChange('numFactureLabel', value)}
                   pdfMode={pdfMode}
                 />
               </View>
               <View className="w-40" pdfMode={pdfMode}>
                 <EditableInput
-                  className="bold left fs-11"
+                  className="left"
                   placeholder='21/09/20833'
                   value={invoice.numFacture}
-                  onChange={(value: any) => handleChange('numFacture', value)}
+                  onChange={(value: string | number) => handleChange('numFacture', value)}
                   pdfMode={pdfMode}
                 />
               </View>
             </View>
           </View>
-          <View className="w-35" pdfMode={pdfMode}>
-            <ContactPdf className="flex" value={contact?.nom_complet} pdfMode={pdfMode} />
-            <ContactPdf className="flex" value={contact?.adresse} pdfMode={pdfMode} />
-            {contact?.adresse_bis && <ContactPdf className="flex" value={contact?.adresse_bis} pdfMode={pdfMode} />}
-            <ContactPdf className="flex" value={contact?.cp.toString().concat(' ').concat(contact?.ville)} pdfMode={pdfMode} />
+          <View className="w-40" pdfMode={pdfMode}>
+              <ContactPdf className="flex" value={contact?.nom_complet} pdfMode={pdfMode} />
+              <ContactPdf className="flex" value={contact?.adresse} pdfMode={pdfMode} />
+              {contact?.adresse_bis && <ContactPdf className="flex" value={contact?.adresse_bis} pdfMode={pdfMode} />}
+              <ContactPdf className="flex" value={contact?.cp.toString().concat(' ').concat(contact?.ville)} pdfMode={pdfMode} />
           </View>
         </View>
 
@@ -238,39 +243,39 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
             <EditableInput
               className="white bold fs-10"
               value={invoice.productLineDate}
-              onChange={(value: any) => handleChange('productLineDate', value)}
+              onChange={(value: string) => handleChange('productLineDate', value)}
               pdfMode={pdfMode}
             />
           </View>
-          <View className="w-50 p-4-8" pdfMode={pdfMode}>
+          <View className="w-42 p-4-8" pdfMode={pdfMode}>
             <EditableInput
               className="white bold fs-10"
               value={invoice.productLineDescription}
-              onChange={(value: any) => handleChange('productLineDescription', value)}
+              onChange={(value: string) => handleChange('productLineDescription', value)}
+              pdfMode={pdfMode}
+            />
+          </View>
+          <View className="w-18 p-4-8" pdfMode={pdfMode}>
+            <EditableInput
+              className="white bold right fs-10"
+              value={invoice.productLineQuantity}
+              onChange={(value: string | number) => handleChange('productLineQuantity', value)}
               pdfMode={pdfMode}
             />
           </View>
           <View className="w-20 p-4-8" pdfMode={pdfMode}>
             <EditableInput
               className="white bold right fs-10"
-              value={invoice.productLineQuantity}
-              onChange={(value: any) => handleChange('productLineQuantity', value)}
+              value={invoice.productLineUnite}
+              onChange={(value: string | number) => handleChange('productLineUnite', value)}
               pdfMode={pdfMode}
             />
           </View>
           <View className="w-15 p-4-8" pdfMode={pdfMode}>
             <EditableInput
               className="white bold right fs-10"
-              value={invoice.productLineUnite}
-              onChange={(value: any) => handleChange('productLineUnite', value)}
-              pdfMode={pdfMode}
-            />
-          </View>
-          <View className="w-10 p-4-8" pdfMode={pdfMode}>
-            <EditableInput
-              className="white bold right fs-10"
               value={invoice.productLineUniteHT}
-              onChange={(value: any) => handleChange('productLineUniteHT', value)}
+              onChange={(value: string | number) => handleChange('productLineUniteHT', value)}
               pdfMode={pdfMode}
             />
           </View>
@@ -278,13 +283,13 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
             <EditableInput
               className="white bold right fs-10"
               value={invoice.productLineMontantHT}
-              onChange={(value: any) => handleChange('productLineMontantHT', value)}
+              onChange={(value: string | number) => handleChange('productLineMontantHT', value)}
               pdfMode={pdfMode}
             />
           </View>
         </View>
 
-        {invoice.productLines.map((productLine: any, i: any) => {
+        {invoice.productLines.map((productLine: any, i: number) => {
           return pdfMode && productLine.description === '' ? (
             <Text key={i}></Text>
           ) : (
@@ -293,41 +298,41 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
                 <EditableInput
                   className="dark right"
                   value={productLine.date}
-                  onChange={(value: any) => handleProductLineChange(i, 'date', value)}
+                  onChange={(value: string) => handleProductLineChange(i, 'date', value)}
                   pdfMode={pdfMode}
                 />
               </View>
-              <View className="w-50 p-2-8 fs-11" pdfMode={pdfMode}>
+              <View className="w-42 p-2-8 fs-11" pdfMode={pdfMode}>
                 <EditableTextarea
                   className="dark"
                   rows={2}
                   placeholder="Entrer nom/description"
                   value={productLine.description}
-                  onChange={(value: any) => handleProductLineChange(i, 'description', value)}
+                  onChange={(value: string) => handleProductLineChange(i, 'description', value)}
+                  pdfMode={pdfMode}
+                />
+              </View>
+              <View className="w-18 p-2-8 fs-11" pdfMode={pdfMode}>
+                <EditableInput
+                  className="dark right"
+                  value={productLine.quantity}
+                  onChange={(value: string) => handleProductLineChange(i, 'quantity', value)}
                   pdfMode={pdfMode}
                 />
               </View>
               <View className="w-20 p-2-8 fs-11" pdfMode={pdfMode}>
                 <EditableInput
                   className="dark right"
-                  value={productLine.quantity}
-                  onChange={(value: any) => handleProductLineChange(i, 'quantity', value)}
-                  pdfMode={pdfMode}
-                />
-              </View>
-              <View className="w-15 p-2-8 fs-11" pdfMode={pdfMode}>
-                <EditableInput
-                  className="dark right"
                   value={productLine.unite}
-                  onChange={(value: any) => handleProductLineChange(i, 'unite', value)}
+                  onChange={(value: string) => handleProductLineChange(i, 'unite', value)}
                   pdfMode={pdfMode}
                 />
               </View>
-              <View className="w-10 p-5-8 fs-11" pdfMode={pdfMode}>
+              <View className="w-15 p-5-8 fs-11" pdfMode={pdfMode}>
                 <EditableInput
                   className="dark right"
                   value={productLine.rate}
-                  onChange={(value: any) => handleProductLineChange(i, 'rate', value)}
+                  onChange={(value: string) => handleProductLineChange(i, 'rate', value)}
                   pdfMode={pdfMode}
                 />
               </View>
@@ -365,7 +370,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
                 <EditableInput
                   className="fs-11"
                   value={invoice.sousTotalMontantHT}
-                  onChange={(value: any) => handleChange('sousTotalMontantHT', value)}
+                  onChange={(value: string | number) => handleChange('sousTotalMontantHT', value)}
                   pdfMode={pdfMode}
                 />
               </View>
@@ -380,7 +385,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
                 <EditableInput
                   className="fs-11"
                   value={invoice.taxLabel}
-                  onChange={(value: any) => handleChange('taxLabel', value)}
+                  onChange={(value: string | number) => handleChange('taxLabel', value)}
                   pdfMode={pdfMode}
                 />
               </View>
@@ -388,7 +393,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
                 <EditableInput
                   className="right fs-11"
                   value={invoice.tax}
-                  onChange={(value: any) => handleChange('tax', value)}
+                  onChange={(value: string | number) => handleChange('tax', value)}
                   pdfMode={pdfMode}
                 />
               </View>
@@ -403,7 +408,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
                 <EditableInput
                   className="bold fs-11"
                   value={invoice.totalTTC}
-                  onChange={(value: any) => handleChange('totalTTC', value)}
+                  onChange={(value: string | number) => handleChange('totalTTC', value)}
                   pdfMode={pdfMode}
                 />
               </View>
