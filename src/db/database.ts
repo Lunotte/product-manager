@@ -13,7 +13,7 @@ import { Contact } from '../models/Contact';
 
 export const dbPath = () => {
   return app.isPackaged
-        ? path.join(process.resourcesPath, 'database.db')
+        ?  path.join(app.getPath('userData'), 'database.db')
         : path.join(__dirname, '../../', 'public/database.db')
 }
 
