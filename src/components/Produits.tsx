@@ -191,9 +191,9 @@ const Produits: React.FC<ProduitProps> = () => {
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">{produit.nom}</TableCell>
-                                <TableCell align="right">{produit.prixAchat.toFixed(2)}</TableCell>
-                                <TableCell align="right">{produit.taux.toString()}</TableCell>
-                                <TableCell align="right">{produit.prixVente.toFixed(2)}</TableCell>
+                                <TableCell align="right">{produit.prixAchat?.toFixed(2)}</TableCell>
+                                <TableCell align="right">{produit.taux?.toString()}</TableCell>
+                                <TableCell align="right">{produit.prixVente?.toFixed(2)}</TableCell>
                                 <TableCell align="right">{produit.fournisseurNom}</TableCell>
                                 <TableCell align="right">{produit.categorieNom}</TableCell>
                                 <TableCell align="right">{produit.uniteNom}</TableCell>

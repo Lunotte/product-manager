@@ -8,4 +8,6 @@ export interface Contact extends IdNom {
     readonly adresse_bis: string;
     readonly cp: number;
     readonly ville: string;
+    readonly telephone: string;
+    readonly email: string;
 }

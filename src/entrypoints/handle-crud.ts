@@ -93,12 +93,12 @@ export const crudHandlers = () => {
     });
 
     ipcMain.handle('add-contact', (_, contact: Contact): Contact[] => {
-        db.addContact(contact.civilite, contact.nom, contact.prenom, contact.nom_complet, contact.adresse, contact.adresse_bis, contact.cp, contact.ville);
+        db.addContact(contact.civilite, contact.nom, contact.prenom, contact.nom_complet, contact.adresse, contact.adresse_bis, contact.cp, contact.ville, contact.telephone, contact.email);
         return db.getContacts();
     });
 
     ipcMain.handle('update-contact', (_, contact: Contact): Contact[] => {
-        db.updateContact(contact.civilite, contact.nom, contact.prenom, contact.nom_complet, contact.adresse, contact.adresse_bis, contact.cp, contact.ville, contact.id);
+        db.updateContact(contact.civilite, contact.nom, contact.prenom, contact.nom_complet, contact.adresse, contact.adresse_bis, contact.cp, contact.ville, contact.telephone, contact.email, contact.id);
         return db.getContacts();
     });
 
