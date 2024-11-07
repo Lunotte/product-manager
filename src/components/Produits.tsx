@@ -13,6 +13,7 @@ import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ClearIcon from '@mui/icons-material/Clear';
 import { ProduitContext } from "./home";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 interface ProduitProps {}
 
@@ -54,9 +55,14 @@ const Produits: React.FC<ProduitProps> = () => {
         }
     };
 
-    const editProduit = (cat: Produit) => {
+    const duplicateProduit = (produit: Produit) => {
+        const produitACreer: Produit = {...produit, id: null};
+        handleAddProduit(produitACreer);
+    }
+
+    const editProduit = (produit: Produit) => {
         setOpenProduitDialog(true);
-        setProduit(cat);
+        setProduit(produit);
     }
 
     const closeProduit = () => {
@@ -191,15 +197,20 @@ const Produits: React.FC<ProduitProps> = () => {
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">{produit.nom}</TableCell>
-                                <TableCell align="right">{produit.prixAchat.toFixed(2)}</TableCell>
-                                <TableCell align="right">{produit.taux.toString()}</TableCell>
-                                <TableCell align="right">{produit.prixVente.toFixed(2)}</TableCell>
+                                <TableCell align="right">{produit.prixAchat?.toFixed(2)}</TableCell>
+                                <TableCell align="right">{produit.taux?.toString()}</TableCell>
+                                <TableCell align="right">{produit.prixVente?.toFixed(2)}</TableCell>
                                 <TableCell align="right">{produit.fournisseurNom}</TableCell>
                                 <TableCell align="right">{produit.categorieNom}</TableCell>
                                 <TableCell align="right">{produit.uniteNom}</TableCell>
                                 <TableCell align="right">
                                     {modeEdition && 
                                     <>
+                                        <Tooltip title="Dupliquer un produit" arrow>
+                                            <IconButton aria-label="duplicate" size="large" onClick={() => duplicateProduit(produit)}>
+                                                <ContentCopyIcon fontSize="inherit" />
+                                            </IconButton>
+                                        </Tooltip>
                                         <Tooltip title="Modifier un produit" arrow>
                                             <IconButton aria-label="update" size="large" onClick={() => editProduit(produit)}>
                                                 <EditIcon fontSize="inherit" />

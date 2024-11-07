@@ -97,6 +97,8 @@ const Contacts = () => {
                         <TableCell style={{ fontWeight: 600}}>Civilité</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Nom</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Prénom</TableCell>
+                        <TableCell style={{ fontWeight: 600}}>Téléphone</TableCell>
+                        <TableCell style={{ fontWeight: 600}}>Email</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Adresse</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Adresse Complémentaire</TableCell>
                         <TableCell style={{ fontWeight: 600}}>Code Postal</TableCell>
@@ -115,9 +117,11 @@ const Contacts = () => {
                         </TableCell>
                         <TableCell>{contact.nom}</TableCell>
                         <TableCell>{contact.prenom}</TableCell>
+                        <TableCell>{contact.telephone}</TableCell>
+                        <TableCell>{contact.email}</TableCell>
                         <TableCell>{contact.adresse}</TableCell>
                         <TableCell>{contact.adresse_bis}</TableCell>
-                        <TableCell>{contact.cp.toString()}</TableCell>
+                        <TableCell>{contact.cp?.toString()}</TableCell>
                         <TableCell>{contact.ville}</TableCell>
                         <TableCell align="right">
                             <Tooltip title="Modifier une unité" arrow>
