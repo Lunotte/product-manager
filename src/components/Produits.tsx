@@ -136,8 +136,8 @@ const Produits: React.FC<ProduitProps> = () => {
             <div className="flex">
                 <div className={'w-50 panier'}>
                     <Tooltip title="Panier" arrow>
-                        <Badge badgeContent={produitsGlobal.length} color="primary" style={{cursor: "pointer"}}>
-                            <Inventory2OutlinedIcon color="action" onClick={() => goPageFacture()}/>
+                        <Badge badgeContent={produitsGlobal.length} color="primary" style={{cursor: "pointer"}} onClick={() => goPageFacture()}>
+                            <Inventory2OutlinedIcon color="action"/>
                         </Badge>
                     </Tooltip>
                 </div>
