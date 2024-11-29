@@ -42,7 +42,7 @@ const Download: FC<Props> = ({ data, setData }) => {
     const blob = new Blob([JSON.stringify(debounced)], {
       type: 'text/plain;charset=utf-8',
     })
-    FileSaver(blob, title + '.template')
+    FileSaver(blob, title() + '.template')
   }
   
   // const title = data.numFacture ? `${data.numFactureLabel} ${data.numFacture}` : data.numFactureLabel;

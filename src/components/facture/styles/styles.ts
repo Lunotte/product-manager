@@ -211,6 +211,9 @@ const styles: CSSClasses = {
       width: 400,
       left: 50,
       textAlign: 'center'
+  },
+  'body-facture': {
+    paddingBottom: 120
   }
 
 }
