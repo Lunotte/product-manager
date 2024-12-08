@@ -4,7 +4,7 @@ import { Invoice, TInvoice } from './data/types'
 import { useDebounce } from '@uidotdev/usehooks'
 import InvoicePage from './InvoicePageNg'
 import FileSaver from 'file-saver'
-import { ContactContext } from '../home'
+import { ContactContext, ProduitFactureContext } from '../home'
 
 interface Props {
   data: Invoice
@@ -14,6 +14,9 @@ interface Props {
 const Download: FC<Props> = ({ data, setData }) => {
 
   const {contactGlobal} = useContext(ContactContext);
+  const {setProduitsGlobal} = useContext(ProduitFactureContext);
+  const {produitsFactureGlobal, setProduitsFactureGlobal} = useContext(ProduitFactureContext);
+
   const debounced = useDebounce(data, 500)
 
   function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
@@ -29,6 +32,7 @@ const Download: FC<Props> = ({ data, setData }) => {
           }
           const d = JSON.parse(str)
           const dParsed = TInvoice.parse(d)
+          
           setData(dParsed)
         } catch (e) {
           window.electronAPI.logError(e);
@@ -73,7 +77,16 @@ const Download: FC<Props> = ({ data, setData }) => {
     <div className={'download-pdf '}>
       <PDFDownloadLink
         key={JSON.stringify(debounced)}
-        document={<InvoicePage pdfMode={true} data={debounced} contact={contactGlobal?.contact}/>}
+        document={
+          <InvoicePage 
+            pdfMode={true}
+            data={debounced}
+            contact={contactGlobal?.contact}
+            setProduitsGlobal={setProduitsGlobal}
+            produitsFactureGlobal={produitsFactureGlobal}
+            setProduitsFactureGlobal={setProduitsFactureGlobal}
+          />
+        }
         fileName={`${title()}.pdf`}
         aria-label="Générer PDF"
         title="Générer PDF"

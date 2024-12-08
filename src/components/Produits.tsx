@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ClearIcon from '@mui/icons-material/Clear';
-import { ProduitContext } from "./home";
+import { ProduitContext, ProduitFactureContext } from "./home";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 interface ProduitProps {}
@@ -20,8 +20,10 @@ interface ProduitProps {}
 const Produits: React.FC<ProduitProps> = () => {
 
     const {produitsGlobal, setProduitsGlobal} = useContext(ProduitContext);
+    const {setProduitsFactureGlobal} = useContext(ProduitFactureContext);
 
-    const [modeEdition, setModeEdition] = useState(false); 
+    const [modeEdition, setModeEdition] = useState(false);
+    const [rechercheProduit, setRechercheProduit] = useState<string>(""); 
     const [query, setQuery] = useState("");
     const [produit, setProduit] = useState<Produit>();
     const [produits, setProduits] = useState<Produit[]>([]);
@@ -32,23 +34,27 @@ const Produits: React.FC<ProduitProps> = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        chargerProduit();
+    }, []);
+
+    const chargerProduit = () => {
         window.electronAPI.getProduits().then((result) => {
             setProduits(result);
         }).catch((err) => {
             window.electronAPI.logError(err);
         });
-    }, []);
+    }
 
     const handleAddProduit = (produit: Produit) => {
         if(produit.id){
-            window.electronAPI.updateProduit(produit).then((result) => {
-                setProduits(result);
+            window.electronAPI.updateProduit(produit).then(() => {
+                rechargerProduit();
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
-            window.electronAPI.addProduit(produit).then((result) => {
-                setProduits(result);
+            window.electronAPI.addProduit(produit).then(() => {
+                rechargerProduit();
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
@@ -80,8 +86,8 @@ const Produits: React.FC<ProduitProps> = () => {
     };
   
     const handleConfirmDelete = () => {
-        window.electronAPI.deleteProduit(itemToDelete.id).then((result) => {
-            setProduits(result);
+        window.electronAPI.deleteProduit(itemToDelete.id).then(() => {
+            rechargerProduit();
         }).catch((err) => {
             window.electronAPI.logError(err);
         });
@@ -90,12 +96,23 @@ const Produits: React.FC<ProduitProps> = () => {
     };
 
     const rechercherProduits = (query: string) => {
+
+        setRechercheProduit(query);
+
         window.electronAPI.rechercherProduits(query).then((result) => {
             setProduits(result);
         }).catch((err) => {
             window.electronAPI.logError(err);
         });
     };
+
+    const rechargerProduit = () => {
+        if(rechercheProduit.length === 0) {
+            chargerProduit();
+        } else {
+            rechercherProduits(rechercheProduit);
+        }
+    }
 
     const changeModeEdition = () => {
         setModeEdition(!modeEdition);
@@ -116,6 +133,7 @@ const Produits: React.FC<ProduitProps> = () => {
 
     const viderPanier = () => {
         setProduitsGlobal([]);
+        setProduitsFactureGlobal([]);
     }
 
     const goPageFacture = () => {

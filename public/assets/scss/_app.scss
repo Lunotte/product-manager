@@ -205,3 +205,8 @@
   padding: 16px;
   text-align: right;
 }
+
+.highlight {
+  background-color: #f0f8ff; /* Couleur pour mettre en évidence */
+  transition: background-color 0.3s ease; /* Animation douce */
+}
