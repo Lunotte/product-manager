@@ -25,9 +25,9 @@ export interface ElectronAPI {
 
     getProduits: () => Promise<Produit[]>;
     rechercherProduits: (query: string) => Promise<Produit[]>;
-    addProduit: (produit: Produit) => Promise<Produit[]>;
-    updateProduit: (produit: Produit) => Promise<Produit[]>;
-    deleteProduit: (id: number) => Promise<Produit[]>;
+    addProduit: (produit: Produit) => Promise<void>;
+    updateProduit: (produit: Produit) => Promise<void>;
+    deleteProduit: (id: number) => Promise<void>;
 
     getContacts: () => Promise<Contact[]>;
     addContact: (contact: Contact) => Promise<Contact[]>;

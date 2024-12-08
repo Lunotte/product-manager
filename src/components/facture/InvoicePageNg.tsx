@@ -33,9 +33,12 @@ interface Props {
 
 const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
   
-  const [invoice, setInvoice] = useState<Invoice>(data ? { ...data } : { ...initialInvoice })
-  const [subTotal, setSubTotal] = useState<number>()
-  const [saleTax, setSaleTax] = useState<number>()
+  const [invoice, setInvoice] = useState<Invoice>(data ? { ...data } : { ...initialInvoice });
+  const [subTotal, setSubTotal] = useState<number>();
+  const [saleTax, setSaleTax] = useState<number>();
+  // État pour stocker l'index de la ligne sélectionnée
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
 
   const handleChange = (name: keyof Invoice, value: string | number) => {
     if (name !== 'productLines') {
@@ -126,10 +129,6 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
     }
   }, [onChange, invoice])
 
-
-
-  // État pour stocker l'index de la ligne sélectionnée
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   // Fonction pour gérer la sélection
   const handleRowClick = (index: number) => {

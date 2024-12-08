@@ -72,19 +72,16 @@ export const crudHandlers = () => {
         return db.rechercherProduit(query);
     });
 
-    ipcMain.handle('add-produit', (_, produit: Produit): Produit[] => {
+    ipcMain.handle('add-produit', (_, produit: Produit): void => {
         db.addProduit(produit.nom, produit.prixAchat, produit.taux, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
-        return db.getProduits();
     });
 
-    ipcMain.handle('update-produit', (_, produit: Produit): Produit[] => {
+    ipcMain.handle('update-produit', (_, produit: Produit): void => {
         db.updateProduit(produit.id, produit.nom, produit.prixAchat, produit.taux, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
-        return db.getProduits();
     });
 
-    ipcMain.handle('delete-produit', (_, id: number): Produit[] => {
+    ipcMain.handle('delete-produit', (_, id: number): void => {
         db.deleteProduit(id);
-        return db.getProduits();
     });
 
 
