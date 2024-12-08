@@ -103,6 +103,8 @@
   padding: 2px;
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
+  color: #696a6b !important;
+  text-decoration: none !important;
 
   .row:hover &,
   .row:focus-within & {

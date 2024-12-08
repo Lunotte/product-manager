@@ -15,6 +15,7 @@ import { Contact } from '../../models/Contact'
 import { IconButton } from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
 
 Font.register({
   family: 'Nunito',
@@ -447,10 +448,10 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact, setProduit
           <FView className="flex" pdfMode={pdfMode}>
             <FView className="w-50 mt-10" pdfMode={pdfMode}>
               {!pdfMode && (
-                <button className="link" onClick={handleAdd}>
-                  <span className="icon icon-add bg-green mr-10"></span>
-                  Ajouter une ligne de produit
-                </button>
+
+                <IconButton aria-label="add" size="small" onClick={handleAdd}>
+                  <AddIcon fontSize="small" />
+                </IconButton>
               )}
             </FView>
             <FView className="w-50 mt-10" pdfMode={pdfMode}>
