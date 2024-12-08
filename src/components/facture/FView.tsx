@@ -7,7 +7,7 @@ interface Props {
   pdfMode?: boolean
 }
 
-const View: FC<PropsWithChildren<Props>> = ({ className, pdfMode, children }) => {
+const FView: FC<PropsWithChildren<Props>> = ({ className, pdfMode, children }) => {
   return (
     <>
       {pdfMode ? (
@@ -19,4 +19,4 @@ const View: FC<PropsWithChildren<Props>> = ({ className, pdfMode, children }) =>
   )
 }
 
-export default View
+export default FView
