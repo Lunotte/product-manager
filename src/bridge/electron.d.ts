@@ -30,10 +30,10 @@ export interface ElectronAPI {
     deleteProduit: (id: number) => Promise<void>;
 
     getContacts: () => Promise<Contact[]>;
-    // rechercherContacts: (query: string) => Promise<Contact[]>;
-    addContact: (contact: Contact) => Promise<Contact[]>;
-    updateContact: (contact: Contact) => Promise<Contact[]>;
-    deleteContact: (id: number) => Promise<Contact[]>;
+    rechercherContacts: (query: string) => Promise<Contact[]>;
+    addContact: (contact: Contact) => Promise<void>;
+    updateContact: (contact: Contact) => Promise<void>;
+    deleteContact: (id: number) => Promise<void>;
 }
   
 declare global {

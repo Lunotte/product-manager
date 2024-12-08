@@ -89,18 +89,19 @@ export const crudHandlers = () => {
         return db.getContacts();
     });
 
-    ipcMain.handle('add-contact', (_, contact: Contact): Contact[] => {
+    ipcMain.handle('rechercher-contacts', (_, query: string): Contact[] => {
+        return db.rechercherContacts(query);
+    });
+
+    ipcMain.handle('add-contact', (_, contact: Contact): void => {
         db.addContact(contact.civilite, contact.nom, contact.prenom, contact.nom_complet, contact.adresse, contact.adresse_bis, contact.cp, contact.ville, contact.telephone, contact.email);
-        return db.getContacts();
     });
 
-    ipcMain.handle('update-contact', (_, contact: Contact): Contact[] => {
+    ipcMain.handle('update-contact', (_, contact: Contact): void => {
         db.updateContact(contact.civilite, contact.nom, contact.prenom, contact.nom_complet, contact.adresse, contact.adresse_bis, contact.cp, contact.ville, contact.telephone, contact.email, contact.id);
-        return db.getContacts();
     });
 
-    ipcMain.handle('delete-contact', (_, id: number): Contact[] => {
+    ipcMain.handle('delete-contact', (_, id: number): void => {
         db.deleteContact(id);
-        return db.getContacts();
     });
 };
