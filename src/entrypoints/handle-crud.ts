@@ -72,19 +72,16 @@ export const crudHandlers = () => {
         return db.rechercherProduit(query);
     });
 
-    ipcMain.handle('add-produit', (_, produit: Produit): Produit[] => {
+    ipcMain.handle('add-produit', (_, produit: Produit): void => {
         db.addProduit(produit.nom, produit.prixAchat, produit.taux, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
-        return db.getProduits();
     });
 
-    ipcMain.handle('update-produit', (_, produit: Produit): Produit[] => {
+    ipcMain.handle('update-produit', (_, produit: Produit): void => {
         db.updateProduit(produit.id, produit.nom, produit.prixAchat, produit.taux, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
-        return db.getProduits();
     });
 
-    ipcMain.handle('delete-produit', (_, id: number): Produit[] => {
+    ipcMain.handle('delete-produit', (_, id: number): void => {
         db.deleteProduit(id);
-        return db.getProduits();
     });
 
 
@@ -92,18 +89,19 @@ export const crudHandlers = () => {
         return db.getContacts();
     });
 
-    ipcMain.handle('add-contact', (_, contact: Contact): Contact[] => {
+    ipcMain.handle('rechercher-contacts', (_, query: string): Contact[] => {
+        return db.rechercherContacts(query);
+    });
+
+    ipcMain.handle('add-contact', (_, contact: Contact): void => {
         db.addContact(contact.civilite, contact.nom, contact.prenom, contact.nom_complet, contact.adresse, contact.adresse_bis, contact.cp, contact.ville, contact.telephone, contact.email);
-        return db.getContacts();
     });
 
-    ipcMain.handle('update-contact', (_, contact: Contact): Contact[] => {
+    ipcMain.handle('update-contact', (_, contact: Contact): void => {
         db.updateContact(contact.civilite, contact.nom, contact.prenom, contact.nom_complet, contact.adresse, contact.adresse_bis, contact.cp, contact.ville, contact.telephone, contact.email, contact.id);
-        return db.getContacts();
     });
 
-    ipcMain.handle('delete-contact', (_, id: number): Contact[] => {
+    ipcMain.handle('delete-contact', (_, id: number): void => {
         db.deleteContact(id);
-        return db.getContacts();
     });
 };

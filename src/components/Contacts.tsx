@@ -1,4 +1,4 @@
-import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material";
+import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
 import { Contact } from "../models/Contact";
 import { useEffect, useState } from "react";
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
@@ -11,29 +11,54 @@ import EditContactDialog from "./dialogs/EditContactDialog";
 const Contacts = () => {
 
     const [contact, setContact] = useState<Contact>();
+    const [rechercheContact, setRechercheContact] = useState<string>(""); 
+    const [query, setQuery] = useState("");
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [openContactDialog, setOpenContactDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
     useEffect(() => {
+        chargerContacts();
+    }, []);
+
+
+    const chargerContacts = () => {
         window.electronAPI.getContacts().then((result) => {
             setContacts(result);
         }).catch((err) => {
           window.electronAPI.logError(err);
         });
-    }, []);
+    }
+
+    const rechercherContacts = (query: string) => {
+        setRechercheContact(query);
+
+        window.electronAPI.rechercherContacts(query).then((result) => {
+            setContacts(result);
+        }).catch((err) => {
+            window.electronAPI.logError(err);
+        });
+    };
+
+    const rechargerContacts = () => {
+        if(rechercheContact.length === 0) {
+            chargerContacts();
+        } else {
+            rechercherContacts(rechercheContact);
+        }
+    }
 
     const handleAddContact = (contact: Contact) => {
         if(contact.id){
-            window.electronAPI.updateContact(contact).then((result) => {
-                setContacts(result);
+            window.electronAPI.updateContact(contact).then(() => {
+                rechargerContacts();
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
-            window.electronAPI.addContact(contact).then((result) => {
-                setContacts(result);
+            window.electronAPI.addContact(contact).then(() => {
+                rechargerContacts();
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
@@ -59,15 +84,20 @@ const Contacts = () => {
         setOpenConfirmationDelete(false);
     };
     
-      const handleConfirmDelete = () => {
-        window.electronAPI.deleteContact(itemToDelete.id).then((result) => {
-            setContacts(result);
+    const handleConfirmDelete = () => {
+        window.electronAPI.deleteContact(itemToDelete.id).then(() => {
+            rechargerContacts();
         }).catch((err) => {
             window.electronAPI.logError(err);
         });
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
-      };
+    };
+
+    useEffect(() => {
+        const timeOutId = setTimeout(() => rechercherContacts(query), 500);
+        return () => clearTimeout(timeOutId);
+    }, [query]);
       
     return (
         <div>
@@ -78,6 +108,13 @@ const Contacts = () => {
                     </IconButton>
                 </Tooltip>
             </div>
+            <TextField 
+                style={{backgroundColor:"white"}}
+                margin="dense"
+                label="Rechercher par nom / prénom"
+                type="text"
+                fullWidth
+                onChange={event => setQuery(event.target.value)} />
             <EditContactDialog
                 open={openContactDialog}
                 onClose={() => closeContact()}
@@ -94,16 +131,12 @@ const Contacts = () => {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                 <TableHead>
                     <TableRow>
-                        <TableCell style={{ fontWeight: 600}}>Civilité</TableCell>
-                        <TableCell style={{ fontWeight: 600}}>Nom</TableCell>
-                        <TableCell style={{ fontWeight: 600}}>Prénom</TableCell>
-                        <TableCell style={{ fontWeight: 600}}>Téléphone</TableCell>
-                        <TableCell style={{ fontWeight: 600}}>Email</TableCell>
-                        <TableCell style={{ fontWeight: 600}}>Adresse</TableCell>
-                        <TableCell style={{ fontWeight: 600}}>Adresse Complémentaire</TableCell>
-                        <TableCell style={{ fontWeight: 600}}>Code Postal</TableCell>
-                        <TableCell style={{ fontWeight: 600}}>Ville</TableCell>
-                        <TableCell></TableCell>
+                        <TableCell style={{ fontWeight: 600, width:"10%"}}>Civilité</TableCell>
+                        <TableCell style={{ fontWeight: 600, width:"20%"}}>Nom</TableCell>
+                        <TableCell style={{ fontWeight: 600, width:"20%"}}>Prénom</TableCell>
+                        <TableCell style={{ fontWeight: 600, width:"20%"}}>Téléphone</TableCell>
+                        <TableCell style={{ fontWeight: 600, width:"15%"}}>Ville</TableCell>
+                        <TableCell style={{ width:"15%"}}></TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -118,10 +151,6 @@ const Contacts = () => {
                         <TableCell>{contact.nom}</TableCell>
                         <TableCell>{contact.prenom}</TableCell>
                         <TableCell>{contact.telephone}</TableCell>
-                        <TableCell>{contact.email}</TableCell>
-                        <TableCell>{contact.adresse}</TableCell>
-                        <TableCell>{contact.adresse_bis}</TableCell>
-                        <TableCell>{contact.cp?.toString()}</TableCell>
                         <TableCell>{contact.ville}</TableCell>
                         <TableCell align="right">
                             <Tooltip title="Modifier une unité" arrow>

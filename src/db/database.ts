@@ -145,6 +145,9 @@ const dbMethods = {
   getContacts(): Contact[] {
     return db.prepare<unknown[] , Contact>('SELECT * FROM contacts ORDER BY nom ASC, prenom ASC').all();
   },
+  rechercherContacts(query: string): Contact[] {
+    return db.prepare<unknown[], Contact>("SELECT * FROM contacts WHERE contacts.nom LIKE ?1 OR contacts.prenom LIKE ?1 OR (contacts.nom || ' ' || contacts.prenom) LIKE ?1 OR (contacts.prenom || ' ' || contacts.nom) LIKE ?1 ORDER BY nom ASC, prenom ASC").all( { 1: '%' + query + '%' });
+  }, 
   addContact(civilite: string, nom: string, prenom: string, nom_complet: string, adresse: string, adresse_bis: string, cp: number, ville: string, telephone: string, email: string): void {
     const stmt = db.prepare('INSERT INTO contacts (civilite, nom, prenom, nom_complet, adresse, adresse_bis, cp, ville, telephone, email) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
     stmt.run(civilite, nom, prenom, nom_complet, adresse, adresse_bis, cp, ville, telephone, email);
