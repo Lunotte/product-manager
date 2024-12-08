@@ -236,7 +236,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
             <FView className="flex w-100" pdfMode={pdfMode}>
               <FView className="w-17" pdfMode={pdfMode}>
                 <EditableInput
-                  className=""
+                  className="bold"
                   value={invoice.numFactureLabel}
                   onChange={(value: string) => handleChange('numFactureLabel', value)}
                   pdfMode={pdfMode}
@@ -244,7 +244,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
               </FView>
               <FView className="w-40" pdfMode={pdfMode}>
                 <EditableInput
-                  className="left"
+                  className="left bold"
                   placeholder='21/09/20833'
                   value={invoice.numFacture}
                   onChange={(value: string | number) => handleChange('numFacture', value)}
@@ -254,10 +254,10 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
             </FView>
           </FView>
           <FView className="w-30" pdfMode={pdfMode}>
-              <ContactPdf className="flex" value={contact?.nom_complet} pdfMode={pdfMode} />
-              <ContactPdf className="flex" value={contact?.adresse} pdfMode={pdfMode} />
-              {contact?.adresse_bis && <ContactPdf className="flex" value={contact?.adresse_bis} pdfMode={pdfMode} />}
-              <ContactPdf className="flex" value={contact?.cp?.toString().concat(' ').concat(contact?.ville)} pdfMode={pdfMode} />
+              <ContactPdf className="flex bold" value={contact?.nom_complet} pdfMode={pdfMode} />
+              <ContactPdf className="flex bold" value={contact?.adresse} pdfMode={pdfMode} />
+              {contact?.adresse_bis && <ContactPdf className="flex bold" value={contact?.adresse_bis} pdfMode={pdfMode} />}
+              <ContactPdf className="flex bold" value={contact?.cp?.toString().concat(' ').concat(contact?.ville)} pdfMode={pdfMode} />
           </FView>
         </FView>
 
