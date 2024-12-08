@@ -1,4 +1,4 @@
-import { FC, useState, useEffect } from 'react'
+import { FC, useState, useEffect, useContext } from 'react'
 import { Invoice, ProductLine } from './data/types'
 import { initialInvoice, initialProductLine } from './data/initialData'
 import EditableInput from './EditableInput'
@@ -12,6 +12,9 @@ import Download from './DownloadPDF'
 import Footer from './Footer'
 import ContactPdf from './ContactPdf'
 import { Contact } from '../../models/Contact'
+import { IconButton } from '@mui/material'
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 Font.register({
   family: 'Nunito',
@@ -27,17 +30,33 @@ Font.register({
 interface Props {
   data?: Invoice,
   contact?: Contact,
+  setProduitsGlobal?: any,
+  produitsFactureGlobal: any,
+  setProduitsFactureGlobal?: any,
   pdfMode?: boolean
   onChange?: (invoice: Invoice) => void
 }
 
-const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
-  
+const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact, setProduitsGlobal, produitsFactureGlobal, setProduitsFactureGlobal }) => {
+
   const [invoice, setInvoice] = useState<Invoice>(data ? { ...data } : { ...initialInvoice });
   const [subTotal, setSubTotal] = useState<number>();
   const [saleTax, setSaleTax] = useState<number>();
   // État pour stocker l'index de la ligne sélectionnée
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+
+     // On filtre les produits qui ne sont pas dans produitsFactureGlobal
+    const produitsSupplementaires = data.productLines.filter((produit: ProductLine) => 
+      !produitsFactureGlobal.some((produitFacture: ProductLine) => produitFacture.id === produit.id)
+    );
+    
+    // Fusionner les produits existants avec les nouveaux produits
+    const fusionProduit = [...produitsFactureGlobal, ...produitsSupplementaires];
+    
+    setProduitsFactureGlobal(fusionProduit);
+  }, [])
 
 
   const handleChange = (name: keyof Invoice, value: string | number) => {
@@ -54,7 +73,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
   }
 
   const handleProductLineChange = (index: number, name: keyof ProductLine, value: string) => {
-    const productLines = invoice.productLines.map((productLine: any, i: number) => {
+    const productLines = produitsFactureGlobal.map((productLine: any, i: number) => {
       if (i === index) {
         const newProductLine = { ...productLine }
 
@@ -79,17 +98,17 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
       return { ...productLine }
     })
 
-    setInvoice({ ...invoice, productLines })
+    setProduitsFactureGlobal(productLines)
   }
 
   const handleRemove = (i: number) => {
-    const productLines = invoice.productLines.filter((_: any, index: number) => index !== i)
-    setInvoice({ ...invoice, productLines })
+    const productLines = produitsFactureGlobal.filter((_: any, index: number) => index !== i)
+    setProduitsFactureGlobal(productLines)
   }
 
   const handleAdd = () => {
-    const productLines = [...invoice.productLines, { ...initialProductLine }]
-    setInvoice({ ...invoice, productLines })
+    const productLines = [...produitsFactureGlobal, { ...initialProductLine }]
+    setProduitsFactureGlobal(productLines)
   }
 
   const calculateAmount = (quantity: string, rate: string) => {
@@ -103,7 +122,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
   useEffect(() => {
     let subTotal = 0
 
-    invoice.productLines.forEach((productLine: any) => {
+    produitsFactureGlobal.forEach((productLine: any) => {
       const quantityNumber = parseFloat(productLine.quantity)
       const rateNumber = parseFloat(productLine.rate)
       const amount = quantityNumber && rateNumber ? quantityNumber * rateNumber : 0
@@ -112,12 +131,11 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
     })
 
     setSubTotal(subTotal)
-  }, [invoice.productLines])
+  }, [produitsFactureGlobal])
 
   useEffect(() => {
     const match = invoice.tax.match(/(\d+)%/)
     const taxRate = match ? parseFloat(match[1]) : 0
-    // const taxRate = parseFloat(invoice.tax);
     const saleTax = subTotal ? (subTotal * taxRate) / 100 : 0
 
     setSaleTax(saleTax)
@@ -137,22 +155,33 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
 
   // Fonction pour réarranger les lignes
   const rearrangeLines = (fromIndex: number, toIndex: number) => {
-    if (toIndex < 0 || toIndex >= invoice.productLines.length) return; // Empêche les débordements
+    if (toIndex < 0 || toIndex >= produitsFactureGlobal.length) return; // Empêche les débordements
 
-    const updatedLines = [...invoice.productLines];
+    const updatedLines = [...produitsFactureGlobal];
     const [movedLine] = updatedLines.splice(fromIndex, 1);
     updatedLines.splice(toIndex, 0, movedLine);
 
-    // Mettre à jour l'état du parent ou invoquer une méthode pour sauvegarder
-    setInvoice({ ...invoice, productLines: updatedLines });
+    setProduitsFactureGlobal(updatedLines);
     setSelectedIndex(toIndex); // Met à jour l'index sélectionné
   };
+
+  const handleDuplicate = (i: number) => {
+    const duplicateProduct = (produitsFactureGlobal as ProductLine[])[i];
+    const listUpdated = [...produitsFactureGlobal, {...duplicateProduct, id: null}];
+    setProduitsFactureGlobal(listUpdated);
+  }
+
+  const mergeInvoice =  {...invoice, productLines: produitsFactureGlobal};
 
   return (
     <>
     <Document pdfMode={pdfMode}>
       <Page className="invoice-wrapper body-facture" pdfMode={pdfMode}>
-        {!pdfMode && <Download data={invoice} setData={(data: Invoice) => setInvoice(data)} />}
+        {!pdfMode && <Download data={mergeInvoice} setData={(data: Invoice) => {
+          setProduitsFactureGlobal(data.productLines)
+          setProduitsGlobal(data.productLines)
+          setInvoice(data)
+        }} />}
 
         <FView className="flex" pdfMode={pdfMode}>
           <FView className="w-60" pdfMode={pdfMode}>
@@ -312,7 +341,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
             </FView>
           </FView>
 
-          {invoice.productLines.map((productLine: any, i: number) => {
+          {produitsFactureGlobal.map((productLine: any, i: number) => {
 
             const isSelected = i === selectedIndex; // Vérifier si la ligne est sélectionnée
 
@@ -401,14 +430,14 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact }) => {
                   )}
                   
                 {!pdfMode && (
-                  <button
-                    className="link row__remove"
-                    aria-label="Remove Row"
-                    title="Supprimer ligne"
-                    onClick={() => handleRemove(i)}
-                  >
-                    <span className="icon icon-remove bg-red"></span>
-                  </button>
+                   <div  className="row__remove">
+                      <IconButton aria-label="dupliquer" size="small" onClick={() => handleDuplicate(i)}>
+                        <ContentCopyIcon fontSize="small" />
+                      </IconButton>
+                      <IconButton aria-label="Supprimer ligne" size="small" onClick={() => handleRemove(i)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                   </div>
                 )}
               </FView>
             </div>

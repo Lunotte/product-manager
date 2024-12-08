@@ -8,11 +8,11 @@ import EditProduitDialog from "./dialogs/EditProduitDialog";
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import { json, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ClearIcon from '@mui/icons-material/Clear';
-import { ProduitContext } from "./home";
+import { ProduitContext, ProduitFactureContext } from "./home";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 interface ProduitProps {}
@@ -20,6 +20,7 @@ interface ProduitProps {}
 const Produits: React.FC<ProduitProps> = () => {
 
     const {produitsGlobal, setProduitsGlobal} = useContext(ProduitContext);
+    const {setProduitsFactureGlobal} = useContext(ProduitFactureContext);
 
     const [modeEdition, setModeEdition] = useState(false);
     const [rechercheProduit, setRechercheProduit] = useState<string>(""); 
@@ -132,6 +133,7 @@ const Produits: React.FC<ProduitProps> = () => {
 
     const viderPanier = () => {
         setProduitsGlobal([]);
+        setProduitsFactureGlobal([]);
     }
 
     const goPageFacture = () => {
