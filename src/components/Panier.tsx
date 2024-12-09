@@ -2,13 +2,13 @@ import InvoicePageNg from './facture/InvoicePageNg';
 import { ProductLine } from './facture/data/types';
 import { Produit } from '../models/Produit';
 import { initialInvoice } from './facture/data/initialData';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { ContactContext, ProduitContext, ProduitFactureContext } from './home';
 import SelectionnerContact from './facture/SelectionnerContact';
 
 export function Panier() {
 
-  const {produitsGlobal} = useContext(ProduitContext);
+  const {produitsGlobal, setProduitsGlobal} = useContext(ProduitContext);
   const {produitsFactureGlobal, setProduitsFactureGlobal} = useContext(ProduitFactureContext);
   const {contactGlobal} = useContext(ContactContext);
   
@@ -17,8 +17,8 @@ export function Panier() {
     date: '',
     description: produit.nom,
     quantity: '1',
-    unite: produit.uniteNom.toString(),
-    rate: produit.prixVente.toFixed(2)
+    unite: produit?.uniteNom?.toString(),
+    rate: produit?.prixVente?.toFixed(2)
  } as ProductLine))
   const facture = {...initialInvoice, productLines: produitsInvoice}
   
@@ -28,6 +28,7 @@ export function Panier() {
         <InvoicePageNg 
           data={facture}
           contact={contactGlobal?.contact}
+          setProduitsGlobal={setProduitsGlobal}
           produitsFactureGlobal={produitsFactureGlobal}
           setProduitsFactureGlobal={setProduitsFactureGlobal}/>
       </div>

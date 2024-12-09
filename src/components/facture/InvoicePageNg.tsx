@@ -55,7 +55,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact, setProduit
     
     // Fusionner les produits existants avec les nouveaux produits
     const fusionProduit = [...produitsFactureGlobal, ...produitsSupplementaires];
-    
+    setProduitsGlobal(data.productLines);
     setProduitsFactureGlobal(fusionProduit);
   }, [])
 
