@@ -13,7 +13,7 @@ interface Props {
   produitsFactureGlobal: any,
 }
 
-const Download: FC<Props> = ({ data, setData, contact/*, setProduitsGlobal*/, produitsFactureGlobal/*, setProduitsFactureGlobal */}) => {
+const Download: FC<Props> = ({ data, setData, contact, produitsFactureGlobal}) => {
 
   const debounced = useDebounce(data, 500)
 
