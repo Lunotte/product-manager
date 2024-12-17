@@ -17,8 +17,8 @@ export function Panier() {
     date: '',
     description: produit.nom,
     quantity: '1',
-    unite: produit.uniteNom.toString(),
-    rate: produit.prixVente.toFixed(2)
+    unite: produit?.uniteNom?.toString(),
+    rate: produit?.prixVente?.toFixed(2)
  } as ProductLine))
   const facture = {...initialInvoice, productLines: produitsInvoice}
   
