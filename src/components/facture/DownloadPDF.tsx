@@ -4,18 +4,18 @@ import { Invoice, TInvoice } from './data/types'
 import { useDebounce } from '@uidotdev/usehooks'
 import InvoicePage from './InvoicePageNg'
 import FileSaver from 'file-saver'
-import { ContactContext, ProduitFactureContext } from '../home'
+import { Contact } from '../../models/Contact'
 
 interface Props {
   data: Invoice
-  setData(data: Invoice): void
+  setData(data: Invoice): void,
+  contact?: Contact,
+  setProduitsGlobal: any,
+  produitsFactureGlobal: any,
+  setProduitsFactureGlobal: any,
 }
 
-const Download: FC<Props> = ({ data, setData }) => {
-
-  const {contactGlobal} = useContext(ContactContext);
-  const {setProduitsGlobal} = useContext(ProduitFactureContext);
-  const {produitsFactureGlobal, setProduitsFactureGlobal} = useContext(ProduitFactureContext);
+const Download: FC<Props> = ({ data, setData, contact, setProduitsGlobal, produitsFactureGlobal, setProduitsFactureGlobal }) => {
 
   const debounced = useDebounce(data, 500)
 
@@ -60,14 +60,14 @@ const Download: FC<Props> = ({ data, setData }) => {
    */
   const title = () => {
     if(data.numFacture) {
-      if(contactGlobal && contactGlobal.contact) {
-        return `${data.numFactureLabel}${data.numFacture} - ${contactGlobal.contact.nom_complet}`; 
+      if(contact) {
+        return `${data.numFactureLabel}${data.numFacture} - ${contact.nom_complet}`; 
       } else {
         return `${data.numFactureLabel}${data.numFacture}`;
       }
     } else {
-      if(contactGlobal && contactGlobal.contact) {
-        return `${data.numFactureLabel} - ${contactGlobal.contact.nom_complet}`; 
+      if(contact) {
+        return `${data.numFactureLabel} - ${contact.nom_complet}`; 
       }
       return data.numFactureLabel;
     }
@@ -81,7 +81,7 @@ const Download: FC<Props> = ({ data, setData }) => {
           <InvoicePage 
             pdfMode={true}
             data={debounced}
-            contact={contactGlobal?.contact}
+            contact={contact}
             setProduitsGlobal={setProduitsGlobal}
             produitsFactureGlobal={produitsFactureGlobal}
             setProduitsFactureGlobal={setProduitsFactureGlobal}

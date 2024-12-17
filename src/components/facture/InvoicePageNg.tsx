@@ -31,9 +31,9 @@ Font.register({
 interface Props {
   data?: Invoice,
   contact?: Contact,
-  setProduitsGlobal?: any,
+  setProduitsGlobal: any,
   produitsFactureGlobal: any,
-  setProduitsFactureGlobal?: any,
+  setProduitsFactureGlobal: any,
   pdfMode?: boolean
   onChange?: (invoice: Invoice) => void
 }
@@ -178,11 +178,17 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact, setProduit
     <>
     <Document pdfMode={pdfMode}>
       <Page className="invoice-wrapper body-facture" pdfMode={pdfMode}>
-        {!pdfMode && <Download data={mergeInvoice} setData={(data: Invoice) => {
+        {!pdfMode && <Download data={mergeInvoice}
+          contact={contact}
+          setProduitsGlobal={setProduitsGlobal}
+          produitsFactureGlobal={produitsFactureGlobal}
+          setProduitsFactureGlobal={setProduitsFactureGlobal}
+          setData={(data: Invoice) => {
           setProduitsFactureGlobal(data.productLines)
           setProduitsGlobal(data.productLines)
           setInvoice(data)
-        }} />}
+        }}  
+            />}
 
         <FView className="flex" pdfMode={pdfMode}>
           <FView className="w-60" pdfMode={pdfMode}>
