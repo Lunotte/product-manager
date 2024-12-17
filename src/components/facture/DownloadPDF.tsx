@@ -10,12 +10,10 @@ interface Props {
   data: Invoice
   setData(data: Invoice): void,
   contact?: Contact,
-  setProduitsGlobal: any,
   produitsFactureGlobal: any,
-  setProduitsFactureGlobal: any,
 }
 
-const Download: FC<Props> = ({ data, setData, contact, setProduitsGlobal, produitsFactureGlobal, setProduitsFactureGlobal }) => {
+const Download: FC<Props> = ({ data, setData, contact, produitsFactureGlobal}) => {
 
   const debounced = useDebounce(data, 500)
 
@@ -49,8 +47,6 @@ const Download: FC<Props> = ({ data, setData, contact, setProduitsGlobal, produi
     FileSaver(blob, title() + '.template')
   }
   
-  // const title = data.numFacture ? `${data.numFactureLabel} ${data.numFacture}` : data.numFactureLabel;
-
   /**
    * Si un numéro de facture est défini et si on a un client qui a été défini = numFactureLabel + numFacture + nomComplet,
    * sinon numFctureLabel + numFacture
@@ -82,9 +78,7 @@ const Download: FC<Props> = ({ data, setData, contact, setProduitsGlobal, produi
             pdfMode={true}
             data={debounced}
             contact={contact}
-            setProduitsGlobal={setProduitsGlobal}
             produitsFactureGlobal={produitsFactureGlobal}
-            setProduitsFactureGlobal={setProduitsFactureGlobal}
           />
         }
         fileName={`${title()}.pdf`}

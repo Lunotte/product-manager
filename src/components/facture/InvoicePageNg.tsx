@@ -180,11 +180,14 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact, setProduit
     <>
     <Document pdfMode={pdfMode}>
       <Page className="invoice-wrapper body-facture" pdfMode={pdfMode}>
-        {!pdfMode && <Download data={mergeInvoice} setData={(data: Invoice) => {
-          setProduitsFactureGlobal(data.productLines)
-          setProduitsGlobal(data.productLines)
-          setInvoice(data)
-        }} />}
+        {!pdfMode && <Download data={mergeInvoice}
+                                produitsFactureGlobal={produitsFactureGlobal}
+                                setData={(data: Invoice) => {
+                                  setProduitsFactureGlobal(data.productLines)
+                                  setProduitsGlobal(data.productLines)
+                                  setInvoice(data)
+                                }} 
+          />}
 
         <FView className="flex" pdfMode={pdfMode}>
           <FView className="w-60" pdfMode={pdfMode}>
