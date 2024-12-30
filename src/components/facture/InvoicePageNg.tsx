@@ -181,6 +181,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact, setProduit
     <Document pdfMode={pdfMode}>
       <Page className="invoice-wrapper body-facture" pdfMode={pdfMode}>
         {!pdfMode && <Download data={mergeInvoice}
+                                contact={contact}
                                 produitsFactureGlobal={produitsFactureGlobal}
                                 setData={(data: Invoice) => {
                                   setProduitsFactureGlobal(data.productLines)
