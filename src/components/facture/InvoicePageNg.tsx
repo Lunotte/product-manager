@@ -296,7 +296,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact, setProduit
           </FView>
         </FView>
 
-        <FView pdfMode={pdfMode}>
+        <FView pdfMode={pdfMode} wrap={true}>
           <FView className="mt-20 bg-dark flex" pdfMode={pdfMode}>
             <FView className="w-15 p-4-8" pdfMode={pdfMode}>
               <EditableInput
@@ -460,7 +460,7 @@ const InvoicePageNg: FC<Props> = ({ data, pdfMode, onChange, contact, setProduit
                 </IconButton>
               )}
             </FView>
-            <FView className="w-50 mt-10" pdfMode={pdfMode}>
+            <FView wrap={false} className="w-50 mt-10" pdfMode={pdfMode}>
               <FView className="flex" pdfMode={pdfMode}>
                 <FView className="w-70 p-5" pdfMode={pdfMode}>
                   <EditableInput

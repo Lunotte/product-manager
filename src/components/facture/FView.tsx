@@ -5,13 +5,14 @@ import compose from './styles/compose'
 interface Props {
   className?: string
   pdfMode?: boolean
+  wrap?: boolean
 }
 
-const FView: FC<PropsWithChildren<Props>> = ({ className, pdfMode, children }) => {
+const FView: FC<PropsWithChildren<Props>> = ({ className, pdfMode, children, wrap }) => {
   return (
     <>
       {pdfMode ? (
-        <PdfView style={compose('view ' + (className ? className : ''))}>{children}</PdfView>
+        <PdfView wrap={wrap} style={compose('view ' + (className ? className : ''))}>{children}</PdfView>
       ) : (
         <div className={'view ' + (className ? className : '')}>{children}</div>
       )}

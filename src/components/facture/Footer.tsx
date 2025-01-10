@@ -16,6 +16,9 @@ const Footer: FC<Props> = ({ pdfMode, conditionsReglement, term}) => {
           <View style={compose('footer')} fixed>
             <Text style={compose('w-100 pied-page')}>{conditionsReglement}</Text>
             <Text style={compose('footer-center')}>{term}</Text>
+            <Text style={compose('page-number')} render={({ pageNumber, totalPages }) => (
+              `${pageNumber} / ${totalPages}`
+            )} fixed />
           </View>
         ) : (
           <div className="footer">
