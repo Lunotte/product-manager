@@ -36,7 +36,6 @@ function BarNavigation() {
   const exportProduits = () => {
     window.electronAPI.getProduits().then((result) => {
       const csvData = convertToCSV(result);
-      console.log(csvData);
       downloadCSV(csvData, 'Produits.csv');
     }).catch((err) => {
         window.electronAPI.logError(err);
@@ -67,7 +66,8 @@ function BarNavigation() {
   };
   
   const downloadCSV = (csvData: any, filename = "data.csv") => {
-    const blob = new Blob([csvData], { type: "text/csv" });
+    const bom = "\uFEFF";
+    const blob = new Blob([bom + csvData], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
   
     const a = document.createElement("a");
