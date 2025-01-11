@@ -79,7 +79,7 @@ export const verifierEtExecuterMigration = () => {
 
 const dbMethods = {
   getCategories(): Categorie[] {
-    return db.prepare<unknown[] , Categorie>('SELECT * FROM categories').all();
+    return db.prepare<unknown[] , Categorie>('SELECT * FROM categories ORDER BY LOWER(nom) ASC').all();
   },
   addCategory(nom: string): void {
     const stmt = db.prepare('INSERT INTO categories (nom) VALUES (?)');
@@ -94,7 +94,7 @@ const dbMethods = {
     stmt.run(id);
   },
   getFournisseurs(): Fournisseur[] {
-    return db.prepare<unknown[] , Fournisseur>('SELECT * FROM fournisseurs').all();
+    return db.prepare<unknown[] , Fournisseur>('SELECT * FROM fournisseurs ORDER BY LOWER(nom) ASC').all();
   },
   addFournisseur(nom: string): void {
     const stmt = db.prepare('INSERT INTO fournisseurs (nom) VALUES (?)');
@@ -109,7 +109,7 @@ const dbMethods = {
     stmt.run(id);
   },
   getUnites(): Unite[] {
-    return db.prepare<unknown[] , Unite>('SELECT * FROM unites').all();
+    return db.prepare<unknown[] , Unite>('SELECT * FROM unites ORDER BY LOWER(nom) ASC').all();
   },
   addUnite(nom: string): void {
     const stmt = db.prepare('INSERT INTO unites (nom) VALUES (?)');
@@ -124,10 +124,10 @@ const dbMethods = {
     stmt.run(id);
   },
   getProduits(): Produit[] {
-    return db.prepare<unknown[] , Produit>("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id").all();
+    return db.prepare<unknown[] , Produit>("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id ORDER BY nom ASC").all();
   },
   rechercherProduit(query: string): Produit[] {
-    return db.prepare<unknown[] , Produit>("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id WHERE produits.nom LIKE ?1 OR categories.nom LIKE ?1 OR fournisseurs.nom LIKE ?1").all( { 1: '%' + query + '%' });
+    return db.prepare<unknown[] , Produit>("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id WHERE produits.nom LIKE ?1 OR categories.nom LIKE ?1 OR fournisseurs.nom LIKE ?1 ORDER BY nom ASC").all( { 1: '%' + query + '%' });
   }, 
   addProduit(nom: string, prixAchat: number, taux: number, prixVente: number, categorie_id: number, fournisseur_id: number, unite_id: number): void {
     const stmt = db.prepare('INSERT INTO produits (nom, prix_achat, taux, prix_vente, categorie_id, fournisseur_id, unite_id) VALUES (?, ?, ?, ?, ?, ?, ?)');
@@ -143,7 +143,7 @@ const dbMethods = {
   },
 
   getContacts(): Contact[] {
-    return db.prepare<unknown[] , Contact>('SELECT * FROM contacts ORDER BY nom ASC, prenom ASC').all();
+    return db.prepare<unknown[] , Contact>('SELECT * FROM contacts ORDER BY LOWER(nom) ASC, LOWER(prenom) ASC').all();
   },
   rechercherContacts(query: string): Contact[] {
     return db.prepare<unknown[], Contact>("SELECT * FROM contacts WHERE contacts.nom LIKE ?1 OR contacts.prenom LIKE ?1 OR (contacts.nom || ' ' || contacts.prenom) LIKE ?1 OR (contacts.prenom || ' ' || contacts.nom) LIKE ?1 ORDER BY nom ASC, prenom ASC").all( { 1: '%' + query + '%' });

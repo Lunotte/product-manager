@@ -1,0 +1,1 @@
+export const cleanStartAndEndString = (data: string): string => data.trim();

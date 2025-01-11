@@ -5,6 +5,7 @@ import { IdNom } from '../../models/IdNom';
 import { Fournisseur } from '../../models/Fournisseur';
 import { Unite } from '../../models/Unite';
 import { Produit } from '../../models/Produit';
+import { cleanStartAndEndString } from '../divers/Utils';
 
 interface EditProduitDialogProps {
   open: boolean;
@@ -96,11 +97,13 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
     }
 
     let produit: Produit;
+    const nomCleaned = cleanStartAndEndString(nom);
+
     if(produitToEdit) {
-      produit = {...produitToEdit, nom, prixAchat: parseFloat(prixAchat), taux, prixVente: parseFloat(prixVente),
+      produit = {...produitToEdit, nom: nomCleaned, prixAchat: parseFloat(prixAchat), taux, prixVente: parseFloat(prixVente),
         categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)};
     } else {
-      produit = {id: null, nom, prixAchat: parseFloat(prixAchat), taux, prixVente: parseFloat(prixVente),
+      produit = {id: null, nom: nomCleaned, prixAchat: parseFloat(prixAchat), taux, prixVente: parseFloat(prixVente),
         categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)};
     }
     onAdd(produit);

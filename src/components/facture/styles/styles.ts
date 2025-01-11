@@ -212,6 +212,9 @@ const styles: CSSClasses = {
       left: 50,
       textAlign: 'center'
   },
+  'page-number': {
+    textAlign: 'right'
+  },
   'body-facture': {
     paddingBottom: 120
   }

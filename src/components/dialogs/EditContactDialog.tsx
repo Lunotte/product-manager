@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem, Input, FormHelperText } from '@mui/material';
 import { Contact } from '../../models/Contact';
 import validator from 'validator';
+import { cleanStartAndEndString } from '../divers/Utils';
 
 interface EditContactDialogProps {
   open: boolean;
@@ -73,11 +74,13 @@ const EditContactDialog: React.FC<EditContactDialogProps> = ({ open, onClose, on
  } 
 
     let contact: Contact;
-    const nomComplet = civilite.concat(' ').concat(nom.concat(' ').concat(prenom));
+    const nomCleaned = cleanStartAndEndString(nom);
+    const prenomCleaned = cleanStartAndEndString(prenom);
+    const nomComplet = civilite.concat(' ').concat(nomCleaned.concat(' ').concat(prenomCleaned));
     if(contactToEdit) {
-      contact = {...contactToEdit, civilite, nom, prenom, nom_complet: nomComplet, adresse, adresse_bis, cp: parseInt(cp), ville, telephone, email};
+      contact = {...contactToEdit, civilite, nom: nomCleaned, prenom: prenomCleaned, nom_complet: nomComplet, adresse, adresse_bis, cp: parseInt(cp), ville, telephone, email};
     } else {
-      contact = {id: null, civilite, nom, prenom, adresse, nom_complet: nomComplet, adresse_bis, cp: parseInt(cp), ville, telephone, email};
+      contact = {id: null, civilite, nom: nomCleaned, prenom, adresse, nom_complet: nomComplet, adresse_bis, cp: parseInt(cp), ville, telephone, email};
     }
     onAdd(contact);
     reset();
