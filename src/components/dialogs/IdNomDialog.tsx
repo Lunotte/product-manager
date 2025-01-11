@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 import { IdNom } from '../../models/IdNom';
+import { cleanStartAndEndString } from '../divers/Utils';
 
 interface IdNomDialogProps {
   open: boolean;
@@ -26,10 +27,11 @@ const IdNomDialog: React.FC<IdNomDialogProps> = ({ open, onClose, onAdd, objetTo
 
   const handleAdd = () => {
     let objet: IdNom;
+    const nomCleaned = cleanStartAndEndString(objetName);
     if(objetToEdit) {
-      objet = {...objetToEdit, nom: objetName}
+      objet = {...objetToEdit, nom: nomCleaned}
     } else {
-      objet = {id: null, nom: objetName};
+      objet = {id: null, nom: nomCleaned};
     }
     onAdd(objet);
     onClose();
