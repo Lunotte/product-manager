@@ -124,17 +124,17 @@ const dbMethods = {
     stmt.run(id);
   },
   getProduits(): Produit[] {
-    return db.prepare<unknown[] , Produit>("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id ORDER BY LOWER(produits.nom) ASC").all();
+    return db.prepare<unknown[] , Produit>("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.date_maj_prix as dateMajPrix, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id ORDER BY LOWER(produits.nom) ASC").all();
   },
   rechercherProduit(query: string): Produit[] {
-    return db.prepare<unknown[] , Produit>("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id WHERE produits.nom LIKE ?1 OR categories.nom LIKE ?1 OR fournisseurs.nom LIKE ?1 ORDER BY LOWER(produits.nom) ASC").all( { 1: '%' + query + '%' });
+    return db.prepare<unknown[] , Produit>("SELECT produits.id, produits.nom AS nom, produits.prix_achat as prixAchat, produits.date_maj_prix as dateMajPrix, produits.taux, produits.prix_vente as prixVente, produits.categorie_id AS categorieId, categories.nom AS categorieNom, produits.fournisseur_id AS fournisseurId, fournisseurs.nom AS fournisseurNom, produits.unite_id AS uniteId, unites.nom AS uniteNom FROM produits LEFT JOIN categories ON produits.categorie_id = categories.id LEFT JOIN fournisseurs ON produits.fournisseur_id = fournisseurs.id LEFT JOIN unites ON produits.unite_id = unites.id WHERE produits.nom LIKE ?1 OR categories.nom LIKE ?1 OR fournisseurs.nom LIKE ?1 ORDER BY LOWER(produits.nom) ASC").all( { 1: '%' + query + '%' });
   }, 
   addProduit(nom: string, prixAchat: number, taux: number, prixVente: number, categorie_id: number, fournisseur_id: number, unite_id: number): void {
-    const stmt = db.prepare('INSERT INTO produits (nom, prix_achat, taux, prix_vente, categorie_id, fournisseur_id, unite_id) VALUES (?, ?, ?, ?, ?, ?, ?)');
+    const stmt = db.prepare('INSERT INTO produits (nom, prix_achat, date_maj_prix, taux, prix_vente, categorie_id, fournisseur_id, unite_id) VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?)');
     stmt.run(nom, prixAchat, taux, prixVente, categorie_id, fournisseur_id, unite_id);
   },
   updateProduit(id: number, nom: string, prixAchat: number, taux: number, prixVente: number, categorieId: number, fournisseurId: number, uniteId: number): void {
-    const stmt = db.prepare('UPDATE produits SET nom=?, prix_achat=?, taux=?, prix_vente=?, categorie_id=?, fournisseur_id=?, unite_id=? WHERE id=?');
+    const stmt = db.prepare('UPDATE produits SET nom=?, prix_achat=?, date_maj_prix=CURRENT_TIMESTAMP, taux=?, prix_vente=?, categorie_id=?, fournisseur_id=?, unite_id=? WHERE id=?');
     stmt.run(nom, prixAchat, taux, prixVente, categorieId, fournisseurId, uniteId, id);
   },
   deleteProduit(id: number): void {

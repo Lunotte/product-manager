@@ -1,3 +1,4 @@
+import { genererDate } from '../../../tool'
 import { ProductLine, Invoice } from './types'
 
 export const initialProductLine: ProductLine = {
@@ -6,11 +7,6 @@ export const initialProductLine: ProductLine = {
   quantity: '1',
   unite: '',
   rate: '0.00',
-}
-
-const genererDate = () => {
-  const date = new Date();
-  return new Intl.DateTimeFormat('fr-FR', {dateStyle: 'long'}).format(date);
 }
 
 export const initialInvoice: Invoice = {

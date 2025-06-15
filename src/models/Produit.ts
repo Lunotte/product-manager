@@ -2,6 +2,7 @@ import { IdNom } from "./IdNom";
 
 export interface Produit extends IdNom {
     readonly prixAchat: number;
+    readonly dateMajPrix?: Date;
     readonly taux: number;
     readonly prixVente: number;
     readonly categorieId: number;

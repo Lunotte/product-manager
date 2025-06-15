@@ -14,6 +14,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ClearIcon from '@mui/icons-material/Clear';
 import { ProduitContext, ProduitFactureContext } from "./home";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { formatCustomDateFR } from "../tool";
 
 interface ProduitProps {}
 
@@ -215,7 +216,9 @@ const Produits: React.FC<ProduitProps> = () => {
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">{produit.nom}</TableCell>
-                                <TableCell align="right">{produit.prixAchat?.toFixed(2)}</TableCell>
+                                <Tooltip title={formatCustomDateFR(produit.dateMajPrix)} arrow> 
+                                    <TableCell align="right">{produit.prixAchat?.toFixed(2)}</TableCell>
+                                </Tooltip>
                                 <TableCell align="right">{produit.taux?.toString()}</TableCell>
                                 <TableCell align="right">{produit.prixVente?.toFixed(2)}</TableCell>
                                 <TableCell align="right">{produit.fournisseurNom}</TableCell>
