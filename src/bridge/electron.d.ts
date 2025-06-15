@@ -23,6 +23,7 @@ export interface ElectronAPI {
     updateUnite: (id: number, nom: string) => Promise<Unite[]>;
     deleteUnite: (id: number) => Promise<Unite[]>;
 
+    importProduits: (produits: Produit[]) => Promise<Produit[]>;
     getProduits: () => Promise<Produit[]>;
     rechercherProduits: (query: string) => Promise<Produit[]>;
     addProduit: (produit: Produit) => Promise<void>;

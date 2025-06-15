@@ -25,6 +25,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateUnite: (id: number, nom: string) => ipcRenderer.invoke('update-unite', id, nom),
   deleteUnite: (id: number) => ipcRenderer.invoke('delete-unite', id),
 
+
+
+  importProduits: (produits: Produit[]) => ipcRenderer.invoke('import-produits', produits),
+
   getProduits: () => ipcRenderer.invoke('get-produits'),
   rechercherProduits: (query: string) => ipcRenderer.invoke('rechercher-produit', query),
   addProduit: (produit: Produit) => ipcRenderer.invoke('add-produit', produit),

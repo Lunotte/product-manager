@@ -5,9 +5,9 @@ export interface Produit extends IdNom {
     readonly dateMajPrix?: Date;
     readonly taux: number;
     readonly prixVente: number;
-    readonly categorieId: number;
-    readonly fournisseurId: number;
-    readonly uniteId: number;
+    readonly categorieId?: number;
+    readonly fournisseurId?: number;
+    readonly uniteId?: number;
     readonly categorieNom?: string;
     readonly fournisseurNom?: string;
     readonly uniteNom?: string;

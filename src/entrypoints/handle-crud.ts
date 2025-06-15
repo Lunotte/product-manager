@@ -5,6 +5,7 @@ import { Fournisseur } from '../models/Fournisseur';
 import { Unite } from '../models/Unite';
 import db from '../db/database';
 import { Contact } from '../models/Contact';
+import log from 'electron-log';
 
 export const crudHandlers = () => {
     ipcMain.handle('get-categories', (): Categorie[] => {
@@ -63,6 +64,29 @@ export const crudHandlers = () => {
         db.deleteUnite(id);
         return db.getUnites();
     });
+
+
+    ipcMain.handle('import-produits', async (event, produits) => {
+        log.info('Importation de produits:', produits);
+  // Logique pour sauvegarder/mettre à jour les produits dans la base de données
+  // Exemple:
+  // try {
+  //   for (const produit of produits) {
+  //     if (produit.id) {
+  //       // Mettre à jour le produit existant
+  //     } else {
+  //       // Ajouter un nouveau produit
+  //     }
+  //   }
+  //   return { success: true };
+  // } catch (error) {
+  //   console.error('Erreur lors de l\'importation des produits:', error);
+  //   return { success: false, error: error.message };
+  // }
+});
+
+
+
 
     ipcMain.handle('get-produits', (): Produit[] => {
         return db.getProduits();
