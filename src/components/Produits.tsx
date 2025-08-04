@@ -216,9 +216,15 @@ const Produits: React.FC<ProduitProps> = () => {
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">{produit.nom}</TableCell>
-                                <Tooltip title={formatCustomDateFR(produit.dateMajPrix)} arrow> 
-                                    <TableCell align="right">{produit.prixAchat?.toFixed(2)}</TableCell>
-                                </Tooltip>
+                               
+                                <TableCell align="right">
+                                    <Tooltip title={formatCustomDateFR(produit.dateMajPrix)} arrow placement="left"> 
+                                        <span>
+                                            {produit.prixAchat?.toFixed(2)}
+                                       </span>
+                                    </Tooltip>
+                                </TableCell>
+                               
                                 <TableCell align="right">{produit.taux?.toString()}</TableCell>
                                 <TableCell align="right">{produit.prixVente?.toFixed(2)}</TableCell>
                                 <TableCell align="right">{produit.fournisseurNom}</TableCell>

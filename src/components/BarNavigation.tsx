@@ -240,16 +240,16 @@ function BarNavigation() {
               >
                 Facture
             </Button>
-            <Tooltip title="Faire une sauvegarde" arrow>
+            
               <Button
                   onClick={() => handleBackup()}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
-                  Backup
+                <Tooltip title="Faire une sauvegarde" arrow>
+                  <span>Backup</span>
+                </Tooltip>
               </Button>
-            </Tooltip>
 
-            <Tooltip title="Faire un export CSV" arrow>
               <Button
                 sx={{ my: 2, color: 'white', display: 'block' }}
                 aria-controls={openExportMenu ? 'export-menu' : undefined}
@@ -257,9 +257,11 @@ function BarNavigation() {
                  aria-expanded={openExportMenu ? 'true' : undefined}
                 onClick={handleClickExport}
               >
-                Exports
+                <Tooltip title="Faire un export CSV" arrow>
+                  <span>Exports</span>
+                </Tooltip>
               </Button>
-            </Tooltip>
+            
             <Menu
               id="export-menu"
               anchorEl={anchorElExport}
@@ -273,7 +275,7 @@ function BarNavigation() {
               <MenuItem onClick={handleExportContacts}>Contacts</MenuItem>
             </Menu>
 
-            <Tooltip title="Importer des données CSV" arrow>
+            
               <Button
                 sx={{ my: 2, color: 'white', display: 'block' }}
                 aria-controls={openImportMenu ? 'import-menu' : undefined}
@@ -281,9 +283,11 @@ function BarNavigation() {
                 aria-expanded={openImportMenu ? 'true' : undefined}
                 onClick={handleClickImport}
               >
-                Imports
+                <Tooltip title="Importer des données CSV" arrow>
+                <span>Imports</span>
+                </Tooltip>
               </Button>
-            </Tooltip>
+            
             <Menu
               id="import-menu"
               anchorEl={anchorElImport}

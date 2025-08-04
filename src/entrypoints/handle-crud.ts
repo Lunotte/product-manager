@@ -1,4 +1,4 @@
-import { ipcMain} from 'electron';
+import { ipcMain, IpcMainInvokeEvent} from 'electron';
 import { Produit } from '../models/Produit';
 import { Categorie } from '../models/Categorie';
 import { Fournisseur } from '../models/Fournisseur';
@@ -66,8 +66,12 @@ export const crudHandlers = () => {
     });
 
 
-    ipcMain.handle('import-produits', async (event, produits) => {
-        log.info('Importation de produits:', produits);
+    ipcMain.handle('import-produits', async (_, produits: Produit[]) => {
+        log.info('Importation de produits:');
+         console.log("Produits importés:");
+
+        // log.info('Importation de produits:', produits);
+        //  console.log("Produits importés:", produits);
   // Logique pour sauvegarder/mettre à jour les produits dans la base de données
   // Exemple:
   // try {
