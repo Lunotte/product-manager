@@ -7,13 +7,14 @@ import { IdNom } from "../models/IdNom";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useFournisseurs } from "./dataset/fournisseur.service";
 
 interface FournisseurProps {} 
 
 const Fournisseurs: React.FC<FournisseurProps> = () => {
 
     const [fournisseur, setFournisseur] = useState<Fournisseur>();
-    const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
+    const { fournisseurs, setFournisseurs } = useFournisseurs();
     const [openFournisseurDialog, setOpenFournisseurDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);

@@ -2,7 +2,6 @@ import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import EditProduitDialog from './dialogs/EditProduitDialog';
 import Categories from './Categories';
 import Fournisseurs from './Fournisseurs';
 import Unites from './Unites';

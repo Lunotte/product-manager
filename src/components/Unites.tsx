@@ -7,13 +7,14 @@ import { IdNom } from "../models/IdNom";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useUnites } from "./dataset/unite.service";
 
 interface UniteProps {} 
 
 const Unites: React.FC<UniteProps> = () => {
 
     const [unite, setUnite] = useState<Unite>();
-    const [unites, setUnites] = useState<Unite[]>([]);
+    const {unites, setUnites} = useUnites();
     const [openUniteDialog, setOpenUniteDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);

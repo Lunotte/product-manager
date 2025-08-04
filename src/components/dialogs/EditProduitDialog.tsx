@@ -6,6 +6,9 @@ import { Fournisseur } from '../../models/Fournisseur';
 import { Unite } from '../../models/Unite';
 import { Produit } from '../../models/Produit';
 import { cleanStartAndEndString } from '../divers/Utils';
+import { useFournisseurs } from '../dataset/fournisseur.service';
+import { useCategories } from '../dataset/categorie.service';
+import { useUnites } from '../dataset/unite.service';
 
 interface EditProduitDialogProps {
   open: boolean;
@@ -23,32 +26,12 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
   const [fournisseur, setFournisseur] = useState('');
   const [unite, setUnite] = useState('');
 
-  const [categories, setCategories] = useState<Categorie[]>([]);
-  const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
-  const [unites, setUnites] = useState<Unite[]>([]);
+  const { categories } = useCategories();
+  const { fournisseurs } = useFournisseurs();
+  const {unites} = useUnites();
 
   const [edition, setEdition] = useState(true);
   const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    window.electronAPI.getCategories().then((result) => {
-      setCategories(result);
-    }).catch((err) => {
-      window.electronAPI.logError(err);
-    });
-
-    window.electronAPI.getFournisseurs().then((result) => {
-      setFournisseurs(result);
-    }).catch((err) => {
-      window.electronAPI.logError(err);
-    });
-
-    window.electronAPI.getUnites().then((result) => {
-      setUnites(result);
-    }).catch((err) => {
-      window.electronAPI.logError(err);
-    });
-  }, []);
 
   useEffect(() => {
     if (produitToEdit) {

@@ -7,24 +7,18 @@ import { IdNom } from "../models/IdNom";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useCategories } from "./dataset/categorie.service";
 
 interface CategorieProps {} 
 
 const Categories: React.FC<CategorieProps> = () => {
 
     const [categorie, setCategorie] = useState<Categorie>();
-    const [categories, setCategories] = useState<Categorie[]>([]);
+    const { categories, setCategories } = useCategories();
     const [openCategorieDialog, setOpenCategorieDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
-    useEffect(() => {
-        window.electronAPI.getCategories().then((result) => {
-            setCategories(result);
-        }).catch((err) => {
-          window.electronAPI.logError(err);
-        });
-    }, []);
 
     const handleAddCategorie = (categorie: Categorie) => {
         if(categorie.id){
