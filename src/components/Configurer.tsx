@@ -6,6 +6,7 @@ import Categories from './Categories';
 import Fournisseurs from './Fournisseurs';
 import Unites from './Unites';
 import Contacts from './Contacts';
+import Snackbars from './hooks/utilitaires/Snackbars';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,9 +39,14 @@ function a11yProps(index: number) {
 
 export default function Configurer() {
   const [value, setValue] = React.useState(0);
+  const [snackbar, setSnackbar] = React.useState<{ open: boolean; message: string }>({ open: false, message: "" });
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
+  };
+
+  const handleAction = (event: { type: 'add' | 'update' | 'delete'; message: string }) : void => {
+    setSnackbar({ open: true, message: event.message });
   };
 
   return (
@@ -54,17 +60,22 @@ export default function Configurer() {
             </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
-            <Categories/>
+            <Categories onAction={handleAction}/>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-            <Fournisseurs/>
+            <Fournisseurs onAction={handleAction}/>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={2}>
-            <Unites/>
+            <Unites onAction={handleAction}/>
         </CustomTabPanel>
         <CustomTabPanel value={value} index={3}>
-            <Contacts/> 
+            <Contacts onAction={handleAction}/> 
         </CustomTabPanel>
+
+         <Snackbars
+                        open={snackbar.open}
+                        message={snackbar.message}
+                        onClose={() => setSnackbar({ ...snackbar, open: false })} />
     </Box>
   );
 }

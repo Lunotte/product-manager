@@ -9,9 +9,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useCategories } from "./dataset/categorie.service";
 
-interface CategorieProps {} 
+interface ActionProps {
+  onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
+}
 
-const Categories: React.FC<CategorieProps> = () => {
+const Categories: React.FC<ActionProps> = ({ onAction }) => {
 
     const [categorie, setCategorie] = useState<Categorie>();
     const { categories, setCategories } = useCategories();
@@ -24,12 +26,14 @@ const Categories: React.FC<CategorieProps> = () => {
         if(categorie.id){
             window.electronAPI.updateCategorie(categorie.id, categorie.nom).then((result) => {
                 setCategories(result);
+                onAction({ type: 'update', message: "Catégorie modifiée" });
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addCategorie(categorie.nom).then((result) => {
                 setCategories(result);
+                onAction({ type: 'add', message: "Catégorie ajoutée" });
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
@@ -58,6 +62,7 @@ const Categories: React.FC<CategorieProps> = () => {
     const handleConfirmDelete = () => {
         window.electronAPI.deleteCategorie(itemToDelete.id).then((result) => {
             setCategories(result);
+            onAction({ type: 'delete', message: "Catégorie supprimée" });
         }).catch((err) => {
             window.electronAPI.logError(err);
         });

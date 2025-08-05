@@ -15,6 +15,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { ProduitContext, ProduitFactureContext } from "./home";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { formatCustomDateFR } from "../tool";
+import Snackbars from "./hooks/utilitaires/Snackbars";
 
 interface ProduitProps {}
 
@@ -32,11 +33,17 @@ const Produits: React.FC<ProduitProps> = () => {
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
+    const [snackbar, setSnackbar] = useState<{ open: boolean; message: string }>({ open: false, message: "" });
+
     const navigate = useNavigate();
 
     useEffect(() => {
         chargerProduit();
     }, []);
+
+    const afficherSnackbar = (message: string) => {
+        setSnackbar({ open: true, message });
+    }   
 
     const chargerProduit = () => {
         window.electronAPI.getProduits().then((result) => {
@@ -50,12 +57,14 @@ const Produits: React.FC<ProduitProps> = () => {
         if(produit.id){
             window.electronAPI.updateProduit(produit).then(() => {
                 rechargerProduit();
+                afficherSnackbar("Produit mis à jour");
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addProduit(produit).then(() => {
                 rechargerProduit();
+                afficherSnackbar("Produit enregistré");
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
@@ -89,6 +98,7 @@ const Produits: React.FC<ProduitProps> = () => {
     const handleConfirmDelete = () => {
         window.electronAPI.deleteProduit(itemToDelete.id).then(() => {
             rechargerProduit();
+            afficherSnackbar("Produit supprimé");
         }).catch((err) => {
             window.electronAPI.logError(err);
         });
@@ -269,6 +279,11 @@ const Produits: React.FC<ProduitProps> = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <Snackbars
+                open={snackbar.open}
+                message={snackbar.message}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                />
         </div>
   );
 }

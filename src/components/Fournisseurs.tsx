@@ -9,12 +9,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFournisseurs } from "./dataset/fournisseur.service";
 
-interface FournisseurProps {} 
+interface ActionProps {
+  onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
+}
 
-const Fournisseurs: React.FC<FournisseurProps> = () => {
+const Fournisseurs: React.FC<ActionProps> = ({ onAction }) => {
 
     const [fournisseur, setFournisseur] = useState<Fournisseur>();
-    const { fournisseurs, setFournisseurs } = useFournisseurs();
+    const { fournisseurs, setFournisseurs, reloadFournisseurs } = useFournisseurs();
     const [openFournisseurDialog, setOpenFournisseurDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
@@ -30,13 +32,15 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
     const handleAddFournisseur = (fournisseur: Fournisseur) => {
         if(fournisseur.id){
             window.electronAPI.updateFournisseur(fournisseur.id, fournisseur.nom).then((result) => {
-                setFournisseurs(result);
+                onAction({ type: 'update', message: "Fournisseur modifié" });
+                reloadFournisseurs();
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addFournisseur(fournisseur.nom).then((result) => {
-                setFournisseurs(result);
+                onAction({ type: 'add', message: "Fournisseur ajouté" });
+                reloadFournisseurs();
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
@@ -65,6 +69,7 @@ const Fournisseurs: React.FC<FournisseurProps> = () => {
     const handleConfirmDelete = () => {
         window.electronAPI.deleteFournisseur(itemToDelete.id).then((result) => {
             setFournisseurs(result);
+            onAction({ type: 'delete', message: "Fournisseur supprimé" });
         }).catch((err) => {
             window.electronAPI.logError(err);
         });

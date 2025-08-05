@@ -9,9 +9,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useUnites } from "./dataset/unite.service";
 
-interface UniteProps {} 
+interface ActionProps {
+  onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
+}
 
-const Unites: React.FC<UniteProps> = () => {
+const Unites: React.FC<ActionProps> = ({ onAction }) => {
 
     const [unite, setUnite] = useState<Unite>();
     const {unites, setUnites} = useUnites();
@@ -31,12 +33,14 @@ const Unites: React.FC<UniteProps> = () => {
         if(unite.id){
             window.electronAPI.updateUnite(unite.id, unite.nom).then((result) => {
                 setUnites(result);
+                onAction({ type: 'update', message: "Unité modifiée" });
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addUnite(unite.nom).then((result) => {
                 setUnites(result);
+                onAction({ type: 'add', message: "Unité ajoutée" });
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
@@ -65,6 +69,7 @@ const Unites: React.FC<UniteProps> = () => {
     const handleConfirmDelete = () => {
         window.electronAPI.deleteUnite(itemToDelete.id).then((result) => {
             setUnites(result);
+            onAction({ type: 'delete', message: "Unité supprimée" });
         }).catch((err) => {
             window.electronAPI.logError(err);
         });

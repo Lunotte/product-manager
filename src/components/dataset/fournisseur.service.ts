@@ -1,16 +1,21 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Fournisseur } from "../..//models/Fournisseur";
 
 export function useFournisseurs() {
   const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const reloadFournisseurs = useCallback(() => {
+    setLoading(true);
     window.electronAPI.getFournisseurs()
       .then((result) => setFournisseurs(result))
       .catch((err) => window.electronAPI.logError(err))
       .finally(() => setLoading(false));
   }, []);
 
-  return { fournisseurs, setFournisseurs, loading };
+  useEffect(() => {
+    reloadFournisseurs();
+  }, [reloadFournisseurs]);
+
+  return { fournisseurs, setFournisseurs, loading, reloadFournisseurs };
 }

@@ -8,7 +8,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditContactDialog from "./dialogs/EditContactDialog";
 
-const Contacts = () => {
+interface ActionProps {
+  onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
+}
+
+const Contacts: React.FC<ActionProps> = ({ onAction }) => {
 
     const [contact, setContact] = useState<Contact>();
     const [rechercheContact, setRechercheContact] = useState<string>(""); 
@@ -52,12 +56,14 @@ const Contacts = () => {
     const handleAddContact = (contact: Contact) => {
         if(contact.id){
             window.electronAPI.updateContact(contact).then(() => {
+                onAction({ type: 'update', message: "Contact modifié" });
                 rechargerContacts();
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addContact(contact).then(() => {
+                onAction({ type: 'add', message: "Contact ajouté" });
                 rechargerContacts();
             }).catch((err) => {
                 window.electronAPI.logError(err);
@@ -87,6 +93,7 @@ const Contacts = () => {
     const handleConfirmDelete = () => {
         window.electronAPI.deleteContact(itemToDelete.id).then(() => {
             rechargerContacts();
+            onAction({ type: 'delete', message: "Contact supprimé" });
         }).catch((err) => {
             window.electronAPI.logError(err);
         });
