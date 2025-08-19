@@ -7,7 +7,7 @@ import { IdNom } from "../models/IdNom";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useUnites } from "./dataset/unite.service";
+import { useUnites } from "./services/unite.service";
 
 interface ActionProps {
   onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
@@ -21,26 +21,18 @@ const Unites: React.FC<ActionProps> = ({ onAction }) => {
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
-    useEffect(() => {
-        window.electronAPI.getUnites().then((result) => {
-            setUnites(result);
-        }).catch((err) => {
-            window.electronAPI.logError(err);
-        });
-    }, []);
-
     const handleAddUnite = (unite: Unite) => {
         if(unite.id){
             window.electronAPI.updateUnite(unite.id, unite.nom).then((result) => {
-                setUnites(result);
                 onAction({ type: 'update', message: "Unité modifiée" });
+                setUnites(result);
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addUnite(unite.nom).then((result) => {
-                setUnites(result);
                 onAction({ type: 'add', message: "Unité ajoutée" });
+                setUnites(result);
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });

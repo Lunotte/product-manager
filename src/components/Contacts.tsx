@@ -7,6 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditContactDialog from "./dialogs/EditContactDialog";
+import { useContacts } from "./services/contact.service";
 
 interface ActionProps {
   onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
@@ -17,23 +18,10 @@ const Contacts: React.FC<ActionProps> = ({ onAction }) => {
     const [contact, setContact] = useState<Contact>();
     const [rechercheContact, setRechercheContact] = useState<string>(""); 
     const [query, setQuery] = useState("");
-    const [contacts, setContacts] = useState<Contact[]>([]);
+    const {contacts, setContacts, reloadContacts} = useContacts();
     const [openContactDialog, setOpenContactDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
-
-    useEffect(() => {
-        chargerContacts();
-    }, []);
-
-
-    const chargerContacts = () => {
-        window.electronAPI.getContacts().then((result) => {
-            setContacts(result);
-        }).catch((err) => {
-          window.electronAPI.logError(err);
-        });
-    }
 
     const rechercherContacts = (query: string) => {
         setRechercheContact(query);
@@ -47,7 +35,7 @@ const Contacts: React.FC<ActionProps> = ({ onAction }) => {
 
     const rechargerContacts = () => {
         if(rechercheContact.length === 0) {
-            chargerContacts();
+            reloadContacts();
         } else {
             rechercherContacts(rechercheContact);
         }
@@ -181,3 +169,7 @@ const Contacts: React.FC<ActionProps> = ({ onAction }) => {
   }
 
   export default Contacts;
+
+function reloadContacts() {
+    throw new Error("Function not implemented.");
+}

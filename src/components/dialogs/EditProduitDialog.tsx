@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { Categorie } from '../../models/Categorie';
-import { IdNom } from '../../models/IdNom';
-import { Fournisseur } from '../../models/Fournisseur';
-import { Unite } from '../../models/Unite';
 import { Produit } from '../../models/Produit';
 import { cleanStartAndEndString } from '../divers/Utils';
-import { useFournisseurs } from '../dataset/fournisseur.service';
-import { useCategories } from '../dataset/categorie.service';
-import { useUnites } from '../dataset/unite.service';
+import { useFournisseurs } from '../services/fournisseur.service';
+import { useCategories } from '../services/categorie.service';
+import { useUnites } from '../services/unite.service';
 
 interface EditProduitDialogProps {
   open: boolean;

@@ -16,6 +16,7 @@ import { ProduitContext, ProduitFactureContext } from "./home";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { formatCustomDateFR } from "../tool";
 import Snackbars from "./hooks/utilitaires/Snackbars";
+import { useProduits } from "./services/produit.service";
 
 interface ProduitProps {}
 
@@ -28,7 +29,7 @@ const Produits: React.FC<ProduitProps> = () => {
     const [rechercheProduit, setRechercheProduit] = useState<string>(""); 
     const [query, setQuery] = useState("");
     const [produit, setProduit] = useState<Produit>();
-    const [produits, setProduits] = useState<Produit[]>([]);
+    const {produits, setProduits, reloadProduits} = useProduits();
     const [openProduitDialog, setOpenProduitDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
@@ -37,68 +38,82 @@ const Produits: React.FC<ProduitProps> = () => {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        chargerProduit();
-    }, []);
-
     const afficherSnackbar = (message: string) => {
         setSnackbar({ open: true, message });
     }   
 
-    const chargerProduit = () => {
-        window.electronAPI.getProduits().then((result) => {
-            setProduits(result);
-        }).catch((err) => {
-            window.electronAPI.logError(err);
-        });
-    }
+    useEffect(() => {
+        const timeOutId = setTimeout(() => rechercherProduits(query), 500);
+        return () => clearTimeout(timeOutId);
+    }, [query]);
 
     const handleAddProduit = (produit: Produit) => {
         if(produit.id){
             window.electronAPI.updateProduit(produit).then(() => {
-                rechargerProduit();
                 afficherSnackbar("Produit mis à jour");
+                rechargerProduits();
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addProduit(produit).then(() => {
-                rechargerProduit();
                 afficherSnackbar("Produit enregistré");
+                rechargerProduits();
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         }
     };
 
+    /**
+     * Duplique un produit en créant une nouvelle entrée avec les mêmes données
+     * @param produit Produit à dupliquer
+     */
     const duplicateProduit = (produit: Produit) => {
         const produitACreer: Produit = {...produit, id: null};
         handleAddProduit(produitACreer);
     }
 
+    /**
+     * Modifie un produit existant en ouvrant le dialog d'édition
+     * @param produit Produit à éditer
+     */
     const editProduit = (produit: Produit) => {
         setOpenProduitDialog(true);
         setProduit(produit);
     }
 
+    /**
+     * Ferme le dialog d'édition de produit
+     */
     const closeProduit = () => {
         setOpenProduitDialog(false)
         setProduit(null);
     }
 
+    /**
+     * Ouvre le dialog de confirmation de suppression
+     * @param item Item à supprimer
+     */
     const handleOpenDialog = (item: IdNom) => {
         setItemToDelete(item);
         setOpenConfirmationDelete(true);
     };
   
+    /**
+     * Ferme le dialog de confirmation de suppression
+     */
     const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
     };
   
+    /**
+     * Supprime un produit après confirmation de l'utilisateur puis recharge la liste des produits
+     */
     const handleConfirmDelete = () => {
         window.electronAPI.deleteProduit(itemToDelete.id).then(() => {
-            rechargerProduit();
             afficherSnackbar("Produit supprimé");
+            rechargerProduits();
         }).catch((err) => {
             window.electronAPI.logError(err);
         });
@@ -106,8 +121,11 @@ const Produits: React.FC<ProduitProps> = () => {
         setOpenConfirmationDelete(false);
     };
 
+    /**
+     * Recherche des produits en fonction de la requête
+     * @param query Requête de recherche
+     */
     const rechercherProduits = (query: string) => {
-
         setRechercheProduit(query);
 
         window.electronAPI.rechercherProduits(query).then((result) => {
@@ -117,18 +135,28 @@ const Produits: React.FC<ProduitProps> = () => {
         });
     };
 
-    const rechargerProduit = () => {
+    /**
+     * Recharger la liste des produits ou effectuer une recherche si une chaîne est spécifiée
+     */
+    const rechargerProduits = () => {
         if(rechercheProduit.length === 0) {
-            chargerProduit();
+            reloadProduits();
         } else {
             rechercherProduits(rechercheProduit);
         }
     }
 
+    /**
+     * Change le mode d'édition des produits
+     */
     const changeModeEdition = () => {
         setModeEdition(!modeEdition);
     }
 
+    /**
+     * Ajoute un produit au panier ou le retire s'il est déjà présent
+     * @param produit Produit à ajouter ou retirer du panier
+     */
     const ajouterPanier = (produit: Produit) => {
         const indexProduit = produitsGlobal.findIndex((produitPanier: Produit) => produitPanier.id === produit.id);
 
@@ -142,24 +170,31 @@ const Produits: React.FC<ProduitProps> = () => {
         }
     }
 
+    /**
+     * Vide le panier en supprimant tous les produits du panier
+     * et les produits de la facture
+     */
     const viderPanier = () => {
         setProduitsGlobal([]);
         setProduitsFactureGlobal([]);
     }
 
+    /**
+     * Navigue vers la page de la facture
+     */
     const goPageFacture = () => {
         navigate('/panier');
     }
 
-    const produitSelected = (id: number) => {
+    /**
+     * Vérifie si un produit est déjà sélectionné dans le panier
+     * @param id Identifiant du produit à vérifier
+     * @returns 
+     */
+    const produitSelected = (id: number): boolean => {
         return produitsGlobal.find((produit: Produit) => produit.id === id) !== undefined;
     }
     
-    useEffect(() => {
-        const timeOutId = setTimeout(() => rechercherProduits(query), 500);
-        return () => clearTimeout(timeOutId);
-    }, [query]);
-
     return (
         <div>
             <div className="flex">

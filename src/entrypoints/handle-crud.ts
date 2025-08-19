@@ -1,4 +1,4 @@
-import { ipcMain, IpcMainInvokeEvent} from 'electron';
+import { ipcMain} from 'electron';
 import { Produit } from '../models/Produit';
 import { Categorie } from '../models/Categorie';
 import { Fournisseur } from '../models/Fournisseur';
@@ -8,6 +8,7 @@ import { Contact } from '../models/Contact';
 import log from 'electron-log';
 
 export const crudHandlers = () => {
+    
     ipcMain.handle('get-categories', (): Categorie[] => {
         return db.getCategories();
     });

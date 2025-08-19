@@ -7,7 +7,7 @@ import { IdNom } from "../models/IdNom";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useFournisseurs } from "./dataset/fournisseur.service";
+import { useFournisseurs } from "./services/fournisseur.service";
 
 interface ActionProps {
   onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
@@ -21,26 +21,18 @@ const Fournisseurs: React.FC<ActionProps> = ({ onAction }) => {
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
-    useEffect(() => {
-        window.electronAPI.getFournisseurs().then((result) => {
-            setFournisseurs(result);
-        }).catch((err) => {
-          window.electronAPI.logError(err);
-        });
-    }, []);
-
     const handleAddFournisseur = (fournisseur: Fournisseur) => {
         if(fournisseur.id){
             window.electronAPI.updateFournisseur(fournisseur.id, fournisseur.nom).then((result) => {
                 onAction({ type: 'update', message: "Fournisseur modifié" });
-                reloadFournisseurs();
+                setFournisseurs(result);
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addFournisseur(fournisseur.nom).then((result) => {
                 onAction({ type: 'add', message: "Fournisseur ajouté" });
-                reloadFournisseurs();
+                setFournisseurs(result);
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });

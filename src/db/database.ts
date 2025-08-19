@@ -78,6 +78,7 @@ export const verifierEtExecuterMigration = () => {
 
 
 const dbMethods = {
+
   getCategories(): Categorie[] {
     return db.prepare<unknown[] , Categorie>('SELECT * FROM categories ORDER BY LOWER(nom) ASC').all();
   },
@@ -141,7 +142,6 @@ const dbMethods = {
     const stmt = db.prepare('DELETE FROM produits WHERE id=?');
     stmt.run(id);
   },
-
   getContacts(): Contact[] {
     return db.prepare<unknown[] , Contact>('SELECT * FROM contacts ORDER BY LOWER(nom) ASC, LOWER(prenom) ASC').all();
   },

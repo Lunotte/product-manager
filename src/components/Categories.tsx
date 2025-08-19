@@ -1,13 +1,13 @@
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material";
 import { Categorie } from "../models/Categorie";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import IdNomDialog from "./dialogs/IdNomDialog";
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import { IdNom } from "../models/IdNom";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useCategories } from "./dataset/categorie.service";
+import { useCategories } from "./services/categorie.service";
 
 interface ActionProps {
   onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
@@ -20,7 +20,6 @@ const Categories: React.FC<ActionProps> = ({ onAction }) => {
     const [openCategorieDialog, setOpenCategorieDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
-
 
     const handleAddCategorie = (categorie: Categorie) => {
         if(categorie.id){
