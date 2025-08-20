@@ -8,34 +8,28 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useUnites } from "./services/unite.service";
+import { useAdd, useUpdate } from "./services/utile.service";
 
 interface ActionProps {
-  onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
+    onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
 }
 
 const Unites: React.FC<ActionProps> = ({ onAction }) => {
 
     const [unite, setUnite] = useState<Unite>();
-    const {unites, setUnites} = useUnites();
+    const { unites, setUnites } = useUnites();
     const [openUniteDialog, setOpenUniteDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
+    const addUnite = useAdd(window.electronAPI.addUnite, setUnites, onAction, "Unité ajoutée");
+    const updateUnite = useUpdate(window.electronAPI.updateUnite, setUnites, onAction, "Unité modifiée");
+
     const handleAddUnite = (unite: Unite) => {
-        if(unite.id){
-            window.electronAPI.updateUnite(unite.id, unite.nom).then((result) => {
-                onAction({ type: 'update', message: "Unité modifiée" });
-                setUnites(result);
-            }).catch((err) => {
-                window.electronAPI.logError(err);
-            });
+        if (unite.id) {
+            updateUnite(unite.id, unite.nom);
         } else {
-            window.electronAPI.addUnite(unite.nom).then((result) => {
-                onAction({ type: 'add', message: "Unité ajoutée" });
-                setUnites(result);
-            }).catch((err) => {
-                window.electronAPI.logError(err);
-            });
+            addUnite(unite.nom);
         }
     };
 
@@ -52,12 +46,12 @@ const Unites: React.FC<ActionProps> = ({ onAction }) => {
     const handleOpenDialog = (item: IdNom) => {
         setItemToDelete(item);
         setOpenConfirmationDelete(true);
-      };
-    
+    };
+
     const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
     };
-    
+
     const handleConfirmDelete = () => {
         window.electronAPI.deleteUnite(itemToDelete.id).then((result) => {
             setUnites(result);
@@ -68,10 +62,10 @@ const Unites: React.FC<ActionProps> = ({ onAction }) => {
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
     };
-      
+
     return (
         <div>
-             <div className={'right mr-20'}>
+            <div className={'right mr-20'}>
                 <Tooltip title="Ajouter une unité" arrow>
                     <IconButton aria-label="add" size="large" onClick={() => setOpenUniteDialog(true)}>
                         <AddIcon fontSize="inherit" />
@@ -92,40 +86,40 @@ const Unites: React.FC<ActionProps> = ({ onAction }) => {
             />
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell style={{ fontWeight: 600}}>Nom</TableCell>
-                        <TableCell align="right"></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {unites.map((unite) => (
-                    <TableRow
-                        key={unite.nom}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                        <TableCell component="th" scope="row">
-                        {unite.nom}
-                        </TableCell>
-                        <TableCell align="right">
-                            <Tooltip title="Modifier une unité" arrow>
-                                <IconButton aria-label="update" size="large" onClick={() => editUnite(unite)}>
-                                    <EditIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Supprimer une unité" arrow>
-                                <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(unite)}>
-                                    <DeleteIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                        </TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell style={{ fontWeight: 600 }}>Nom</TableCell>
+                            <TableCell align="right"></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {unites.map((unite) => (
+                            <TableRow
+                                key={unite.nom}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell component="th" scope="row">
+                                    {unite.nom}
+                                </TableCell>
+                                <TableCell align="right">
+                                    <Tooltip title="Modifier une unité" arrow>
+                                        <IconButton aria-label="update" size="large" onClick={() => editUnite(unite)}>
+                                            <EditIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Supprimer une unité" arrow>
+                                        <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(unite)}>
+                                            <DeleteIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </TableContainer>
         </div>
     );
-  }
+}
 
-  export default Unites;
+export default Unites;

@@ -169,7 +169,3 @@ const Contacts: React.FC<ActionProps> = ({ onAction }) => {
   }
 
   export default Contacts;
-
-function reloadContacts() {
-    throw new Error("Function not implemented.");
-}

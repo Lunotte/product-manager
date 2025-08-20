@@ -8,9 +8,10 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFournisseurs } from "./services/fournisseur.service";
+import { useAdd, useUpdate } from "./services/utile.service";
 
 interface ActionProps {
-  onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
+    onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
 }
 
 const Fournisseurs: React.FC<ActionProps> = ({ onAction }) => {
@@ -21,23 +22,35 @@ const Fournisseurs: React.FC<ActionProps> = ({ onAction }) => {
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
+    const addFournisseur = useAdd(window.electronAPI.addFournisseur, setFournisseurs, onAction, "Fournisseur ajouté");
+    const updateFournisseur = useUpdate(window.electronAPI.updateFournisseur, setFournisseurs, onAction, "Fournisseur modifié");
+
     const handleAddFournisseur = (fournisseur: Fournisseur) => {
-        if(fournisseur.id){
-            window.electronAPI.updateFournisseur(fournisseur.id, fournisseur.nom).then((result) => {
-                onAction({ type: 'update', message: "Fournisseur modifié" });
-                setFournisseurs(result);
-            }).catch((err) => {
-                window.electronAPI.logError(err);
-            });
+        if (fournisseur.id) {
+            updateFournisseur(fournisseur.id, fournisseur.nom);
         } else {
-            window.electronAPI.addFournisseur(fournisseur.nom).then((result) => {
-                onAction({ type: 'add', message: "Fournisseur ajouté" });
-                setFournisseurs(result);
-            }).catch((err) => {
-                window.electronAPI.logError(err);
-            });
+            addFournisseur(fournisseur.nom);
         }
     };
+
+
+    // const handleAddFournisseur = (fournisseur: Fournisseur) => {
+    //     if(fournisseur.id){
+    //         window.electronAPI.updateFournisseur(fournisseur.id, fournisseur.nom).then((result) => {
+    //             onAction({ type: 'update', message: "Fournisseur modifié" });
+    //             setFournisseurs(result);
+    //         }).catch((err) => {
+    //             window.electronAPI.logError(err);
+    //         });
+    //     } else {
+    //         window.electronAPI.addFournisseur(fournisseur.nom).then((result) => {
+    //             onAction({ type: 'add', message: "Fournisseur ajouté" });
+    //             setFournisseurs(result);
+    //         }).catch((err) => {
+    //             window.electronAPI.logError(err);
+    //         });
+    //     }
+    // };
 
     const editFournisseur = (cat: Fournisseur) => {
         setOpenFournisseurDialog(true);
@@ -53,11 +66,11 @@ const Fournisseurs: React.FC<ActionProps> = ({ onAction }) => {
         setItemToDelete(item);
         setOpenConfirmationDelete(true);
     };
-    
+
     const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
     };
-    
+
     const handleConfirmDelete = () => {
         window.electronAPI.deleteFournisseur(itemToDelete.id).then((result) => {
             setFournisseurs(result);
@@ -68,10 +81,10 @@ const Fournisseurs: React.FC<ActionProps> = ({ onAction }) => {
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
     };
-      
+
     return (
         <div>
-             <div className={'right mr-20'}>
+            <div className={'right mr-20'}>
                 <Tooltip title="Ajouter un fournisseur" arrow>
                     <IconButton aria-label="add" size="large" onClick={() => setOpenFournisseurDialog(true)}>
                         <AddIcon fontSize="inherit" />
@@ -92,40 +105,40 @@ const Fournisseurs: React.FC<ActionProps> = ({ onAction }) => {
             />
             {fournisseurs && <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell style={{ fontWeight: 600}}>Nom</TableCell>
-                        <TableCell align="right"></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {fournisseurs.map((fournisseur) => (
-                    <TableRow
-                        key={fournisseur.id}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                        <TableCell component="th" scope="row">
-                        {fournisseur.nom}
-                        </TableCell>
-                        <TableCell align="right">
-                            <Tooltip title="Modifier un fournisseur" arrow>
-                                <IconButton aria-label="update" size="large" onClick={() => editFournisseur(fournisseur)}>
-                                    <EditIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Supprimer un fournisseur" arrow>
-                                <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(fournisseur)}>
-                                    <DeleteIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                        </TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell style={{ fontWeight: 600 }}>Nom</TableCell>
+                            <TableCell align="right"></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {fournisseurs.map((fournisseur) => (
+                            <TableRow
+                                key={fournisseur.id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell component="th" scope="row">
+                                    {fournisseur.nom}
+                                </TableCell>
+                                <TableCell align="right">
+                                    <Tooltip title="Modifier un fournisseur" arrow>
+                                        <IconButton aria-label="update" size="large" onClick={() => editFournisseur(fournisseur)}>
+                                            <EditIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Supprimer un fournisseur" arrow>
+                                        <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(fournisseur)}>
+                                            <DeleteIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </TableContainer>}
         </div>
     );
-  }
+}
 
-  export default Fournisseurs;
+export default Fournisseurs;

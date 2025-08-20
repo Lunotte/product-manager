@@ -8,9 +8,10 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useCategories } from "./services/categorie.service";
+import { useAdd, useUpdate } from "./services/utile.service";
 
 interface ActionProps {
-  onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
+    onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
 }
 
 const Categories: React.FC<ActionProps> = ({ onAction }) => {
@@ -21,23 +22,34 @@ const Categories: React.FC<ActionProps> = ({ onAction }) => {
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
+    const addCategorie = useAdd(window.electronAPI.addCategorie, setCategories, onAction, "Categorie ajoutée");
+    const updateCategorie = useUpdate(window.electronAPI.updateCategorie, setCategories, onAction, "Categorie modifiée");
+
     const handleAddCategorie = (categorie: Categorie) => {
-        if(categorie.id){
-            window.electronAPI.updateCategorie(categorie.id, categorie.nom).then((result) => {
-                setCategories(result);
-                onAction({ type: 'update', message: "Catégorie modifiée" });
-            }).catch((err) => {
-                window.electronAPI.logError(err);
-            });
+        if (categorie.id) {
+            updateCategorie(categorie.id, categorie.nom);
         } else {
-            window.electronAPI.addCategorie(categorie.nom).then((result) => {
-                setCategories(result);
-                onAction({ type: 'add', message: "Catégorie ajoutée" });
-            }).catch((err) => {
-                window.electronAPI.logError(err);
-            });
+            addCategorie(categorie.nom);
         }
     };
+
+    // const handleAddCategorie = (categorie: Categorie) => {
+    //     if(categorie.id){
+    //         window.electronAPI.updateCategorie(categorie.id, categorie.nom).then((result) => {
+    //             setCategories(result);
+    //             onAction({ type: 'update', message: "Catégorie modifiée" });
+    //         }).catch((err) => {
+    //             window.electronAPI.logError(err);
+    //         });
+    //     } else {
+    //         window.electronAPI.addCategorie(categorie.nom).then((result) => {
+    //             setCategories(result);
+    //             onAction({ type: 'add', message: "Catégorie ajoutée" });
+    //         }).catch((err) => {
+    //             window.electronAPI.logError(err);
+    //         });
+    //     }
+    // };
 
     const editCategorie = (cat: Categorie) => {
         setOpenCategorieDialog(true);
@@ -52,12 +64,12 @@ const Categories: React.FC<ActionProps> = ({ onAction }) => {
     const handleOpenDialog = (item: IdNom) => {
         setItemToDelete(item);
         setOpenConfirmationDelete(true);
-      };
-    
+    };
+
     const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
     };
-    
+
     const handleConfirmDelete = () => {
         window.electronAPI.deleteCategorie(itemToDelete.id).then((result) => {
             setCategories(result);
@@ -68,7 +80,7 @@ const Categories: React.FC<ActionProps> = ({ onAction }) => {
         setItemToDelete(null);
         setOpenConfirmationDelete(false);
     };
-      
+
     return (
         <div>
             <div className={'right mr-20'}>
@@ -77,7 +89,7 @@ const Categories: React.FC<ActionProps> = ({ onAction }) => {
                         <AddIcon fontSize="inherit" />
                     </IconButton>
                 </Tooltip>
-                
+
             </div>
             <IdNomDialog
                 open={openCategorieDialog}
@@ -93,40 +105,40 @@ const Categories: React.FC<ActionProps> = ({ onAction }) => {
             />
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell style={{ fontWeight: 600}}>Nom</TableCell>
-                        <TableCell align="right"></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {categories.map((categorie) => (
-                    <TableRow
-                        key={categorie.id}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                        <TableCell component="th" scope="row">
-                        {categorie.nom}
-                        </TableCell>
-                        <TableCell align="right">
-                            <Tooltip title="Modifier une catégorie" arrow>
-                                <IconButton aria-label="update" size="large" onClick={() => editCategorie(categorie)}>
-                                    <EditIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Supprimer une catégorie" arrow>
-                                <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(categorie)}>
-                                    <DeleteIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                        </TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell style={{ fontWeight: 600 }}>Nom</TableCell>
+                            <TableCell align="right"></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {categories.map((categorie) => (
+                            <TableRow
+                                key={categorie.id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell component="th" scope="row">
+                                    {categorie.nom}
+                                </TableCell>
+                                <TableCell align="right">
+                                    <Tooltip title="Modifier une catégorie" arrow>
+                                        <IconButton aria-label="update" size="large" onClick={() => editCategorie(categorie)}>
+                                            <EditIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Supprimer une catégorie" arrow>
+                                        <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(categorie)}>
+                                            <DeleteIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </TableContainer>
         </div>
     );
-  }
+}
 
-  export default Categories;
+export default Categories;
