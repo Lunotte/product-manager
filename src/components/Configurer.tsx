@@ -45,37 +45,37 @@ export default function Configurer() {
     setValue(newValue);
   };
 
-  const handleAction = (event: { type: 'add' | 'update' | 'delete'; message: string }) : void => {
+  const handleAction = (event: { type: 'add' | 'update' | 'delete'; message: string }): void => {
     setSnackbar({ open: true, message: event.message });
   };
 
   return (
-        <Box sx={{ width: '100%' }}>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={value} onChange={handleChange} aria-label="Onglets de configuration">
-                <Tab label="Catégories" {...a11yProps(0)} />
-                <Tab label="Fournisseurs" {...a11yProps(1)} />
-                <Tab label="Unités" {...a11yProps(2)} />
-                <Tab label="Contacts" {...a11yProps(3)} />
-            </Tabs>
-        </Box>
-        <CustomTabPanel value={value} index={0}>
-            <Categories onAction={handleAction}/>
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={1}>
-            <Fournisseurs onAction={handleAction}/>
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
-            <Unites onAction={handleAction}/>
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={3}>
-            <Contacts onAction={handleAction}/> 
-        </CustomTabPanel>
+    <Box sx={{ width: '100%' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+        <Tabs value={value} onChange={handleChange} aria-label="Onglets de configuration">
+          <Tab label="Catégories" {...a11yProps(0)} />
+          <Tab label="Fournisseurs" {...a11yProps(1)} />
+          <Tab label="Unités" {...a11yProps(2)} />
+          <Tab label="Contacts" {...a11yProps(3)} />
+        </Tabs>
+      </Box>
+      <CustomTabPanel value={value} index={0}>
+        <Categories onEvent={handleAction} />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={1}>
+        <Fournisseurs onEvent={handleAction} />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={2}>
+        <Unites onEvent={handleAction} />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={3}>
+        <Contacts onEvent={handleAction} />
+      </CustomTabPanel>
 
-         <Snackbars
-                        open={snackbar.open}
-                        message={snackbar.message}
-                        onClose={() => setSnackbar({ ...snackbar, open: false })} />
+      <Snackbars
+        open={snackbar.open}
+        message={snackbar.message}
+        onClose={() => setSnackbar({ ...snackbar, open: false })} />
     </Box>
   );
 }

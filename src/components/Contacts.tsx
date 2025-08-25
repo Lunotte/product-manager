@@ -8,17 +8,14 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditContactDialog from "./dialogs/EditContactDialog";
 import { useContacts } from "./services/contact.service";
+import { CrudEventProps } from "./services/utile.service";
 
-interface ActionProps {
-  onAction: (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
-}
-
-const Contacts: React.FC<ActionProps> = ({ onAction }) => {
+const Contacts: React.FC<CrudEventProps> = ({ onEvent }) => {
 
     const [contact, setContact] = useState<Contact>();
-    const [rechercheContact, setRechercheContact] = useState<string>(""); 
+    const [rechercheContact, setRechercheContact] = useState<string>("");
     const [query, setQuery] = useState("");
-    const {contacts, setContacts, reloadContacts} = useContacts();
+    const { contacts, setContacts, reloadContacts } = useContacts();
     const [openContactDialog, setOpenContactDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
@@ -34,7 +31,7 @@ const Contacts: React.FC<ActionProps> = ({ onAction }) => {
     };
 
     const rechargerContacts = () => {
-        if(rechercheContact.length === 0) {
+        if (rechercheContact.length === 0) {
             reloadContacts();
         } else {
             rechercherContacts(rechercheContact);
@@ -42,16 +39,16 @@ const Contacts: React.FC<ActionProps> = ({ onAction }) => {
     }
 
     const handleAddContact = (contact: Contact) => {
-        if(contact.id){
+        if (contact.id) {
             window.electronAPI.updateContact(contact).then(() => {
-                onAction({ type: 'update', message: "Contact modifié" });
+                onEvent({ type: 'update', message: "Contact modifié" });
                 rechargerContacts();
             }).catch((err) => {
                 window.electronAPI.logError(err);
             });
         } else {
             window.electronAPI.addContact(contact).then(() => {
-                onAction({ type: 'add', message: "Contact ajouté" });
+                onEvent({ type: 'add', message: "Contact ajouté" });
                 rechargerContacts();
             }).catch((err) => {
                 window.electronAPI.logError(err);
@@ -73,15 +70,15 @@ const Contacts: React.FC<ActionProps> = ({ onAction }) => {
         setItemToDelete(item);
         setOpenConfirmationDelete(true);
     };
-    
+
     const handleCloseDialog = () => {
         setOpenConfirmationDelete(false);
     };
-    
+
     const handleConfirmDelete = () => {
         window.electronAPI.deleteContact(itemToDelete.id).then(() => {
             rechargerContacts();
-            onAction({ type: 'delete', message: "Contact supprimé" });
+            onEvent({ type: 'delete', message: "Contact supprimé" });
         }).catch((err) => {
             window.electronAPI.logError(err);
         });
@@ -93,18 +90,18 @@ const Contacts: React.FC<ActionProps> = ({ onAction }) => {
         const timeOutId = setTimeout(() => rechercherContacts(query), 500);
         return () => clearTimeout(timeOutId);
     }, [query]);
-      
+
     return (
         <div>
-             <div className={'right mr-20'}>
+            <div className={'right mr-20'}>
                 <Tooltip title="Ajouter une unité" arrow>
                     <IconButton aria-label="add" size="large" onClick={() => setOpenContactDialog(true)}>
                         <AddIcon fontSize="inherit" />
                     </IconButton>
                 </Tooltip>
             </div>
-            <TextField 
-                style={{backgroundColor:"white"}}
+            <TextField
+                style={{ backgroundColor: "white" }}
                 margin="dense"
                 label="Rechercher par nom / prénom"
                 type="text"
@@ -124,48 +121,48 @@ const Contacts: React.FC<ActionProps> = ({ onAction }) => {
             />
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell style={{ fontWeight: 600, width:"10%"}}>Civilité</TableCell>
-                        <TableCell style={{ fontWeight: 600, width:"20%"}}>Nom</TableCell>
-                        <TableCell style={{ fontWeight: 600, width:"20%"}}>Prénom</TableCell>
-                        <TableCell style={{ fontWeight: 600, width:"20%"}}>Téléphone</TableCell>
-                        <TableCell style={{ fontWeight: 600, width:"15%"}}>Ville</TableCell>
-                        <TableCell style={{ width:"15%"}}></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {contacts.map((contact) => (
-                    <TableRow
-                        key={contact.nom}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                        <TableCell component="th" scope="row">
-                            {contact.civilite}
-                        </TableCell>
-                        <TableCell>{contact.nom}</TableCell>
-                        <TableCell>{contact.prenom}</TableCell>
-                        <TableCell>{contact.telephone}</TableCell>
-                        <TableCell>{contact.ville}</TableCell>
-                        <TableCell align="right">
-                            <Tooltip title="Modifier une unité" arrow>
-                                <IconButton aria-label="update" size="large" onClick={() => editContact(contact)}>
-                                    <EditIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Supprimer une unité" arrow>
-                                <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(contact)}>
-                                    <DeleteIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                        </TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell style={{ fontWeight: 600, width: "10%" }}>Civilité</TableCell>
+                            <TableCell style={{ fontWeight: 600, width: "20%" }}>Nom</TableCell>
+                            <TableCell style={{ fontWeight: 600, width: "20%" }}>Prénom</TableCell>
+                            <TableCell style={{ fontWeight: 600, width: "20%" }}>Téléphone</TableCell>
+                            <TableCell style={{ fontWeight: 600, width: "15%" }}>Ville</TableCell>
+                            <TableCell style={{ width: "15%" }}></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {contacts.map((contact) => (
+                            <TableRow
+                                key={contact.nom}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell component="th" scope="row">
+                                    {contact.civilite}
+                                </TableCell>
+                                <TableCell>{contact.nom}</TableCell>
+                                <TableCell>{contact.prenom}</TableCell>
+                                <TableCell>{contact.telephone}</TableCell>
+                                <TableCell>{contact.ville}</TableCell>
+                                <TableCell align="right">
+                                    <Tooltip title="Modifier une unité" arrow>
+                                        <IconButton aria-label="update" size="large" onClick={() => editContact(contact)}>
+                                            <EditIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Supprimer une unité" arrow>
+                                        <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(contact)}>
+                                            <DeleteIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </TableContainer>
         </div>
     );
-  }
+}
 
-  export default Contacts;
+export default Contacts;

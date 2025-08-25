@@ -1,37 +1,147 @@
 import { useCallback } from "react";
+import { useState } from "react";
+import { IdNom } from "../../models/IdNom";
+
+export type OnCrudEventType = (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
+
+export interface CrudEventProps {
+    onEvent: OnCrudEventType;
+}
+
+export interface CrudProps<T extends IdNom> {
+    label: string;
+    items: T[];
+    setItems: (items: T[]) => void;
+    useAddApi: (nom: string) => Promise<T[]>;
+    useUpdateApi: (id: number, nom: string) => Promise<T[]>;
+    useDeleteApi: (id: number) => Promise<T[]>;
+    onEvent: OnCrudEventType;
+    addLabel: string;
+    updateLabel: string;
+    deleteLabel: string;
+}
 
 export function useAdd<T>(
     apiAddFn: (nom: string) => Promise<T[]>,
     setState: (data: T[]) => void,
-    onAction: (event: { type: 'add'; message: string }) => void,
+    onEvent: OnCrudEventType,
     successMessage: string
 ) {
     return useCallback((nom: string) => {
         apiAddFn(nom).then((result) => {
-            onAction({ type: 'add', message: successMessage });
+            onEvent({ type: 'add', message: successMessage });
             setState(result);
         })
             .catch((err) => {
                 window.electronAPI.logError(err);
             });
     },
-        [apiAddFn, setState, onAction, successMessage]
+        [apiAddFn, setState, onEvent, successMessage]
     );
 }
 
 export function useUpdate<T>(
     apiUpdateFn: (id: number, nom: string) => Promise<T[]>,
     setState: (data: T[]) => void,
-    onAction: (event: { type: 'update'; message: string }) => void,
+    onEvent: OnCrudEventType,
     successMessage: string
 ) {
     return useCallback((id: number, nom: string) => {
         apiUpdateFn(id, nom).then((result) => {
-            onAction({ type: 'update', message: successMessage });
+            onEvent({ type: 'update', message: successMessage });
             setState(result);
         })
             .catch((err) => {
                 window.electronAPI.logError(err);
             });
-    }, [apiUpdateFn, setState, onAction, successMessage]);
+    }, [apiUpdateFn, setState, onEvent, successMessage]);
 }
+
+export function useDelete<T>(
+    apiDeleteFn: (id: number) => Promise<T[]>,
+    setState: (data: T[]) => void,
+    onEvent: OnCrudEventType,
+    successMessage: string
+) {
+    return useCallback((id: number) => {
+        apiDeleteFn(id).then((result) => {
+            onEvent({ type: 'delete', message: successMessage });
+            setState(result);
+        })
+            .catch((err) => {
+                window.electronAPI.logError(err);
+            });
+    }, [apiDeleteFn, setState, onEvent, successMessage]);
+}
+
+export function useCrudLogic<T extends IdNom>(
+    useAddApi: (nom: string) => Promise<T[]>,
+    useUpdateApi: (id: number, nom: string) => Promise<T[]>,
+    useDeleteApi: (id: number) => Promise<T[]>,
+    setItems: (items: T[]) => void,
+    onEvent: OnCrudEventType,
+    addLabel: string,
+    updateLabel: string,
+    deleteLabel: string
+) {
+    const [item, setItem] = useState<T>();
+    const [openDialog, setOpenDialog] = useState(false);
+    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
+
+    const addItem = useAdd(useAddApi, setItems, onEvent, addLabel);
+    const updateItem = useUpdate(useUpdateApi, setItems, onEvent, updateLabel);
+    const deleteItem = useDelete(useDeleteApi, setItems, onEvent, deleteLabel);
+
+    const handleAdd = (item: T) => {
+        if (item.id) {
+            updateItem(item.id, item.nom);
+        } else {
+            addItem(item.nom);
+        }
+    };
+
+    const editItem = (cat: T) => {
+        setOpenDialog(true);
+        setItem(cat);
+    };
+
+    const closeDialog = () => {
+        setOpenDialog(false);
+        setItem(null);
+    };
+
+    const handleOpenDeleteDialog = (item: IdNom) => {
+        setItemToDelete(item);
+        setOpenDeleteDialog(true);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        setOpenDeleteDialog(false);
+    };
+
+    const handleConfirmDelete = () => {
+        if (itemToDelete?.id) {
+            deleteItem(itemToDelete.id);
+        }
+        setItemToDelete(null);
+        setOpenDeleteDialog(false);
+    };
+
+    return {
+        item,
+        setItem,
+        openDialog,
+        setOpenDialog,
+        openDeleteDialog,
+        setOpenDeleteDialog,
+        itemToDelete,
+        setItemToDelete,
+        handleAdd,
+        editItem,
+        closeDialog,
+        handleOpenDeleteDialog,
+        handleCloseDeleteDialog,
+        handleConfirmDelete,
+    };
+};
