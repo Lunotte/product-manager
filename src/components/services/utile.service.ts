@@ -33,12 +33,17 @@ export function useAdd<T>(
     apiAddFn: (item: T) => Promise<T[]>,
     setState: (data: T[]) => void,
     onEvent: OnCrudEventType,
-    successMessage: string
+    successMessage: string,
+    onReload?: () => void
 ) {
     return useCallback((item: T) => {
         apiAddFn(item).then((result) => {
             onEvent({ type: 'add', message: successMessage });
-            setState(result);
+            if (onReload) {
+                onReload();
+            } else {
+                setState(result);
+            }
         })
             .catch((err) => {
                 window.electronAPI.logError(err);
@@ -52,12 +57,17 @@ export function useUpdate<T>(
     apiUpdateFn: (item: T) => Promise<T[]>,
     setState: (data: T[]) => void,
     onEvent: OnCrudEventType,
-    successMessage: string
+    successMessage: string,
+    onReload?: () => void
 ) {
     return useCallback((item: T) => {
         apiUpdateFn(item).then((result) => {
             onEvent({ type: 'update', message: successMessage });
-            setState(result);
+            if (onReload) {
+                onReload();
+            } else {
+                setState(result);
+            }
         })
             .catch((err) => {
                 window.electronAPI.logError(err);
@@ -69,17 +79,37 @@ export function useDelete<T>(
     apiDeleteFn: (id: number) => Promise<T[]>,
     setState: (data: T[]) => void,
     onEvent: OnCrudEventType,
-    successMessage: string
+    successMessage: string,
+    onReload?: () => void
 ) {
     return useCallback((id: number) => {
         apiDeleteFn(id).then((result) => {
             onEvent({ type: 'delete', message: successMessage });
-            setState(result);
+            if (onReload) {
+                onReload();
+            } else {
+                setState(result);
+            }
         })
             .catch((err) => {
                 window.electronAPI.logError(err);
             });
     }, [apiDeleteFn, setState, onEvent, successMessage]);
+}
+
+export function useQueryItems<T>(
+    apiQueryItemsFn: (query: string) => Promise<T[]>,
+    setState: (data: T[]) => void
+) {
+
+    return useCallback((query: string) => {
+        apiQueryItemsFn(query).then((result) => {
+            setState(result);
+        })
+            .catch((err) => {
+                window.electronAPI.logError(err);
+            });
+    }, [apiQueryItemsFn, setState]);
 }
 
 export function useCrudLogic<T extends IdNom>(
@@ -90,16 +120,21 @@ export function useCrudLogic<T extends IdNom>(
     onEvent: OnCrudEventType,
     addLabel: string,
     updateLabel: string,
-    deleteLabel: string
+    deleteLabel: string,
+    onReload?: () => void
 ) {
+    // const [queryItems, setQueryItems] = useState<string>("");
+    // const [query, setQuery] = useState<string>("");
+
     const [item, setItem] = useState<T>();
     const [openDialog, setOpenDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
 
-    const addItem = useAdd(useAddApi, setItems, onEvent, addLabel);
-    const updateItem = useUpdate(useUpdateApi, setItems, onEvent, updateLabel);
-    const deleteItem = useDelete(useDeleteApi, setItems, onEvent, deleteLabel);
+    const addItem = useAdd(useAddApi, setItems, onEvent, addLabel, onReload);
+    const updateItem = useUpdate(useUpdateApi, setItems, onEvent, updateLabel, onReload);
+    const deleteItem = useDelete(useDeleteApi, setItems, onEvent, deleteLabel, onReload);
+    // const queryItems = useQueryItems(useQueryItemsApi, setItems);
 
     const handleAdd = (item: T) => {
         if (item.id) {
@@ -136,6 +171,26 @@ export function useCrudLogic<T extends IdNom>(
         setOpenDeleteDialog(false);
     };
 
+    // const reloadItems = useCallback(() => {
+    //     if (options?.query && options?.apiQueryItemsFn) {
+    //         options.apiQueryItemsFn(options.query)
+    //             .then(setItems)
+    //             .catch(window.electronAPI.logError);
+    //     } else if (options?.apiQueryItemsFn) {
+    //         options.apiQueryItemsFn()
+    //             .then(setItems)
+    //             .catch(window.electronAPI.logError);
+    //     }
+    // }, [options, setItems]);
+
+    // const reloadItems = () => {
+    //     if (queryItems.length === 0) {
+    //         reloadContacts();
+    //     } else {
+    //         queryItems(queryItems);
+    //     }
+    // }
+
     return {
         item,
         setItem,
@@ -151,5 +206,6 @@ export function useCrudLogic<T extends IdNom>(
         handleOpenDeleteDialog,
         handleCloseDeleteDialog,
         handleConfirmDelete,
+        // reloadItems
     };
 };

@@ -1,68 +1,42 @@
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material";
-import { useState } from "react";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IdNomDialog from "./dialogs/IdNomDialog";
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import { IdNom } from "../models/IdNom";
-import { CrudProps, useAdd, useDelete, useUpdate } from "./services/utile.service";
+import { CrudProps, useCrudLogic } from "./services/utile.service";
 
-export function CrudTable<T extends IdNom>({
-    label,
-    items,
-    setItems,
-    useAddApi,
-    useUpdateApi,
-    useDeleteApi,
-    onEvent,
-    addLabel,
-    updateLabel,
-    deleteLabel
-}: CrudProps<T>) {
-    const [item, setItem] = useState<T>();
-    const [openDialog, setOpenDialog] = useState(false);
-    const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
+export function CrudTable<T extends IdNom>(props: CrudProps<T>) {
+    const {
+        label, items, setItems,
+        useAddApi, useUpdateApi, useDeleteApi,
+        onEvent, addLabel, updateLabel, deleteLabel
+    } = props;
 
-    const addItem = useAdd(useAddApi, setItems, onEvent, addLabel);
-    const updateItem = useUpdate(useUpdateApi, setItems, onEvent, updateLabel);
-    const deleteItem = useDelete(useDeleteApi, setItems, onEvent, deleteLabel);
-
-    const handleAdd = (item: T) => {
-        if (item.id) {
-            updateItem(item);
-        } else {
-            addItem(item);
-        }
-    };
-
-    const editItem = (cat: T) => {
-        setOpenDialog(true);
-        setItem(cat);
-    };
-
-    const closeDialog = () => {
-        setOpenDialog(false);
-        setItem(null);
-    };
-
-    const handleOpenDeleteDialog = (item: IdNom) => {
-        setItemToDelete(item);
-        setOpenDeleteDialog(true);
-    };
-
-    const handleCloseDeleteDialog = () => {
-        setOpenDeleteDialog(false);
-    };
-
-    const handleConfirmDelete = () => {
-        if (itemToDelete?.id) {
-            deleteItem(itemToDelete.id);
-        }
-        setItemToDelete(null);
-        setOpenDeleteDialog(false);
-    };
+    const {
+        item,
+        openDialog,
+        setOpenDialog,
+        openDeleteDialog,
+        itemToDelete,
+        handleAdd,
+        editItem,
+        closeDialog,
+        handleOpenDeleteDialog,
+        handleCloseDeleteDialog,
+        handleConfirmDelete
+    } =
+        useCrudLogic(
+            useAddApi,
+            useUpdateApi,
+            useDeleteApi,
+            setItems,
+            onEvent,
+            addLabel,
+            updateLabel,
+            deleteLabel
+        );
 
     return (
         <div>
