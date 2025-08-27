@@ -8,7 +8,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditContactDialog from "./dialogs/EditContactDialog";
 import { useContacts } from "./services/contact.service";
-import { CrudEventProps } from "./services/utile.service";
+import { CrudEventProps, useAdd, useDelete, useUpdate } from "./services/utile.service";
 
 const Contacts: React.FC<CrudEventProps> = ({ onEvent }) => {
 
@@ -19,6 +19,11 @@ const Contacts: React.FC<CrudEventProps> = ({ onEvent }) => {
     const [openContactDialog, setOpenContactDialog] = useState(false);
     const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
+
+
+    const addContact = useAdd(window.electronAPI.addContact, setContacts, onEvent, "Contact ajouté");
+    const updateContact = useUpdate(window.electronAPI.updateContact, setContacts, onEvent, "Contact modifié");
+    const deleteItem = useDelete(window.electronAPI.deleteContact, setContacts, onEvent, "Contact supprimé");
 
     const rechercherContacts = (query: string) => {
         setRechercheContact(query);

@@ -31,9 +31,9 @@ export function CrudTable<T extends IdNom>({
 
     const handleAdd = (item: T) => {
         if (item.id) {
-            updateItem(item.id, item.nom);
+            updateItem(item);
         } else {
-            addItem(item.nom);
+            addItem(item);
         }
     };
 

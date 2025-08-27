@@ -12,8 +12,8 @@ export interface CrudProps<T extends IdNom> {
     label: string;
     items: T[];
     setItems: (items: T[]) => void;
-    useAddApi: (nom: string) => Promise<T[]>;
-    useUpdateApi: (id: number, nom: string) => Promise<T[]>;
+    useAddApi: (item: T) => Promise<T[]>;
+    useUpdateApi: (item: T) => Promise<T[]>;
     useDeleteApi: (id: number) => Promise<T[]>;
     onEvent: OnCrudEventType;
     addLabel: string;
@@ -21,14 +21,22 @@ export interface CrudProps<T extends IdNom> {
     deleteLabel: string;
 }
 
+/**
+ * 
+ * @param apiAddFn Il faudrait systematiquement utiliser l’objet pour être cohérent avec les autres fonctions
+ * @param setState 
+ * @param onEvent 
+ * @param successMessage 
+ * @returns 
+ */
 export function useAdd<T>(
-    apiAddFn: (nom: string) => Promise<T[]>,
+    apiAddFn: (item: T) => Promise<T[]>,
     setState: (data: T[]) => void,
     onEvent: OnCrudEventType,
     successMessage: string
 ) {
-    return useCallback((nom: string) => {
-        apiAddFn(nom).then((result) => {
+    return useCallback((item: T) => {
+        apiAddFn(item).then((result) => {
             onEvent({ type: 'add', message: successMessage });
             setState(result);
         })
@@ -41,13 +49,13 @@ export function useAdd<T>(
 }
 
 export function useUpdate<T>(
-    apiUpdateFn: (id: number, nom: string) => Promise<T[]>,
+    apiUpdateFn: (item: T) => Promise<T[]>,
     setState: (data: T[]) => void,
     onEvent: OnCrudEventType,
     successMessage: string
 ) {
-    return useCallback((id: number, nom: string) => {
-        apiUpdateFn(id, nom).then((result) => {
+    return useCallback((item: T) => {
+        apiUpdateFn(item).then((result) => {
             onEvent({ type: 'update', message: successMessage });
             setState(result);
         })
@@ -75,8 +83,8 @@ export function useDelete<T>(
 }
 
 export function useCrudLogic<T extends IdNom>(
-    useAddApi: (nom: string) => Promise<T[]>,
-    useUpdateApi: (id: number, nom: string) => Promise<T[]>,
+    useAddApi: (item: T) => Promise<T[]>,
+    useUpdateApi: (item: T) => Promise<T[]>,
     useDeleteApi: (id: number) => Promise<T[]>,
     setItems: (items: T[]) => void,
     onEvent: OnCrudEventType,
@@ -95,9 +103,9 @@ export function useCrudLogic<T extends IdNom>(
 
     const handleAdd = (item: T) => {
         if (item.id) {
-            updateItem(item.id, item.nom);
+            updateItem(item);
         } else {
-            addItem(item.nom);
+            addItem(item);
         }
     };
 
