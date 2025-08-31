@@ -1,5 +1,5 @@
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -11,17 +11,44 @@ import { CrudEventProps, useCrudLogic } from "./services/utile.service";
 const Contacts: React.FC<CrudEventProps> = ({ onEvent }) => {
 
     const [rechercheContact, setRechercheContact] = useState<string>("");
+    const rechercheContactRef = useRef<string>("");
+
     const [query, setQuery] = useState<string>("");
     const { contacts, setContacts, reloadContacts } = useContacts();
 
-    const rechargerContacts = () => {
-        console.log("Query modifiée : ", query);
-        if (rechercheContact.length === 0) {
-            reloadContacts();
+    useEffect(() => {
+        const timeOutId = setTimeout(() => rechercherContacts(query), 500);
+        return () => clearTimeout(timeOutId);
+    }, [query]);
+
+    useEffect(() => {
+        // Pour garder la valeur actuelle de rechercheContact dans la ref, sinon problème avec le callback du hook
+        rechercheContactRef.current = rechercheContact;
+    }, [rechercheContact]);
+
+    const rechercherContacts = (query: string) => {
+        setRechercheContact(query);
+        window.electronAPI.rechercherContacts(query).then((result) => {
+            setContacts(result);
+        }).catch((err) => {
+            window.electronAPI.logError(err);
+        });
+    };
+
+    /**
+     * Recharge les contacts en fonction de la valeur actuelle de rechercheContact.
+     * Si rechercheContact est vide, recharge tous les contacts.
+     */
+    const rechargerContacts = useCallback(() => {
+
+        const currentRecherche = rechercheContactRef.current;
+
+        if (!!currentRecherche) {
+            rechercherContacts(currentRecherche);
         } else {
-            rechercherContacts(rechercheContact);
+            reloadContacts();
         }
-    }
+    }, [reloadContacts, rechercherContacts, query]);
 
     const {
         item,
@@ -35,7 +62,6 @@ const Contacts: React.FC<CrudEventProps> = ({ onEvent }) => {
         handleOpenDeleteDialog,
         handleCloseDeleteDialog,
         handleConfirmDelete,
-        // reloadItems
     } =
         useCrudLogic(
             window.electronAPI.addContact,
@@ -47,28 +73,7 @@ const Contacts: React.FC<CrudEventProps> = ({ onEvent }) => {
             "Contact modifié",
             "Contact supprimé",
             rechargerContacts
-            // {
-            //     query,
-            //     apiQueryItemsFn: window.electronAPI.rechercherContacts,
-            //     // reloadApiFn: reloadContacts
-            // }
         );
-
-    const rechercherContacts = (query: string) => {
-        setRechercheContact(query);
-        console.log("Recherche de contacts avec la query : ", query);
-        window.electronAPI.rechercherContacts(query).then((result) => {
-            setContacts(result);
-        }).catch((err) => {
-            window.electronAPI.logError(err);
-        });
-    };
-
-
-    useEffect(() => {
-        const timeOutId = setTimeout(() => rechercherContacts(query), 500);
-        return () => clearTimeout(timeOutId);
-    }, [query]);
 
     return (
         <div>
@@ -111,9 +116,9 @@ const Contacts: React.FC<CrudEventProps> = ({ onEvent }) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {contacts.map((contact) => (
+                        {contacts.map((contact, index) => (
                             <TableRow
-                                key={contact.nom}
+                                key={`${contact.nom}-${index}`}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">

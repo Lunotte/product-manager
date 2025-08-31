@@ -68,9 +68,9 @@ export function CrudTable<T extends IdNom>(props: CrudProps<T>) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {items.map((item) => (
+                        {items.map((item, index) => (
                             <TableRow
-                                key={item.id}
+                                key={`${item.nom}-${index}`}
                                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
                                 <TableCell component="th" scope="row">
