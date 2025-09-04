@@ -10,10 +10,19 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Contact } from '../models/Contact';
 import { Produit } from '../models/Produit';
+import { useCategories } from './services/categorie.service';
+import { Categorie } from '../models/Categorie';
+import { useFournisseurs } from './services/fournisseur.service';
+import { useUnites } from './services/unite.service';
+import { Unite } from '../models/Unite';
+import { Fournisseur } from '../models/Fournisseur';
 
 function BarNavigation() {
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const { categories } = useCategories();
+  const { fournisseurs } = useFournisseurs();
+  const { unites } = useUnites();
 
   const [anchorElExport, setAnchorElExport] = React.useState<null | HTMLElement>(null);
   const openExportMenu = Boolean(anchorElExport);
@@ -27,7 +36,7 @@ function BarNavigation() {
     navigate(page);
   };
 
-  const handleBackup =() => {
+  const handleBackup = () => {
     window.electronAPI.backup();
   }
 
@@ -43,9 +52,9 @@ function BarNavigation() {
       const csvData = convertToCSV(result);
       downloadCSV(csvData, 'Produits.csv');
     }).catch((err) => {
-        window.electronAPI.logError(err);
+      window.electronAPI.logError(err);
     });
-}
+  }
 
   const handleExportProduits = () => {
     exportProduits();
@@ -69,29 +78,29 @@ function BarNavigation() {
     const rows = data.map(row => Object.values(row).join(";")).join("\n");
     return headers + rows;
   };
-  
+
   const downloadCSV = (csvData: any, filename = "data.csv") => {
     const bom = "\uFEFF";
     const blob = new Blob([bom + csvData], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-  
+
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-  
+
     URL.revokeObjectURL(url); // Libérer la mémoire
   };
 
 
 
-/**********************************
- * 
- *    Importation de produits 
- * 
- ***********************************/
+  /**********************************
+   * 
+   *    Importation de produits 
+   * 
+   ***********************************/
 
   const handleClickImport = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorElImport(event.currentTarget);
@@ -112,58 +121,77 @@ function BarNavigation() {
 
   const parseCSVToProduits = (csvData: string): Produit[] => {
     const lines = csvData.replace(/^\uFEFF/, '').split(/\r?\n/); // Supprimer BOM, séparer les lignes
-    
+
     let headerLineIndex = 0;
-    while(headerLineIndex < lines.length && !lines[headerLineIndex].trim()) {
-        headerLineIndex++; // Ignorer les lignes vides au début
+    while (headerLineIndex < lines.length && !lines[headerLineIndex].trim()) {
+      headerLineIndex++; // Ignorer les lignes vides au début
     }
 
     if (headerLineIndex >= lines.length || lines.length < headerLineIndex + 2) {
-        console.warn("Le CSV ne contient pas assez de données (entêtes + au moins une ligne de données).");
-        return [];
+      console.warn("Le CSV ne contient pas assez de données (entêtes + au moins une ligne de données).");
+      return [];
     }
 
     const headers = lines[headerLineIndex].split(';').map(h => h.trim());
     const produits: Produit[] = [];
 
     for (let i = headerLineIndex + 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue; // Ignorer les lignes vides
+      const line = lines[i].trim();
+      if (!line) continue; // Ignorer les lignes vides
 
-        const values = line.split(';');
-        const produitData: any = {};
-        headers.forEach((header, index) => {
-            produitData[header] = values.length > index ? (values[index] || '').trim() : '';
-        });
+      const values = line.split(';');
+      const produitData: any = {};
+      headers.forEach((header, index) => {
+        produitData[header] = values.length > index ? (values[index] || '').trim() : '';
+      });
 
-        let parsedId: number | null = null;
-        if (produitData.id && produitData.id.toLowerCase() !== 'null' && produitData.id !== '') {
-          const numId = parseInt(produitData.id, 10);
-          if (!isNaN(numId)) { 
-            parsedId = numId; 
-          } else {
-            console.warn(`ID invalide "${produitData.id}" trouvé pour le produit "${produitData.nom || 'N/A'}". L'ID sera traité comme nul.`);
-          }
-        }
-
-        const produit: Produit = {
-            id: parsedId,
-            nom: produitData.nom || '',
-            prixAchat: parseOptionalFloat(produitData.prixAchat),
-            taux: parseOptionalFloat(produitData.taux),
-            prixVente: parseOptionalFloat(produitData.prixVente),
-            fournisseurNom: produitData.fournisseurNom || undefined,
-            categorieNom: produitData.categorieNom || undefined,
-            uniteNom: produitData.uniteNom || undefined,
-            dateMajPrix: produitData.dateMajPrix || undefined,
-        };
-        
-        if (produit.nom) { // Validation de base: un produit doit avoir un nom
-            produits.push(produit);
+      let parsedId: number | null = null;
+      if (produitData.id && produitData.id.toLowerCase() !== 'null' && produitData.id !== '') {
+        const numId = parseInt(produitData.id, 10);
+        if (!isNaN(numId)) {
+          parsedId = numId;
         } else {
-            console.warn("Produit ignoré car nom manquant:", produitData);
+          console.warn(`ID invalide "${produitData.id}" trouvé pour le produit "${produitData.nom || 'N/A'}". L'ID sera traité comme nul.`);
         }
+      }
+
+      // Vérification des champs requis
+      if (!parsedId || !produitData.categorieNom || !produitData.fournisseurNom || !produitData.uniteNom) {
+        break;
+      }
+
+      const hasCategorie = categories.some((categorie: Categorie) => (categorie.id == produitData.categorieId));
+      const hasFournisseur = fournisseurs.some((fournisseur: Fournisseur) => (fournisseur.id == produitData.fournisseurId));
+      const hasUnite = unites.some((unite: Unite) => (unite.id == produitData.uniteId));
+
+      // console.log(hasCategorie, hasFournisseur, hasUnite, unites, produitData);
+
+      if (!hasCategorie || !hasFournisseur || !hasUnite) {
+        console.error(`Import annulé, car il manque des références valides: ${JSON.stringify(produitData)}`);
+        break;
+      }
+
+      const produit: Produit = {
+        id: parsedId,
+        nom: produitData.nom || '',
+        prixAchat: parseOptionalFloat(produitData.prixAchat),
+        taux: parseOptionalFloat(produitData.taux),
+        prixVente: parseOptionalFloat(produitData.prixVente),
+        fournisseurNom: produitData.fournisseurNom || undefined,
+        categorieNom: produitData.categorieNom || undefined,
+        uniteNom: produitData.uniteNom || undefined,
+        dateMajPrix: produitData.dateMajPrix || undefined,
+      };
+
+      if (produit.nom) { // Validation de base: un produit doit avoir un nom
+        produits.push(produit);
+      } else {
+        console.warn("Produit ignoré car nom manquant:", produitData);
+      }
     }
+
+    console.log("Produits importés:", produits, produits.length);
+
     return produits;
   };
 
@@ -177,14 +205,16 @@ function BarNavigation() {
           try {
             const importedProduits = parseCSVToProduits(text);
             console.log("Produits importés:", importedProduits);
-            
+
             if (importedProduits.length > 0) {
-              await window.electronAPI.importProduits(importedProduits); 
-              alert('Produits importés avec succès! Veuillez rafraîchir la liste des produits si nécessaire.');
+              await window.electronAPI.importProduits(importedProduits);
+              console.log('Produits importés avec succès! Veuillez rafraîchir la liste des produits si nécessaire.');
+              // alert('Produits importés avec succès! Veuillez rafraîchir la liste des produits si nécessaire.');
               // Envisagez une manière plus intégrée de rafraîchir la liste des produits,
               // par exemple, via une mise à jour du contexte ou un bus d'événements.
             } else {
-              alert('Aucun produit valide trouvé dans le fichier ou fichier vide.');
+              console.warn('Aucun produit valide trouvé dans le fichier ou fichier vide.');
+              // alert('Aucun produit valide trouvé dans le fichier ou fichier vide.');
             }
           } catch (error: any) {
             console.error("Erreur lors de l'importation des produits:", error);
@@ -202,7 +232,7 @@ function BarNavigation() {
     }
     // Réinitialiser l'input pour permettre de sélectionner à nouveau le même fichier
     if (event.target) {
-      event.target.value = ''; 
+      event.target.value = '';
     }
   };
 
@@ -210,58 +240,58 @@ function BarNavigation() {
     handleCloseImportMenu(); // Fermer le menu d'abord
     fileInputRef.current?.click(); // Puis déclencher l'input de fichier
   };
-  
+
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-        <Inventory2OutlinedIcon 
-          onClick={() => handleCloseNavMenu('/main_window')}
-          style={{cursor: 'pointer'}}
-          sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} 
-        />
+          <Inventory2OutlinedIcon
+            onClick={() => handleCloseNavMenu('/main_window')}
+            style={{ cursor: 'pointer' }}
+            sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }}
+          />
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }}>
             <Button
-                onClick={() => handleCloseNavMenu('/main_window')}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Catalogue
+              onClick={() => handleCloseNavMenu('/main_window')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Catalogue
             </Button>
             <Button
-                onClick={() => handleCloseNavMenu('/configurer')}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Configurer
+              onClick={() => handleCloseNavMenu('/configurer')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Configurer
             </Button>
             <Button
-                onClick={() => handleCloseNavMenu('/panier')}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Facture
+              onClick={() => handleCloseNavMenu('/panier')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Facture
             </Button>
-            
-              <Button
-                  onClick={() => handleBackup()}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                >
-                <Tooltip title="Faire une sauvegarde" arrow>
-                  <span>Backup</span>
-                </Tooltip>
-              </Button>
 
-              <Button
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                aria-controls={openExportMenu ? 'export-menu' : undefined}
-                aria-haspopup="true"
-                 aria-expanded={openExportMenu ? 'true' : undefined}
-                onClick={handleClickExport}
-              >
-                <Tooltip title="Faire un export CSV" arrow>
-                  <span>Exports</span>
-                </Tooltip>
-              </Button>
-            
+            <Button
+              onClick={() => handleBackup()}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              <Tooltip title="Faire une sauvegarde" arrow>
+                <span>Backup</span>
+              </Tooltip>
+            </Button>
+
+            <Button
+              sx={{ my: 2, color: 'white', display: 'block' }}
+              aria-controls={openExportMenu ? 'export-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={openExportMenu ? 'true' : undefined}
+              onClick={handleClickExport}
+            >
+              <Tooltip title="Faire un export CSV" arrow>
+                <span>Exports</span>
+              </Tooltip>
+            </Button>
+
             <Menu
               id="export-menu"
               anchorEl={anchorElExport}
@@ -275,19 +305,19 @@ function BarNavigation() {
               <MenuItem onClick={handleExportContacts}>Contacts</MenuItem>
             </Menu>
 
-            
-              <Button
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                aria-controls={openImportMenu ? 'import-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={openImportMenu ? 'true' : undefined}
-                onClick={handleClickImport}
-              >
-                <Tooltip title="Importer des données CSV" arrow>
+
+            <Button
+              sx={{ my: 2, color: 'white', display: 'block' }}
+              aria-controls={openImportMenu ? 'import-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={openImportMenu ? 'true' : undefined}
+              onClick={handleClickImport}
+            >
+              <Tooltip title="Importer des données CSV" arrow>
                 <span>Imports</span>
-                </Tooltip>
-              </Button>
-            
+              </Tooltip>
+            </Button>
+
             <Menu
               id="import-menu"
               anchorEl={anchorElImport}
@@ -299,11 +329,11 @@ function BarNavigation() {
             >
               <MenuItem onClick={triggerProduitsImportInput}>Importer Produits (CSV)</MenuItem>
             </Menu>
-           
+
           </Box>
         </Toolbar>
       </Container>
-        {/* Input de fichier caché pour l'importation CSV */}
+      {/* Input de fichier caché pour l'importation CSV */}
       <input
         type="file"
         ref={fileInputRef}
