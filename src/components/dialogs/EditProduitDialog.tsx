@@ -49,7 +49,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
 
   const calculerMontantTTC = () => {
     const prixVente = parseFloat(prixAchat) * (1 + (taux / 100));
-    setPrixVente(prixVente.toFixed(2));
+    setPrixVente(isNaN(prixVente) ? "0.00" : prixVente.toFixed(2));
   }
 
   const reset = () => {
