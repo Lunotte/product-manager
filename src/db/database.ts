@@ -80,6 +80,10 @@ export const verifierEtExecuterMigration = () => {
 
 const dbMethods = {
 
+  purgeEntite(entite: string): void {
+    const resultat = db.prepare(`DELETE FROM ${entite}`).run();
+    log.debug(`Purge de l'entité ${entite} effectuée. ${resultat.changes} lignes supprimées.`, resultat);
+  },
   getCategories(): Categorie[] {
     return db.prepare<unknown[], Categorie>('SELECT * FROM categories ORDER BY LOWER(nom) ASC').all();
   },

@@ -11,6 +11,17 @@ import { IdNom } from '../models/IdNom';
 export const crudHandlers = () => {
 
     /****************************/
+    /*           CRUD           */
+    /****************************/
+
+    ipcMain.handle('purge-produics', (_): void => {
+        db.purgeEntite('produits');
+        db.purgeEntite('categories');
+        db.purgeEntite('fournisseurs');
+        db.purgeEntite('unites');
+    });
+
+    /****************************/
     /*          Categorie       */
     /****************************/
 

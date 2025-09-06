@@ -24,6 +24,7 @@ export interface ElectronAPI {
     deleteUnite: (id: number) => Promise<Unite[]>;
 
     importProduits: (produits: Produit[]) => Promise<Produit[]>;
+    purgeProduits: () => Promise<void>;
     getProduits: () => Promise<Produit[]>;
     rechercherProduits: (query: string) => Promise<Produit[]>;
     addProduit: (produit: Produit) => Promise<void>;

@@ -1,4 +1,4 @@
 export interface IdNom {
-    readonly id: number;
+    readonly id?: number;
     readonly nom: string;
 }
