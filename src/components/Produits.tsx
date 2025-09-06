@@ -16,7 +16,7 @@ import { ProduitContext, ProduitFactureContext } from "./home";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { formatCustomDateFR } from "../tool";
 import Snackbars from "./hooks/utilitaires/Snackbars";
-import { useProduits } from "./services/produit.service";
+import { useProduits } from "./hooks/produit/manage-produit";
 
 interface ProduitProps { }
 

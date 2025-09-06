@@ -10,20 +10,11 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Contact } from '../models/Contact';
 import { Produit } from '../models/Produit';
-import { useCategories } from './services/categorie.service';
-import { Categorie } from '../models/Categorie';
-import { useFournisseurs } from './services/fournisseur.service';
-import { useUnites } from './services/unite.service';
-import { Unite } from '../models/Unite';
-import { Fournisseur } from '../models/Fournisseur';
 import { handleImportProduitsFileSelected } from './services/import-produit.service';
 
 function BarNavigation() {
 
   const navigate = useNavigate();
-  const { categories } = useCategories();
-  const { fournisseurs } = useFournisseurs();
-  const { unites } = useUnites();
 
   const [anchorElExport, setAnchorElExport] = React.useState<null | HTMLElement>(null);
   const openExportMenu = Boolean(anchorElExport);
@@ -344,7 +335,7 @@ function BarNavigation() {
         ref={fileInputRef}
         style={{ display: 'none' }}
         accept=".csv"
-        onChange={e => handleImportProduitsFileSelected(e, categories, fournisseurs, unites)}
+        onChange={e => handleImportProduitsFileSelected(e)}
       />
     </AppBar>
   );

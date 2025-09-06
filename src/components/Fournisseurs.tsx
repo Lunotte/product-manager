@@ -1,6 +1,6 @@
 import { Fournisseur } from "../models/Fournisseur";
-import { useFournisseurs } from "./services/fournisseur.service";
 import { CrudTable } from "./CrudTable";
+import { useFournisseurs } from "./hooks/fournisseur/manage-fournisseur";
 import { CrudEventProps } from "./services/utile.service";
 
 const Fournisseurs: React.FC<CrudEventProps> = ({ onEvent }) => {

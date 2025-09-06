@@ -1,23 +1,11 @@
-import { Categorie } from "../../models/Categorie";
-import { Fournisseur } from "../../models/Fournisseur";
 import { Produit } from "../..//models/Produit";
-import { Unite } from "../../models/Unite";
+import { gestionImportProduits } from "./produit.service";
 
-/**
- * Convertit une chaîne en float optionnel (gère la virgule comme séparateur décimal)
- */
-const parseOptionalFloat = (value: string | undefined): number | undefined => {
-    if (value === undefined || value === null || value.trim() === '') return undefined;
-    // Gérer la virgule comme séparateur décimal
-    const sanitizedValue = value.replace(',', '.');
-    const num = parseFloat(sanitizedValue);
-    return isNaN(num) ? undefined : num;
-};
 
 /**
  * Parse le CSV en tableau de produits.
  */
-const parseCSVToProduits = (csvData: string, categories: Categorie[], fournisseurs: Fournisseur[], unites: Unite[]): Produit[] => {
+const parseCSVToProduits = (csvData: string): Produit[] => {
 
     const lines = csvData.replace(/^\uFEFF/, '').split(/\r?\n/); // Supprimer BOM, séparer les lignes
 
@@ -44,40 +32,8 @@ const parseCSVToProduits = (csvData: string, categories: Categorie[], fournisseu
             produitData[header] = values.length > index ? (values[index] || '').trim() : '';
         });
 
-        // Vérification des champs requis
-        if (!produitData.nom || !produitData.categorieNom || !produitData.fournisseurNom || !produitData.uniteNom) {
-            console.error("Import annulé, champs requis manquants:", produitData);
-            break;
-        }
-
-        const hasCategorie = categories.some((categorie: Categorie) => (categorie.nom == produitData.categorieNom));
-        const hasFournisseur = fournisseurs.some((fournisseur: Fournisseur) => (fournisseur.nom == produitData.fournisseurNom));
-        const hasUnite = unites.some((unite: Unite) => (unite.nom == produitData.uniteNom));
-
-        console.log(hasCategorie, hasFournisseur, hasUnite, unites, produitData);
-
-        if (!hasCategorie || !hasFournisseur || !hasUnite) {
-            console.error(`Import annulé, car il manque des références valides (Catégorie et/ou Fournisseur et/ou Unité): ${JSON.stringify(produitData)}`);
-            break;
-        }
-
-        const produit: Produit = {
-            nom: produitData.nom || '',
-            prixAchat: parseOptionalFloat(produitData.prixAchat),
-            taux: parseOptionalFloat(produitData.taux),
-            prixVente: parseOptionalFloat(produitData.prixVente),
-            fournisseurNom: produitData.fournisseurNom || undefined,
-            categorieNom: produitData.categorieNom || undefined,
-            uniteNom: produitData.uniteNom || undefined,
-            dateMajPrix: produitData.dateMajPrix || undefined,
-        };
-
-        // TODO : Ajouter d'autres validations pour verifier l'intégrité des données
-        if (produit.nom) { // Validation de base: un produit doit avoir un nom
-            produits.push(produit);
-        } else {
-            console.warn("Produit ignoré car nom manquant:", produitData);
-        }
+        produits.push(gestionImportProduits(produitData));
+        // TODO : Ajout en bdd
     }
 
     console.log("Produits importés:", produits, produits.length);
@@ -91,11 +47,7 @@ const parseCSVToProduits = (csvData: string, categories: Categorie[], fournisseu
    * TODO : Il faut alerter de la suppression de tous les produits avant l'importation
    * @param event 
    */
-export const handleImportProduitsFileSelected = (
-    event: React.ChangeEvent<HTMLInputElement>,
-    categories: Categorie[],
-    fournisseurs: Fournisseur[],
-    unites: Unite[]) => {
+export const handleImportProduitsFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
 
     const file = event.target.files?.[0];
     if (file) {
@@ -104,7 +56,7 @@ export const handleImportProduitsFileSelected = (
             const text = e.target?.result as string;
             if (text) {
                 try {
-                    const importedProduits = parseCSVToProduits(text, categories, fournisseurs, unites);
+                    const importedProduits = parseCSVToProduits(text);
                     console.log("Produits importés:", importedProduits);
 
                     if (importedProduits.length > 0) {

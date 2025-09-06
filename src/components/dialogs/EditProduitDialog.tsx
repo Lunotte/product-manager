@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Produit } from '../../models/Produit';
 import { cleanStartAndEndString } from '../divers/Utils';
-import { useFournisseurs } from '../services/fournisseur.service';
-import { useCategories } from '../services/categorie.service';
-import { useUnites } from '../services/unite.service';
+import { useCategories } from '../hooks/categorie/manage-categorie';
+import { useFournisseurs } from '../hooks/fournisseur/manage-fournisseur';
+import { useUnites } from '../hooks/unite/manage-unite';
 
 interface EditProduitDialogProps {
   open: boolean;

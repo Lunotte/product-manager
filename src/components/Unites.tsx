@@ -1,6 +1,6 @@
 import { Unite } from "../models/Unite";
-import { useUnites } from "./services/unite.service";
 import CrudTable from "./CrudTable";
+import { useUnites } from "./hooks/unite/manage-unite";
 import { CrudEventProps } from "./services/utile.service";
 
 const Unites: React.FC<CrudEventProps> = ({ onEvent }) => {
