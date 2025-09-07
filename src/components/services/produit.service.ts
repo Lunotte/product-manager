@@ -5,52 +5,24 @@ import { Categorie } from "../../models/Categorie";
 import { Fournisseur } from "../../models/Fournisseur";
 import { Unite } from "../../models/Unite";
 
-export const gestionImportProduits = (produitData: any): Produit => {
+export type ConfigurationType = Categorie | Fournisseur | Unite;
 
+export const gestionImportProduits = (produitData: any, categories: Categorie[], fournisseurs: Fournisseur[], unites: Unite[], listIndexCache: WeakMap<ConfigurationType[], Map<string, ConfigurationType>>): Produit => {
 
   // Vérification des champs requis
   if (!produitData.nom || !produitData.categorieNom || !produitData.fournisseurNom || !produitData.uniteNom) {
     // console.error("Import annulé, champs requis manquants:", produitData);
     throw new Error(`Champs requis manquants parmis le nom du produit / catégorie / fournisseur / unité ${produitData}`);
-
   }
+
   const categorieNom = cleanStartAndEndString(produitData.categorieNom);
   const fournisseurNom = cleanStartAndEndString(produitData.fournisseurNom);
   const uniteNom = cleanStartAndEndString(produitData.uniteNom);
   const produitNom = cleanStartAndEndString(produitData.nom);
 
-  const categories: Categorie[] = [];
-  const fournisseurs: Fournisseur[] = [];
-  const unites: Unite[] = [];
-
-
-  // TODO : Ajouter un throw sur les erreurs d'ajout
-  // TODO : Optimiser la recherche avec une Map ou un objet indexé par nom
-  // TODO : Faire un save pour pouvoir récupérer les IDs
-  // Rechercher si la référence existe déjà, sinon la créer et l'ajouter
-  let existingCategorie = categories.find((c: Categorie) => c.nom === categorieNom);
-  if (!existingCategorie) {
-    const newCategorie: Categorie = { nom: categorieNom } as Categorie;
-    categories.push(newCategorie);
-    existingCategorie = newCategorie;
-    console.log("Nouvelle catégorie créée:", newCategorie);
-  }
-
-  let existingFournisseur = fournisseurs.find((f: Fournisseur) => f.nom === fournisseurNom);
-  if (!existingFournisseur) {
-    const newFournisseur: Fournisseur = { nom: fournisseurNom } as Fournisseur;
-    fournisseurs.push(newFournisseur);
-    existingFournisseur = newFournisseur;
-    console.log("Nouveau fournisseur créé:", newFournisseur);
-  }
-
-  let existingUnite = unites.find((u: Unite) => u.nom === uniteNom);
-  if (!existingUnite) {
-    const newUnite: Unite = { nom: uniteNom } as Unite;
-    unites.push(newUnite);
-    existingUnite = newUnite;
-    console.log("Nouvelle unité créée:", newUnite);
-  }
+  const existingCategorie = addItem<Categorie>(categorieNom, categories, listIndexCache);
+  const existingFournisseur = addItem<Categorie>(fournisseurNom, fournisseurs, listIndexCache);
+  const existingUnite = addItem<Categorie>(uniteNom, unites, listIndexCache);
 
   // TODO : Ajouter d'autres validations pour verifier l'intégrité des données
   if (!produitNom) { // Validation de base: un produit doit avoir un nom
@@ -67,6 +39,44 @@ export const gestionImportProduits = (produitData: any): Produit => {
     uniteId: existingUnite.id || undefined,
     dateMajPrix: produitData.dateMajPrix || undefined,
   } as Produit;
+}
+
+/**
+ * Si le nom n'existe pas dans la liste, l'ajouter
+ * 
+ * @param nom Nom de la configuration à ajouter
+ * @param liste À laquelle ajouter l'élément
+ * @throws Error si une erreur survient lors de l'ajout
+ */
+const addItem = <T extends ConfigurationType>(nom: string, liste: T[], listIndexCache: WeakMap<ConfigurationType[], Map<string, ConfigurationType>>): T => {
+
+  try {
+    // Récupérer ou construire l'index pour ce tableau
+    let index = listIndexCache.get(liste) as Map<string, T> | undefined;
+    if (!index) {
+      index = new Map<string, T>();
+      for (const item of liste) {
+        if (item?.nom) {
+          index.set(item.nom, item as T);
+        }
+      }
+      listIndexCache.set(liste, index as Map<string, ConfigurationType>);
+    }
+
+    // Recherche optimisée via la map
+    let existingItem = index.get(nom);
+    if (!existingItem) {
+      const newItem = { nom } as T;
+      liste.push(newItem);
+      index.set(nom, newItem);
+      existingItem = newItem;
+      console.debug("Nouvel élément créé:", newItem);
+      // TODO : Faire un save pour pouvoir récupérer les IDs
+    }
+    return existingItem;
+  } catch (error) {
+    throw new Error(`Erreur lors de l'ajout de l'élément '${nom}': ${error}`);
+  }
 }
 
 /**

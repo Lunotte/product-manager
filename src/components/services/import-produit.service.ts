@@ -1,5 +1,8 @@
-import { Produit } from "../..//models/Produit";
-import { gestionImportProduits } from "./produit.service";
+import { Categorie } from "../../models/Categorie";
+import { Produit } from "../../models/Produit";
+import { Fournisseur } from "../../models/Fournisseur";
+import { Unite } from "../../models/Unite";
+import { ConfigurationType, gestionImportProduits } from "./produit.service";
 
 
 /**
@@ -20,7 +23,14 @@ const parseCSVToProduits = (csvData: string): Produit[] => {
     }
 
     const headers = lines[headerLineIndex].split(';').map(h => h.trim());
+
+    // Cache d'index par référence de tableau pour éviter de reconstruire à chaque appel
+    const listIndexCache: WeakMap<ConfigurationType[], Map<string, ConfigurationType>> = new WeakMap();
+    const categories: Categorie[] = [];
+    const fournisseurs: Fournisseur[] = [];
+    const unites: Unite[] = [];
     const produits: Produit[] = [];
+
 
     for (let i = headerLineIndex + 1; i < lines.length; i++) {
         const line = lines[i].trim();
@@ -32,12 +42,11 @@ const parseCSVToProduits = (csvData: string): Produit[] => {
             produitData[header] = values.length > index ? (values[index] || '').trim() : '';
         });
 
-        produits.push(gestionImportProduits(produitData));
+        produits.push(gestionImportProduits(produitData, categories, fournisseurs, unites, listIndexCache));
         // TODO : Ajout en bdd
     }
 
-    console.log("Produits importés:", produits, produits.length);
-
+    // console.log("Configurations importées - Catégories:", categories, "Fournisseurs:", fournisseurs, "Unités:", unites, listIndexCache);
     return produits;
 };
 
@@ -57,20 +66,20 @@ export const handleImportProduitsFileSelected = (event: React.ChangeEvent<HTMLIn
             if (text) {
                 try {
                     const importedProduits = parseCSVToProduits(text);
-                    console.log("Produits importés:", importedProduits);
+                    console.log("Produits importés:", importedProduits, importedProduits.length);
 
                     if (importedProduits.length > 0) {
                         await window.electronAPI.importProduits(importedProduits);
-                        console.log('Produits importés avec succès! Veuillez rafraîchir la liste des produits si nécessaire.');
-                        // alert('Produits importés avec succès! Veuillez rafraîchir la liste des produits si nécessaire.');
+                        // console.log('Produits importés avec succès! Veuillez rafraîchir la liste des produits si nécessaire.');
+                        alert('Produits importés avec succès! Veuillez rafraîchir la liste des produits si nécessaire.');
                         // Envisagez une manière plus intégrée de rafraîchir la liste des produits,
                         // par exemple, via une mise à jour du contexte ou un bus d'événements.
                     } else {
-                        console.warn('Aucun produit valide trouvé dans le fichier ou fichier vide.');
-                        // alert('Aucun produit valide trouvé dans le fichier ou fichier vide.');
+                        // console.warn('Aucun produit valide trouvé dans le fichier ou fichier vide.');
+                        alert('Aucun produit valide trouvé dans le fichier ou fichier vide.');
                     }
                 } catch (error: any) {
-                    console.error("Erreur lors de l'importation des produits:", error);
+                    // console.error("Erreur lors de l'importation des produits:", error);
                     window.electronAPI.logError(`Erreur importation CSV Produits: ${error.message || error}`);
                     alert(`Erreur lors de l'importation: ${error.message || 'Erreur inconnue'}`);
                 }
