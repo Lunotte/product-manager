@@ -11,10 +11,13 @@ import MenuItem from '@mui/material/MenuItem';
 import { Contact } from '../models/Contact';
 import { Produit } from '../models/Produit';
 import { handleImportProduitsFileSelected } from './services/import-produit.service';
+import DialogDialog from './dialogs/DialogDialog';
 
 function BarNavigation() {
 
   const navigate = useNavigate();
+
+  const [openDialog, setOpenDialog] = React.useState(false);
 
   const [anchorElExport, setAnchorElExport] = React.useState<null | HTMLElement>(null);
   const openExportMenu = Boolean(anchorElExport);
@@ -23,6 +26,7 @@ function BarNavigation() {
   const openImportMenu = Boolean(anchorElImport);
 
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileRef = React.useRef<React.ChangeEvent<HTMLInputElement>>(null);
 
   const handleCloseNavMenu = (page: string) => {
     navigate(page);
@@ -108,6 +112,23 @@ function BarNavigation() {
   const triggerProduitsImportInput = () => {
     handleCloseImportMenu();
     fileInputRef.current?.click();
+  };
+
+  /**
+       * Ferme le dialog d'édition de produit
+       */
+  const closeDialog = () => {
+    setOpenDialog(false);
+    handleImportProduitsFileSelected(fileRef.current);
+  }
+
+  /**
+   * Ouvre le dialog de confirmation de suppression
+   * @param item Item à supprimer
+   */
+  const handleOpenDialog = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setOpenDialog(true);
+    fileRef.current = event;
   };
 
   return (
@@ -207,7 +228,12 @@ function BarNavigation() {
         ref={fileInputRef}
         style={{ display: 'none' }}
         accept=".csv"
-        onChange={e => handleImportProduitsFileSelected(e)}
+        onChange={e => handleOpenDialog(e)}
+      />
+      <DialogDialog
+        open={openDialog}
+        onClose={() => closeDialog()}
+        message="Les données seront supprimées définitivement."
       />
     </AppBar>
   );
