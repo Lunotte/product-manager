@@ -12,12 +12,15 @@ import { Contact } from '../models/Contact';
 import { Produit } from '../models/Produit';
 import { handleImportProduitsFileSelected } from './services/import-produit.service';
 import DialogDialog from './dialogs/DialogDialog';
+import { string } from 'zod';
 
 function BarNavigation() {
 
   const navigate = useNavigate();
 
   const [openDialog, setOpenDialog] = React.useState(false);
+  const [messageDialog, setMessageDialog] = React.useState<string>(null);
+  const [typeDialog, setTypeDialog] = React.useState<string>(null);
 
   const [anchorElExport, setAnchorElExport] = React.useState<null | HTMLElement>(null);
   const openExportMenu = Boolean(anchorElExport);
@@ -32,9 +35,14 @@ function BarNavigation() {
     navigate(page);
   };
 
-  const handleBackup = () => {
-    window.electronAPI.backup();
-  }
+  const handleBackup = async () => {
+    try {
+      await window.electronAPI.backup();
+      console.log("Backup terminé !");
+    } catch (err) {
+      console.error("Erreur backup :", err);
+    }
+  };
 
   const handleClickExport = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorElExport(event.currentTarget);
@@ -114,19 +122,40 @@ function BarNavigation() {
     fileInputRef.current?.click();
   };
 
-  /**
-       * Ferme le dialog d'édition de produit
-       */
-  const closeDialog = () => {
-    setOpenDialog(false);
-    handleImportProduitsFileSelected(fileRef.current);
+  // const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+  const closeDialog = async () => {
+    if (typeDialog === "PURGE") {
+      setOpenDialog(false);
+      await handleBackup();
+      setTypeDialog("BACKUP");
+      setMessageDialog("Backup terminé !");
+      setOpenDialog(true);
+    }
+    else if (typeDialog === "BACKUP") {
+      setOpenDialog(false);
+      await handleImportProduitsFileSelected(fileRef.current);
+      console.log("import terminé !");
+
+      setTypeDialog("IMPORT");
+      setMessageDialog("Importation terminée !");
+      setOpenDialog(true);
+    }
+    // else if (typeDialog === "IMPORT") {
+
+    // }
+    else {
+      setOpenDialog(false);
+    }
   }
 
   /**
-   * Ouvre le dialog de confirmation de suppression
-   * @param item Item à supprimer
+   * Ouvre le dialog pour notifier l’utilisateur
+   * @param event Le fichier
    */
   const handleOpenDialog = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTypeDialog("PURGE");
+    setMessageDialog("Les données seront supprimées définitivement. Un backup est réalisé avant l'importation !");
     setOpenDialog(true);
     fileRef.current = event;
   };
@@ -233,7 +262,8 @@ function BarNavigation() {
       <DialogDialog
         open={openDialog}
         onClose={() => closeDialog()}
-        message="Les données seront supprimées définitivement."
+        message={messageDialog}
+        type={typeDialog}
       />
     </AppBar>
   );

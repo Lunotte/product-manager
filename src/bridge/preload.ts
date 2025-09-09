@@ -9,7 +9,7 @@ import { IdNom } from '../models/IdNom';
 contextBridge.exposeInMainWorld('electronAPI', {
 
   logError: (message: string) => ipcRenderer.send('log-error', message),
-  backup: () => ipcRenderer.send('backup'),
+  backup: (): Promise<void> => ipcRenderer.invoke('backup'),
 
   getCategories: () => ipcRenderer.invoke('get-categories'),
   addCategorie: (categorie: IdNom) => ipcRenderer.invoke('add-categorie', categorie),

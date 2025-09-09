@@ -13,9 +13,10 @@ interface ConfirmDeleteDialogProps {
   open: boolean;
   onClose: () => void;
   message: string;
+  type: string;
 }
 
-const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({ open, onClose, message }) => {
+const ConfirmDeleteDialog: React.FC<ConfirmDeleteDialogProps> = ({ open, onClose, message, type }) => {
   return (
     message && <Dialog open={open} onClose={onClose} aria-modal>
       <DialogTitle>Message d’information</DialogTitle>
