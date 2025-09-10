@@ -11,16 +11,15 @@ import MenuItem from '@mui/material/MenuItem';
 import { Contact } from '../models/Contact';
 import { Produit } from '../models/Produit';
 import { handleImportProduitsFileSelected } from './services/import-produit.service';
-import DialogDialog from './dialogs/DialogDialog';
-import { string } from 'zod';
+import DialogDialog, { DataDialog, TypeAlert } from './dialogs/AlerteDialog';
 
 function BarNavigation() {
 
   const navigate = useNavigate();
 
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [messageDialog, setMessageDialog] = React.useState<string>(null);
-  const [typeDialog, setTypeDialog] = React.useState<string>(null);
+  const [eventImport, setEventImport] = React.useState<'PURGE' | 'BACKUP' | 'IMPORT' | 'NONE'>('NONE');
+  const [dataDialog, setDataDialog] = React.useState<DataDialog>(null);
 
   const [anchorElExport, setAnchorElExport] = React.useState<null | HTMLElement>(null);
   const openExportMenu = Boolean(anchorElExport);
@@ -38,9 +37,8 @@ function BarNavigation() {
   const handleBackup = async () => {
     try {
       await window.electronAPI.backup();
-      console.log("Backup terminé !");
     } catch (err) {
-      console.error("Erreur backup :", err);
+      window.electronAPI.logError(`Erreur backup avant import: ${err.message || err}`);
     }
   };
 
@@ -56,7 +54,6 @@ function BarNavigation() {
       const csvData = convertToCSV(result);
       downloadCSV(csvData, 'Produits.csv');
     }).catch((err) => {
-      console.error(err);
       window.electronAPI.logError(err);
     });
   }
@@ -125,27 +122,27 @@ function BarNavigation() {
   // const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
   const closeDialog = async () => {
-    if (typeDialog === "PURGE") {
-      setOpenDialog(false);
-      await handleBackup();
-      setTypeDialog("BACKUP");
-      setMessageDialog("Backup terminé !");
-      setOpenDialog(true);
-    }
-    else if (typeDialog === "BACKUP") {
-      setOpenDialog(false);
-      await handleImportProduitsFileSelected(fileRef.current);
-      console.log("import terminé !");
 
-      setTypeDialog("IMPORT");
-      setMessageDialog("Importation terminée !");
-      setOpenDialog(true);
-    }
-    // else if (typeDialog === "IMPORT") {
-
-    // }
-    else {
-      setOpenDialog(false);
+    switch (eventImport) {
+      case "PURGE":
+        setOpenDialog(false);
+        await handleBackup();
+        setEventImport("BACKUP");
+        setDataDialog({ message: "Backup terminé !", type: "success" });
+        setOpenDialog(true);
+        break;
+      case "BACKUP":
+        setOpenDialog(false);
+        await handleImportProduitsFileSelected(fileRef.current);
+        setEventImport("IMPORT");
+        setDataDialog({ message: "Importation terminée !", type: "success" });
+        setOpenDialog(true);
+        break;
+      default:
+        setOpenDialog(false);
+        setEventImport("NONE");
+        setDataDialog(null);
+        break;
     }
   }
 
@@ -154,11 +151,12 @@ function BarNavigation() {
    * @param event Le fichier
    */
   const handleOpenDialog = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTypeDialog("PURGE");
-    setMessageDialog("Les données seront supprimées définitivement. Un backup est réalisé avant l'importation !");
+    setEventImport("PURGE");
+    setDataDialog({ message: "Les données seront supprimées définitivement. Un backup est réalisé avant l'importation !", type: "warning" });
     setOpenDialog(true);
     fileRef.current = event;
   };
+
 
   return (
     <AppBar position="static">
@@ -242,7 +240,7 @@ function BarNavigation() {
               open={openImportMenu}
               onClose={handleCloseImportMenu}
               MenuListProps={{
-                'aria-labelledby': 'import-button', // Assurez-vous que le bouton a cet id si nécessaire
+                'aria-labelledby': 'import-button',
               }}
             >
               <MenuItem onClick={triggerProduitsImportInput}>Importer Produits (CSV)</MenuItem>
@@ -262,8 +260,7 @@ function BarNavigation() {
       <DialogDialog
         open={openDialog}
         onClose={() => closeDialog()}
-        message={messageDialog}
-        type={typeDialog}
+        data={dataDialog}
       />
     </AppBar>
   );

@@ -53,7 +53,7 @@ const parseCSVToProduits = (csvData: string): Produit[] => {
 
 export const handleImportProduitsFileSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return false;
+    if (!file) throw new Error("Aucun fichier sélectionné pour l'import.");
 
     try {
         // 1. Lire le fichier en texte via une Promise
@@ -71,17 +71,15 @@ export const handleImportProduitsFileSelected = async (event: React.ChangeEvent<
         if (importedProduits.length > 0) {
             // 3. Attendre l'import Electron
             await window.electronAPI.importProduits(importedProduits);
-
-            alert("Produits importés avec succès! Veuillez rafraîchir la liste des produits si nécessaire.");
             return true;
         } else {
-            alert("Aucun produit valide trouvé dans le fichier ou fichier vide.");
-            return false;
+            throw new Error("Aucun produit valide trouvé dans le fichier ou fichier vide.");
         }
     } catch (error: any) {
         window.electronAPI.logError(`Erreur importation CSV Produits: ${error.message || error}`);
-        alert(`Erreur lors de l'importation: ${error.message || "Erreur inconnue"}`);
-        return false;
+        // alert(`Erreur lors de l'importation: ${error.message || "Erreur inconnue"}`);
+        // return false;
+        throw error;
     } finally {
         // 4. Réinitialiser l’input pour pouvoir réimporter le même fichier plus tard
         if (event.target) {
