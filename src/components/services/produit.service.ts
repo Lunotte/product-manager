@@ -11,8 +11,7 @@ export const gestionImportProduits = (produitData: any, categories: Categorie[],
 
   // Vérification des champs requis
   if (!produitData.nom || !produitData.categorieNom || !produitData.fournisseurNom || !produitData.uniteNom) {
-    // console.error("Import annulé, champs requis manquants:", produitData);
-    throw new Error(`Champs requis manquants parmis le nom du produit / catégorie / fournisseur / unité ${produitData}`);
+    throw new Error(`Champs requis manquants parmi le nom du produit / catégorie / fournisseur / unité ${JSON.stringify(produitData, null, 2)}`);
   }
 
   const categorieNom = cleanStartAndEndString(produitData.categorieNom);
@@ -70,7 +69,6 @@ const addItem = <T extends ConfigurationType>(nom: string, liste: T[], listIndex
       liste.push(newItem);
       index.set(nom, newItem);
       existingItem = newItem;
-      console.debug("Nouvel élément créé:", newItem);
       // TODO : Faire un save pour pouvoir récupérer les IDs
     }
     return existingItem;

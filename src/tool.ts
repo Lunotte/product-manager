@@ -1,6 +1,6 @@
 export const genererDate = () => {
   const date = new Date();
-  return new Intl.DateTimeFormat('fr-FR', {dateStyle: 'long', timeZone: 'Europe/Paris'}).format(date);
+  return new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeZone: 'Europe/Paris' }).format(date);
 }
 
 /**
@@ -20,12 +20,12 @@ export const formaterDateFR = (
   if (isNaN(date.getTime())) {
     return 'Date invalide'; // Gère le cas où la chaîne n'est pas une date valide
   }
-  console.log(date);
-  
-  const titi = new Intl.DateTimeFormat('fr-FR', options).format(date);
-  console.log(titi);
-  
-  return titi;
+  // console.log(date);
+
+  const dateFr = new Intl.DateTimeFormat('fr-FR', options).format(date);
+  // console.log(titi);
+
+  return dateFr;
 }
 
 /**

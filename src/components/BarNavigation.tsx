@@ -9,9 +9,9 @@ import { useNavigate } from 'react-router-dom';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Contact } from '../models/Contact';
-import { Produit } from '../models/Produit';
 import { handleImportProduitsFileSelected } from './services/import-produit.service';
 import DialogDialog, { DataDialog, TypeAlert } from './dialogs/AlerteDialog';
+import { convertProduitsToProduitExport, ProduitExport } from './services/exports/ProduitExport';
 
 function BarNavigation() {
 
@@ -51,7 +51,7 @@ function BarNavigation() {
 
   const exportProduits = () => {
     window.electronAPI.getProduits().then((result) => {
-      const csvData = convertToCSV(result);
+      const csvData = convertToCSV(convertProduitsToProduitExport(result));
       downloadCSV(csvData, 'Produits.csv');
     }).catch((err) => {
       window.electronAPI.logError(err);
@@ -75,7 +75,7 @@ function BarNavigation() {
     exportContacts();
   }
 
-  const convertToCSV = (data: Contact[] | Produit[]): any => {
+  const convertToCSV = (data: Contact[] | ProduitExport[]): any => {
     const headers = Object.keys(data[0]).join(";") + "\n";
     const rows = data.map(row => Object.values(row).join(";")).join("\n");
     return headers + rows;
@@ -132,11 +132,7 @@ function BarNavigation() {
         setOpenDialog(true);
         break;
       case "BACKUP":
-        setOpenDialog(false);
-        await handleImportProduitsFileSelected(fileRef.current);
-        setEventImport("IMPORT");
-        setDataDialog({ message: "Importation terminée !", type: "success" });
-        setOpenDialog(true);
+        importFichierProduits();
         break;
       default:
         setOpenDialog(false);
@@ -145,6 +141,23 @@ function BarNavigation() {
         break;
     }
   }
+
+  const importFichierProduits = async () => {
+    try {
+      setOpenDialog(false);
+      await handleImportProduitsFileSelected(fileRef.current);
+      setEventImport("IMPORT");
+      setDataDialog({ message: "Importation terminée !", type: "success" });
+      setOpenDialog(true);
+
+    } catch (error: any) {
+      setOpenDialog(false);
+      setEventImport("NONE");
+      setDataDialog({ message: error.message || error, type: "error" });
+      setOpenDialog(true);
+    }
+  }
+
 
   /**
    * Ouvre le dialog pour notifier l’utilisateur
