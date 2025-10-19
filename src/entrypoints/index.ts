@@ -35,23 +35,6 @@ const createWindow = (): void => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
-  //   callback({
-  //     responseHeaders: {
-  //       ...details.responseHeaders,
-  //       'Content-Security-Policy': [
-  //         "default-src 'self';",
-  //         "font-src 'self' https://fonts.gstatic.com data:;",
-  //         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;",
-  //         "connect-src 'self' https://fonts.gstatic.com;",
-  //         "img-src 'self' data:;",
-  //         "script-src 'self' 'unsafe-inline' 'unsafe-eval';"
-  //       ].join(' ')
-  //     }
-  //   });
-  // });
-
-
   if (!app.isPackaged) {
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
@@ -60,7 +43,6 @@ const createWindow = (): void => {
 
 // Chemin de sauvegarde des logs
 log.transports.file.resolvePathFn = () => path.join(app.getPath('userData'), 'logs/catalogue.log');
-
 
 
 ipcMain.handle('backup', async (_) => {
@@ -84,28 +66,6 @@ ipcMain.handle('backup', async (_) => {
 ipcMain.on('log-error', (event, message) => {
   log.error('Erreur reçue du renderer :', message);
 });
-
-// ipcMain.on("import-termine", (event, produit) => {
-//   log.info('Coucou toto ' + event, produit);
-
-//   const win = BrowserWindow.getFocusedWindow();
-//   win.webContents.send("on-import-termine", produit);
-// });
-
-// ipcMain.on("remove-event", (channel, produit) => {
-
-//   log.warn('remove event ' + channel, produit);
-
-//   const map = ipcMain.removeHandler(channel);
-//   if (!map) return;
-//   const wrapper = map.get(callback);
-//   if (!wrapper) return;
-//   ipcMain.removeListener(channel, wrapper);
-//   map.delete(callback);
-//   if (map.size === 0) {
-//     ipcListeners.delete(channel);
-//   }
-// });
 
 crudHandlers();
 

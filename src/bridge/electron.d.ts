@@ -30,7 +30,6 @@ export interface ElectronAPI {
     getProduits: () => Promise<Produit[]>;
     rechercherProduits: (query: string) => Promise<Produit[]>;
     addProduit: (produit: Produit) => Promise<void>;
-    // addProduits: (produits: Produit[]) => Promise<void>;
     updateProduit: (produit: Produit) => Promise<void>;
     deleteProduit: (id: number) => Promise<void>;
 
@@ -40,9 +39,7 @@ export interface ElectronAPI {
     updateContact: (contact: Contact) => Promise<Contact[]>;
     deleteContact: (id: number) => Promise<Contact[]>;
 
-    // notifierImportTermine: (channel: string, message: string) => void;
     onEvent: (channel: string, callback: (data: any) => void) => void;
-    // removeEvent: (channel: string, callback: (data: any) => void) => void;
 }
 
 declare global {

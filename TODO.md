@@ -1,7 +1,9 @@
 # Tâches
 
 ## À faire
-Refresh catalogue
+Centraliser les règles
+Mettre en ordre
+Gèrer l’affichage du modale pour lister les erreur en cas d’echec de l’import
 
 
 ## Réalisés
@@ -12,6 +14,7 @@ Afficher notification pour CRUD réalisé
 Mettre au propre
 Purger les données de la base pour l’import
 Supprimer les clés de l’export
+Refresh catalogue
 
 ## Questions
 Afficher la date de mise à jour du "Prix achat" sur quel écran ? (Pour le moment, seulement dans la liste des produits)

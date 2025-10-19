@@ -79,40 +79,6 @@ const Produits: React.FC = () => {
             window.removeEventListener('produits-updated', onProduitsUpdated as EventListener);
         };
     }, []);
-    // window.electronAPI.onNotifierImportTermine(('on-import-termine', _) => {
-    //     console.log("Produit ajouté dans une autre IHM :");
-    //     });
-
-    // Renderer B
-    // window.electronAPI.onEvent("produit-updated", (data) => {
-    //     console.log("Produit mis à jour:", data);
-    //     // Ex: rafraîchir une liste ou recharger le state React
-    // });
-
-
-    // useEffect(() => {
-    //     // Enregistre le listener une seule fois
-    //     window.electronAPI.onEvent("on-import-termine", (data) => {
-    //         console.log("Produit mis à jour:", data);
-    //         // Ex: rafraîchir une liste ou recharger le state React
-    //     });
-    // }, []);
-
-
-    // useEffect(() => {
-    //     const handler = (data: any) => {
-    //         console.log("Produit mis à jour:", data);
-    //         // Ex: rafraîchir une liste ou recharger le state React
-    //     };
-
-    //     // Enregistre le listener
-    //     window.electronAPI.onEvent("on-import-termine", handler);
-
-    //     // Cleanup : supprime le listener pour éviter les doublons
-    //     return () => {
-    //         window.electronAPI.removeEvent("remove-event", handler);
-    //     };
-    // }, []);
 
     /**
      * Duplique un produit en créant une nouvelle entrée avec les mêmes données

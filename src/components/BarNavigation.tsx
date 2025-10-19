@@ -139,13 +139,6 @@ function BarNavigation() {
         await handleBackup();
         ouvrirDialog("IMPORT", { message: "Backup terminé !", type: "success" });
         break;
-      // case "PURGE":
-      //   setOpenDialog(false);
-      //   // await window.electronAPI.purgeProduits();
-      //   console.log('Purge des produits avant importation (non implémenté)');
-
-      //   setEventImport("IMPORT");
-      //   break;
       case "IMPORT":
         setOpenDialog(false);
         await window.electronAPI.purgeProduits();
@@ -163,11 +156,9 @@ function BarNavigation() {
 
   const importFichierProduits = async () => {
     try {
-      // setOpenDialog(false);
       await handleImportProduitsFileSelected(fileRef.current);
       console.log('Importation des produits terminée');
       ouvrirDialog("NONE", { message: "Importation terminée !", type: "success" });
-      // window.electronAPI.notifierImportTermine("produit-updated", 'ieiieieie');
       window.dispatchEvent(new Event('produits-updated'));
     } catch (error: unknown) {
       setOpenDialog(false);

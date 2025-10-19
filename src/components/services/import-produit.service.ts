@@ -51,7 +51,6 @@ const parseCSVToProduits = async (csvData: string): Promise<Produit[]> => {
     }
 
     // console.log("Configurations importées - Catégories:", categories, "Fournisseurs:", fournisseurs, "Unités:", unites, listIndexCache);
-    // window.electronAPI.importProduits(produits);
     return produits;
 }
 
@@ -96,58 +95,3 @@ export const handleImportProduitsFileSelected = async (event: React.ChangeEvent<
         }
     }
 }
-
-
-// /**
-//     * Handler pour l'import de produits depuis un fichier CSV
-//     *
-//    * @param event
-//    */
-// export const handleImportProduitsFileSelected = async (event: React.ChangeEvent<HTMLInputElement>) => {
-
-//     const file = event.target.files?.[0];
-//     if (!file) return false;
-
-//     if (file) {
-//         const reader = new FileReader();
-//         reader.onload = async (e) => {
-//             const text = e.target?.result as string;
-//             if (text) {
-//                 try {
-//                     const importedProduits = parseCSVToProduits(text);
-//                     console.log("Produits importés:", importedProduits, importedProduits.length);
-
-//                     if (importedProduits.length > 0) {
-//                         await window.electronAPI.importProduits(importedProduits);
-//                         console.log('Produits importés avec succès! Veuillez rafraîchir la liste des produits si nécessaire.');
-//                         alert('Produits importés avec succès! Veuillez rafraîchir la liste des produits si nécessaire.');
-//                         // Envisagez une manière plus intégrée de rafraîchir la liste des produits,
-//                         // par exemple, via une mise à jour du contexte ou un bus d'événements.
-//                         return true;
-//                     } else {
-//                         // console.warn('Aucun produit valide trouvé dans le fichier ou fichier vide.');
-//                         alert('Aucun produit valide trouvé dans le fichier ou fichier vide.');
-//                         return false;
-//                     }
-//                 } catch (error: any) {
-//                     // console.error("Erreur lors de l'importation des produits:", error);
-//                     window.electronAPI.logError(`Erreur importation CSV Produits: ${error.message || error}`);
-//                     alert(`Erreur lors de l'importation: ${error.message || 'Erreur inconnue'}`);
-//                     return false;
-//                 }
-//             }
-//         };
-//         reader.onerror = (error) => {
-//             console.error("Erreur de lecture du fichier:", error);
-//             window.electronAPI.logError("Erreur de lecture du fichier CSV pour importation.");
-//             alert("Erreur de lecture du fichier.");
-//             return false;
-//         };
-//         await reader.readAsText(file, 'UTF-8');
-//     }
-//     // Réinitialiser l'input pour permettre de sélectionner à nouveau le même fichier
-//     if (event.target) {
-//         event.target.value = '';
-//     }
-
-// };
