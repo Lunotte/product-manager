@@ -14,7 +14,7 @@ export const crudHandlers = () => {
     /*           CRUD           */
     /****************************/
 
-    ipcMain.handle('purge-produics', (_): void => {
+    ipcMain.handle('purge-produits', (_): void => {
         db.purgeEntite('produits');
         db.purgeEntite('categories');
         db.purgeEntite('fournisseurs');
@@ -32,6 +32,11 @@ export const crudHandlers = () => {
     ipcMain.handle('add-categorie', (_, categorie: IdNom): Categorie[] => {
         db.addCategory(categorie);
         return db.getCategories();
+    });
+
+    ipcMain.handle('add-get-categorie', (_, categorie: IdNom): Categorie => {
+        const result = db.addCategory(categorie);
+        return db.getCategorie(result.lastInsertRowid as number);
     });
 
     ipcMain.handle('update-categorie', (_, categorie: IdNom): Categorie[] => {
@@ -54,6 +59,11 @@ export const crudHandlers = () => {
     ipcMain.handle('add-fournisseur', (_, fournisseur: IdNom): Fournisseur[] => {
         db.addFournisseur(fournisseur);
         return db.getFournisseurs();
+    });
+
+    ipcMain.handle('add-get-fournisseur', (_, fournisseur: IdNom): Fournisseur => {
+        const result = db.addFournisseur(fournisseur);
+        return db.getFournisseur(result.lastInsertRowid as number);
     });
 
     ipcMain.handle('update-fournisseur', (_, fournisseur: IdNom): Fournisseur[] => {
@@ -80,6 +90,11 @@ export const crudHandlers = () => {
         return db.getUnites();
     });
 
+    ipcMain.handle('add-get-unite', (_, unite: IdNom): Unite => {
+        const result = db.addUnite(unite);
+        return db.getUnite(result.lastInsertRowid as number);
+    });
+
     ipcMain.handle('update-unite', (_, unite: IdNom): Unite[] => {
         db.updateUnite(unite);
         return db.getUnites();
@@ -94,27 +109,11 @@ export const crudHandlers = () => {
     /*          Produit         */
     /****************************/
 
-    ipcMain.handle('import-produits', async (_, produits: Produit[]) => {
+    ipcMain.handle('import-produits', async (_, produits: Produit[]): Promise<void> => {
         log.info('Importation de produits:');
-        console.log("Produits importés:");
 
-        // log.info('Importation de produits:', produits);
-        //  console.log("Produits importés:", produits);
-        // Logique pour sauvegarder/mettre à jour les produits dans la base de données
-        // Exemple:
-        // try {
-        //   for (const produit of produits) {
-        //     if (produit.id) {
-        //       // Mettre à jour le produit existant
-        //     } else {
-        //       // Ajouter un nouveau produit
-        //     }
-        //   }
-        //   return { success: true };
-        // } catch (error) {
-        //   console.error('Erreur lors de l\'importation des produits:', error);
-        //   return { success: false, error: error.message };
-        // }
+        // console.log("Produits importés:", produits);
+        db.addProduits(produits);
     });
 
     ipcMain.handle('get-produits', (): Produit[] => {

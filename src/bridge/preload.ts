@@ -13,16 +13,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   getCategories: () => ipcRenderer.invoke('get-categories'),
   addCategorie: (categorie: IdNom) => ipcRenderer.invoke('add-categorie', categorie),
+  addAndGetCategorie: (categorie: IdNom) => ipcRenderer.invoke('add-get-categorie', categorie),
   updateCategorie: (categorie: IdNom) => ipcRenderer.invoke('update-categorie', categorie),
   deleteCategorie: (id: number) => ipcRenderer.invoke('delete-categorie', id),
 
   getFournisseurs: () => ipcRenderer.invoke('get-fournisseurs'),
   addFournisseur: (fournisseur: IdNom) => ipcRenderer.invoke('add-fournisseur', fournisseur),
+  addAndGetFournisseur: (fournisseur: IdNom) => ipcRenderer.invoke('add-get-fournisseur', fournisseur),
   updateFournisseur: (fournisseur: IdNom) => ipcRenderer.invoke('update-fournisseur', fournisseur),
   deleteFournisseur: (id: number) => ipcRenderer.invoke('delete-fournisseur', id),
 
   getUnites: () => ipcRenderer.invoke('get-unites'),
   addUnite: (unite: IdNom) => ipcRenderer.invoke('add-unite', unite),
+  addAndGetUnite: (unite: IdNom) => ipcRenderer.invoke('add-get-unite', unite),
+  // addUnites: (unites: IdNom[]) => ipcRenderer.invoke('add-unites', unites),
   updateUnite: (unite: IdNom) => ipcRenderer.invoke('update-unite', unite),
   deleteUnite: (id: number) => ipcRenderer.invoke('delete-unite', id),
 
@@ -32,6 +36,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getProduits: () => ipcRenderer.invoke('get-produits'),
   rechercherProduits: (query: string) => ipcRenderer.invoke('rechercher-produit', query),
   addProduit: (produit: Produit) => ipcRenderer.invoke('add-produit', produit),
+  // addProduits: (produits: Produit[]) => ipcRenderer.invoke('add-produits', produits),
   updateProduit: (produit: Produit) => ipcRenderer.invoke('update-produit', produit),
   deleteProduit: (id: number) => ipcRenderer.invoke('delete-produit', id),
 
@@ -40,4 +45,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   addContact: (contact: Contact): Promise<Contact[]> => ipcRenderer.invoke('add-contact', contact),
   updateContact: (contact: Contact): Promise<Contact[]> => ipcRenderer.invoke('update-contact', contact),
   deleteContact: (id: number): Promise<Contact[]> => ipcRenderer.invoke('delete-contact', id),
+
+  // notifierImportTermine: (channel: string, data: any) => ipcRenderer.send("import-termine", { channel, data }),
+  // // eslint-disable-next-line @typescript-eslint/no-empty-function
+  // // onNotifierImportTermine: (message: string) => ipcRenderer.on("on-import-termine", (_, data) => message),
+  onEvent: (channel: string, callback: (data: any) => void) => ipcRenderer.on(channel, (_event, data) => callback(data)),
+  // // removeEvent: (channel: string, callback: (data: any) => void) => ipcRenderer.removeListener(channel, (_event, data) => callback(data)),
+  // removeEvent: (channel: string, callback: (data: any) => void) => ipcRenderer.invoke(channel, callback),
 });
+

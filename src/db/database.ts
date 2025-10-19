@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3';
+import Database, { RunResult } from 'better-sqlite3';
 import { app } from 'electron';
 import path from 'path';
 // import fs from 'fs';
@@ -84,12 +84,15 @@ const dbMethods = {
     const resultat = db.prepare(`DELETE FROM ${entite}`).run();
     log.debug(`Purge de l'entité ${entite} effectuée. ${resultat.changes} lignes supprimées.`, resultat);
   },
+  getCategorie(id: number): Categorie {
+    return db.prepare<number, Categorie>('SELECT * FROM categories WHERE id=?').get(id);
+  },
   getCategories(): Categorie[] {
     return db.prepare<unknown[], Categorie>('SELECT * FROM categories ORDER BY LOWER(nom) ASC').all();
   },
-  addCategory(categorie: IdNom): void {
+  addCategory(categorie: IdNom): RunResult {
     const stmt = db.prepare('INSERT INTO categories (nom) VALUES (?)');
-    stmt.run(categorie.nom);
+    return stmt.run(categorie.nom);
   },
   updateCategory(categorie: IdNom): void {
     const stmt = db.prepare('UPDATE categories SET nom=? WHERE id=?');
@@ -99,12 +102,15 @@ const dbMethods = {
     const stmt = db.prepare('DELETE FROM categories WHERE id=?');
     stmt.run(id);
   },
+  getFournisseur(id: number): Fournisseur {
+    return db.prepare<number, Fournisseur>('SELECT * FROM fournisseurs WHERE id=?').get(id);
+  },
   getFournisseurs(): Fournisseur[] {
     return db.prepare<unknown[], Fournisseur>('SELECT * FROM fournisseurs ORDER BY LOWER(nom) ASC').all();
   },
-  addFournisseur(fournisseur: IdNom): void {
+  addFournisseur(fournisseur: IdNom): RunResult {
     const stmt = db.prepare('INSERT INTO fournisseurs (nom) VALUES (?)');
-    stmt.run(fournisseur.nom);
+    return stmt.run(fournisseur.nom);
   },
   updateFournisseur(fournisseur: IdNom): void {
     const stmt = db.prepare('UPDATE fournisseurs SET nom=? WHERE id=?');
@@ -114,12 +120,15 @@ const dbMethods = {
     const stmt = db.prepare('DELETE FROM fournisseurs WHERE id=?');
     stmt.run(id);
   },
+  getUnite(id: number): Unite {
+    return db.prepare<number, Unite>('SELECT * FROM unites WHERE id=?').get(id);
+  },
   getUnites(): Unite[] {
     return db.prepare<unknown[], Unite>('SELECT * FROM unites ORDER BY LOWER(nom) ASC').all();
   },
-  addUnite(unite: IdNom): void {
+  addUnite(unite: IdNom): RunResult {
     const stmt = db.prepare('INSERT INTO unites (nom) VALUES (?)');
-    stmt.run(unite.nom);
+    return stmt.run(unite.nom);
   },
   updateUnite(unite: IdNom): void {
     const stmt = db.prepare('UPDATE unites SET nom=? WHERE id=?');
@@ -138,6 +147,17 @@ const dbMethods = {
   addProduit(nom: string, prixAchat: number, taux: number, prixVente: number, categorie_id: number, fournisseur_id: number, unite_id: number): void {
     const stmt = db.prepare('INSERT INTO produits (nom, prix_achat, date_maj_prix, taux, prix_vente, categorie_id, fournisseur_id, unite_id) VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?)');
     stmt.run(nom, prixAchat, taux, prixVente, categorie_id, fournisseur_id, unite_id);
+  },
+  addProduits(produits: Produit[]): void {
+    const stmt = db.prepare('INSERT INTO produits (nom, prix_achat, date_maj_prix, taux, prix_vente, categorie_id, fournisseur_id, unite_id) VALUES (?, ?, CURRENT_TIMESTAMP, ?, ?, ?, ?, ?)');
+
+    const insertMany = db.transaction((produits: Produit[]) => {
+      for (const produit of produits) {
+        stmt.run(produit.nom, produit.prixAchat, produit.taux, produit.prixVente, produit.categorieId, produit.fournisseurId, produit.uniteId);
+      }
+    });
+
+    insertMany(produits);
   },
   updateProduit(id: number, nom: string, prixAchat: number, taux: number, prixVente: number, categorieId: number, fournisseurId: number, uniteId: number): void {
     const stmt = db.prepare('UPDATE produits SET nom=?, prix_achat=?, date_maj_prix=CURRENT_TIMESTAMP, taux=?, prix_vente=?, categorie_id=?, fournisseur_id=?, unite_id=? WHERE id=?');

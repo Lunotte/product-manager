@@ -10,15 +10,17 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Contact } from '../models/Contact';
 import { handleImportProduitsFileSelected } from './services/import-produit.service';
-import DialogDialog, { DataDialog, TypeAlert } from './dialogs/AlerteDialog';
+import DialogDialog, { DataDialog } from './dialogs/AlerteDialog';
 import { convertProduitsToProduitExport, ProduitExport } from './services/exports/ProduitExport';
+
+type EventImportType = 'NONE' | 'BACKUP' | 'PURGE' | 'IMPORT';
 
 function BarNavigation() {
 
   const navigate = useNavigate();
 
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [eventImport, setEventImport] = React.useState<'PURGE' | 'BACKUP' | 'IMPORT' | 'NONE'>('NONE');
+  const [eventImport, setEventImport] = React.useState<EventImportType>('NONE');
   const [dataDialog, setDataDialog] = React.useState<DataDialog>(null);
 
   const [anchorElExport, setAnchorElExport] = React.useState<null | HTMLElement>(null);
@@ -75,13 +77,14 @@ function BarNavigation() {
     exportContacts();
   }
 
-  const convertToCSV = (data: Contact[] | ProduitExport[]): any => {
+  const convertToCSV = (data: Contact[] | ProduitExport[]): string => {
+    if (!data || data.length === 0) return '';
     const headers = Object.keys(data[0]).join(";") + "\n";
     const rows = data.map(row => Object.values(row).join(";")).join("\n");
     return headers + rows;
   };
 
-  const downloadCSV = (csvData: any, filename = "data.csv") => {
+  const downloadCSV = (csvData: string, filename = "data.csv") => {
     const bom = "\uFEFF";
     const blob = new Blob([bom + csvData], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -119,19 +122,34 @@ function BarNavigation() {
     fileInputRef.current?.click();
   };
 
+  const ouvrirDialog = (event: EventImportType, data: DataDialog) => {
+    setEventImport(event);
+    setDataDialog(data);
+    setOpenDialog(true);
+  };
+
   // const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
   const closeDialog = async () => {
+    console.log(eventImport);
 
     switch (eventImport) {
-      case "PURGE":
+      case "BACKUP":
         setOpenDialog(false);
         await handleBackup();
-        setEventImport("BACKUP");
-        setDataDialog({ message: "Backup terminé !", type: "success" });
-        setOpenDialog(true);
+        ouvrirDialog("IMPORT", { message: "Backup terminé !", type: "success" });
         break;
-      case "BACKUP":
+      // case "PURGE":
+      //   setOpenDialog(false);
+      //   // await window.electronAPI.purgeProduits();
+      //   console.log('Purge des produits avant importation (non implémenté)');
+
+      //   setEventImport("IMPORT");
+      //   break;
+      case "IMPORT":
+        setOpenDialog(false);
+        await window.electronAPI.purgeProduits();
+        console.log('Purge des produits avant importation terminée');
         importFichierProduits();
         break;
       default:
@@ -140,21 +158,21 @@ function BarNavigation() {
         setDataDialog(null);
         break;
     }
+
   }
 
   const importFichierProduits = async () => {
     try {
-      setOpenDialog(false);
+      // setOpenDialog(false);
       await handleImportProduitsFileSelected(fileRef.current);
-      setEventImport("IMPORT");
-      setDataDialog({ message: "Importation terminée !", type: "success" });
-      setOpenDialog(true);
-
-    } catch (error: any) {
+      console.log('Importation des produits terminée');
+      ouvrirDialog("NONE", { message: "Importation terminée !", type: "success" });
+      // window.electronAPI.notifierImportTermine("produit-updated", 'ieiieieie');
+      window.dispatchEvent(new Event('produits-updated'));
+    } catch (error: unknown) {
       setOpenDialog(false);
-      setEventImport("NONE");
-      setDataDialog({ message: error.message || error, type: "error" });
-      setOpenDialog(true);
+      const message = error instanceof Error ? error.message : String(error);
+      ouvrirDialog("NONE", { message, type: "error" });
     }
   }
 
@@ -164,9 +182,7 @@ function BarNavigation() {
    * @param event Le fichier
    */
   const handleOpenDialog = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEventImport("PURGE");
-    setDataDialog({ message: "Les données seront supprimées définitivement. Un backup est réalisé avant l'importation !", type: "warning" });
-    setOpenDialog(true);
+    ouvrirDialog("BACKUP", { message: "Les données seront supprimées définitivement. Un backup est réalisé avant l'importation !", type: "warning" });
     fileRef.current = event;
   };
 

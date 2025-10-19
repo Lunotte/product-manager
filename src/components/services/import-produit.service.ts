@@ -8,7 +8,7 @@ import { ConfigurationType, gestionImportProduits } from "./produit.service";
 /**
  * Parse le CSV en tableau de produits.
  */
-const parseCSVToProduits = (csvData: string): Produit[] => {
+const parseCSVToProduits = async (csvData: string): Promise<Produit[]> => {
 
     const lines = csvData.replace(/^\uFEFF/, '').split(/\r?\n/); // Supprimer BOM, séparer les lignes
 
@@ -42,11 +42,16 @@ const parseCSVToProduits = (csvData: string): Produit[] => {
             produitData[header] = values.length > index ? (values[index] || '').trim() : '';
         });
 
-        produits.push(gestionImportProduits(produitData, categories, fournisseurs, unites, listIndexCache));
-        // TODO : Ajout en bdd
+        await gestionImportProduits(produitData, categories, fournisseurs, unites, listIndexCache).then((produit: Produit) => {
+            produits.push(produit);
+        }).catch((error) => {
+            window.electronAPI.logError(`Erreur lors du traitement du produit à la ligne ${i + 1}: ${error.message || error}`);
+            // Continuer le traitement des autres lignes malgré l'erreur
+        });
     }
 
     // console.log("Configurations importées - Catégories:", categories, "Fournisseurs:", fournisseurs, "Unités:", unites, listIndexCache);
+    // window.electronAPI.importProduits(produits);
     return produits;
 }
 
@@ -65,12 +70,16 @@ export const handleImportProduitsFileSelected = async (event: React.ChangeEvent<
         });
 
         // 2. Parser le CSV
-        const importedProduits = parseCSVToProduits(text);
-        console.log("Produits importés:", importedProduits, importedProduits.length);
+        const importedProduits = await parseCSVToProduits(text);
+        // console.log("Produits à importer :", importedProduits, importedProduits.length);
 
         if (importedProduits.length > 0) {
             // 3. Attendre l'import Electron
-            await window.electronAPI.importProduits(importedProduits);
+            try {
+                await window.electronAPI.importProduits(importedProduits);
+            } catch (error) {
+                throw new Error("Erreur lors de l'import des produits en base de données : " + (error as any).message || error);
+            }
             return true;
         } else {
             throw new Error("Aucun produit valide trouvé dans le fichier ou fichier vide.");

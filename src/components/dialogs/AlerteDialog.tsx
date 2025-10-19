@@ -3,12 +3,10 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogContentText,
   DialogActions,
   Button
 } from '@mui/material';
 import Alert from '@mui/material/Alert';
-import AlertTitle from '@mui/material/AlertTitle';
 
 export type TypeAlert = "success" | "info" | "warning" | "error";
 

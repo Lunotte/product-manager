@@ -18,9 +18,7 @@ import { formatCustomDateFR } from "../tool";
 import Snackbars from "./hooks/utilitaires/Snackbars";
 import { useProduits } from "./hooks/produit/manage-produit";
 
-interface ProduitProps { }
-
-const Produits: React.FC<ProduitProps> = () => {
+const Produits: React.FC = () => {
 
     const { produitsGlobal, setProduitsGlobal } = useContext(ProduitContext);
     const { setProduitsFactureGlobal } = useContext(ProduitFactureContext);
@@ -64,6 +62,57 @@ const Produits: React.FC<ProduitProps> = () => {
             });
         }
     };
+    useEffect(() => {
+        const onProduitsUpdated = async () => {
+            try {
+                console.log("Produit ajouté dans une autre IHM :");
+                const result = await window.electronAPI.getProduits();
+                setProduits(result);
+            } catch (err) {
+                window.electronAPI.logError(err);
+            }
+        };
+
+        window.addEventListener('produits-updated', onProduitsUpdated as EventListener);
+
+        return () => {
+            window.removeEventListener('produits-updated', onProduitsUpdated as EventListener);
+        };
+    }, []);
+    // window.electronAPI.onNotifierImportTermine(('on-import-termine', _) => {
+    //     console.log("Produit ajouté dans une autre IHM :");
+    //     });
+
+    // Renderer B
+    // window.electronAPI.onEvent("produit-updated", (data) => {
+    //     console.log("Produit mis à jour:", data);
+    //     // Ex: rafraîchir une liste ou recharger le state React
+    // });
+
+
+    // useEffect(() => {
+    //     // Enregistre le listener une seule fois
+    //     window.electronAPI.onEvent("on-import-termine", (data) => {
+    //         console.log("Produit mis à jour:", data);
+    //         // Ex: rafraîchir une liste ou recharger le state React
+    //     });
+    // }, []);
+
+
+    // useEffect(() => {
+    //     const handler = (data: any) => {
+    //         console.log("Produit mis à jour:", data);
+    //         // Ex: rafraîchir une liste ou recharger le state React
+    //     };
+
+    //     // Enregistre le listener
+    //     window.electronAPI.onEvent("on-import-termine", handler);
+
+    //     // Cleanup : supprime le listener pour éviter les doublons
+    //     return () => {
+    //         window.electronAPI.removeEvent("remove-event", handler);
+    //     };
+    // }, []);
 
     /**
      * Duplique un produit en créant une nouvelle entrée avec les mêmes données

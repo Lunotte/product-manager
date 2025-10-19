@@ -85,6 +85,28 @@ ipcMain.on('log-error', (event, message) => {
   log.error('Erreur reçue du renderer :', message);
 });
 
+// ipcMain.on("import-termine", (event, produit) => {
+//   log.info('Coucou toto ' + event, produit);
+
+//   const win = BrowserWindow.getFocusedWindow();
+//   win.webContents.send("on-import-termine", produit);
+// });
+
+// ipcMain.on("remove-event", (channel, produit) => {
+
+//   log.warn('remove event ' + channel, produit);
+
+//   const map = ipcMain.removeHandler(channel);
+//   if (!map) return;
+//   const wrapper = map.get(callback);
+//   if (!wrapper) return;
+//   ipcMain.removeListener(channel, wrapper);
+//   map.delete(callback);
+//   if (map.size === 0) {
+//     ipcListeners.delete(channel);
+//   }
+// });
+
 crudHandlers();
 
 // This method will be called when Electron has finished

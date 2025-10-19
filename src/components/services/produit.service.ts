@@ -4,10 +4,11 @@ import { cleanStartAndEndString } from "../divers/Utils";
 import { Categorie } from "../../models/Categorie";
 import { Fournisseur } from "../../models/Fournisseur";
 import { Unite } from "../../models/Unite";
+import { IdNom } from "../../models/IdNom";
 
 export type ConfigurationType = Categorie | Fournisseur | Unite;
 
-export const gestionImportProduits = (produitData: any, categories: Categorie[], fournisseurs: Fournisseur[], unites: Unite[], listIndexCache: WeakMap<ConfigurationType[], Map<string, ConfigurationType>>): Produit => {
+export const gestionImportProduits = async (produitData: any, categories: Categorie[], fournisseurs: Fournisseur[], unites: Unite[], listIndexCache: WeakMap<ConfigurationType[], Map<string, ConfigurationType>>): Promise<Produit> => {
 
   // Vérification des champs requis
   if (!produitData.nom || !produitData.categorieNom || !produitData.fournisseurNom || !produitData.uniteNom) {
@@ -19,9 +20,9 @@ export const gestionImportProduits = (produitData: any, categories: Categorie[],
   const uniteNom = cleanStartAndEndString(produitData.uniteNom);
   const produitNom = cleanStartAndEndString(produitData.nom);
 
-  const existingCategorie = addItem<Categorie>(categorieNom, categories, listIndexCache);
-  const existingFournisseur = addItem<Categorie>(fournisseurNom, fournisseurs, listIndexCache);
-  const existingUnite = addItem<Categorie>(uniteNom, unites, listIndexCache);
+  const existingCategorie = await addItem<Categorie>(categorieNom, categories, listIndexCache, window.electronAPI.addAndGetCategorie);
+  const existingFournisseur = await addItem<Fournisseur>(fournisseurNom, fournisseurs, listIndexCache, window.electronAPI.addAndGetFournisseur);
+  const existingUnite = await addItem<Unite>(uniteNom, unites, listIndexCache, window.electronAPI.addAndGetUnite);
 
   // TODO : Ajouter d'autres validations pour verifier l'intégrité des données
   if (!produitNom) { // Validation de base: un produit doit avoir un nom
@@ -47,7 +48,7 @@ export const gestionImportProduits = (produitData: any, categories: Categorie[],
  * @param liste À laquelle ajouter l'élément
  * @throws Error si une erreur survient lors de l'ajout
  */
-const addItem = <T extends ConfigurationType>(nom: string, liste: T[], listIndexCache: WeakMap<ConfigurationType[], Map<string, ConfigurationType>>): T => {
+const addItem = async <T extends ConfigurationType>(nom: string, liste: T[], listIndexCache: WeakMap<ConfigurationType[], Map<string, ConfigurationType>>, addFn: (item: IdNom) => Promise<T>): Promise<T> => {
 
   try {
     // Récupérer ou construire l'index pour ce tableau
@@ -68,8 +69,7 @@ const addItem = <T extends ConfigurationType>(nom: string, liste: T[], listIndex
       const newItem = { nom } as T;
       liste.push(newItem);
       index.set(nom, newItem);
-      existingItem = newItem;
-      // TODO : Faire un save pour pouvoir récupérer les IDs
+      existingItem = await addFn(newItem as IdNom);
     }
     return existingItem;
   } catch (error) {
