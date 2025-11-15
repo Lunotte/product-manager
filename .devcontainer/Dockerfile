@@ -1,6 +1,6 @@
 # Dev container Dockerfile for Node development
 # Use Node LTS - 18 or adapt to your needs (18 is widely supported for Electron builds)
-FROM node:18-bullseye-slim
+FROM ubuntu:noble
 
 # Avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
