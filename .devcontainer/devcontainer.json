@@ -1,0 +1,31 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+	"name": "Ubuntu (with Docker Compose)",
+	// Use Docker Compose to run the development container
+	"dockerComposeFile": [ "../docker-compose.yml" ],
+	"service": "app",
+	"workspaceFolder": "/workspace",
+
+	// "features": {
+	// 	"ghcr.io/stuartleeks/dev-container-features/add-host:1": {},
+	// 	"ghcr.io/warrenbuckley/codespace-features/sqlite:1": {},
+	// 	"ghcr.io/swift-server-community/swift-devcontainer-features/sqlite:1": {},
+	// 	"ghcr.io/cirolosapio/devcontainers-features/alpine-node:0": {},
+	// 	"ghcr.io/davzucky/devcontainers-features-wolfi/bash:1": {}
+	// }
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Forward the port used by your dev server (adjust if your app runs on another port)
+	"forwardPorts": [3000],
+
+	// Configure tool-specific properties.
+	// "customizations": {},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+
+	"postCreateCommand": "bash -lc 'curl -fsSL https://mise.run | sh || true && ~/.local/bin/mise --version >/dev/null 2>&1 || true && ~/.local/bin/mise install || true && npm ci'"
+}

@@ -1,0 +1,9 @@
+[tools]
+node = "18"
+
+[env]
+NODE_ENV = "development"
+
+[tasks]
+dev = { run = "npm run start" }
+build = { run = "npm run make" }
