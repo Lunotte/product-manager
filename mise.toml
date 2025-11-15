@@ -1,9 +1,18 @@
 [tools]
-node = "18"
+# Node LTS - adjust version as needed
+node = "20"
 
 [env]
 NODE_ENV = "development"
 
-[tasks]
-dev = { run = "npm run start" }
-build = { run = "npm run make" }
+[tasks.dev]
+run = "npm run start"
+description = "Start Electron dev server"
+
+[tasks.build]
+run = "npm run make"
+description = "Build application"
+
+[tasks.lint]
+run = "npm run lint"
+description = "Run linter"

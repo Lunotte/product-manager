@@ -1,33 +1,21 @@
+version: '3.8'
+
 services:
   app:
     build:
       context: .
       dockerfile: .devcontainer/Dockerfile
-    image: product-manager-app:dev
-    command: bash -lc "npm run start"
+    image: product-manager-dev:latest
+    container_name: product-manager-dev
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - /workspace/node_modules
     environment:
       - NODE_ENV=development
-    volumes:
-      - ./:/workspace:cached
-      - /workspace/node_modules
     ports:
       - "3000:3000"
-    # Optional: forward X11 or expose additional ports for electron GUI
-
-  # Optional PostgreSQL service for development if you prefer a server DB
-  db:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: catalogue_dev
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-volumes:
-  postgres_data:
-
-networks:
-  product_net:
-    driver: bridge
+      - "5173:5173"
+    command: npm run start
+    stdin_open: true
+    tty: true

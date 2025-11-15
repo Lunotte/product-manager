@@ -1,42 +1,48 @@
-# Developer convenience Makefile for product-manager
+.PHONY: help build up dev down logs shell clean npm-%
 
-.PHONY: up down build logs attach mise-install mise-use dev
+help:
+	@echo "Product Manager Dev Container Commands"
+	@echo "========================================"
+	@echo "  make build        - Build the dev container image"
+	@echo "  make up           - Start containers in background"
+	@echo "  make dev          - Start containers in foreground (interactive)"
+	@echo "  make down         - Stop and remove containers"
+	@echo "  make logs         - Follow container logs"
+	@echo "  make shell        - Open shell in running container"
+	@echo "  make clean        - Remove containers, images and volumes"
+	@echo "  make npm-*        - Run npm scripts (e.g. make npm-start, make npm-lint)"
 
-# Build and run docker compose
-up:
-	docker compose up --build -d
-
-# Run in foreground
-dev:
-	docker compose up --build
-
-# Stop and cleanup
-down:
-	docker compose down
-
-# Build image without starting
+# Build the container
 build:
-	docker compose build --no-cache
+	docker-compose build --no-cache
 
-# Attach to container shell
-attach:
-	docker compose exec app bash
+# Start in background
+up:
+	docker-compose up -d
+	@echo "✓ Container started. Use 'make logs' to view output"
 
-# View logs
+# Start in foreground (useful during development)
+dev:
+	docker-compose up
+
+# Stop containers
+down:
+	docker-compose down
+
+# View live logs
 logs:
-	docker compose logs -f --tail=200
+	docker-compose logs -f app
 
-# Install tools via mise inside the dev container
-# This will create Node and other tools defined in mise.toml
-mise-install:
-	docker compose exec app bash -lc "~/.local/bin/mise install || echo 'mise not found; install locally with curl https://mise.run | sh'"
+# Open shell in container
+shell:
+	docker-compose exec app bash
 
-# Use a specific node version from the host or container
-mise-use:
-	@echo "Use: make mise-use MISE_NODE=22"
-	if [ -z "$(MISE_NODE)" ]; then echo "Set MISE_NODE"; exit 1; fi
-	docker compose exec app bash -lc "~/.local/bin/mise use --global node@$(MISE_NODE) || echo 'failed to use'; ~/.local/bin/mise --version"
+# Clean up everything
+clean:
+	docker-compose down -v
+	docker rmi product-manager-dev:latest || true
 
-# Run npm scripts inside container
+# Run npm commands inside container
+# Usage: make npm-start, make npm-lint, etc.
 npm-%:
-	docker compose exec app bash -lc "npm run $*"
+	docker-compose exec app npm run $*
