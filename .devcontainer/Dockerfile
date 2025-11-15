@@ -1,6 +1,6 @@
 # Dev container Dockerfile for Node development
 # Use Node LTS - 18 or adapt to your needs (18 is widely supported for Electron builds)
-FROM ubuntu:noble
+FROM mcr.microsoft.com/devcontainers/base:0-ubuntu-22.04
 
 # Avoid interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libgtk-3-0 \
     libx11-xcb1 \
     libasound2 \
-    libgconf-2-4 \
+    libgconf-2-4 gconf2 \
     libnss3 \
     libgdk-pixbuf2.0-0 \
     libxss1 \

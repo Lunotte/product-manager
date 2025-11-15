@@ -1,10 +1,8 @@
-version: "3.8"
-
 services:
   app:
     build:
-      context: ./.devcontainer
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: .devcontainer/Dockerfile
     image: product-manager-app:dev
     command: bash -lc "npm run start"
     environment:

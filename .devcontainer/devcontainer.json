@@ -25,7 +25,7 @@
 	// "customizations": {},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	"remoteUser": "node",
 
 	"postCreateCommand": "bash -lc 'curl -fsSL https://mise.run | sh || true && ~/.local/bin/mise --version >/dev/null 2>&1 || true && ~/.local/bin/mise install || true && npm ci'"
 }
