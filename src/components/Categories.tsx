@@ -1,7 +1,7 @@
-import CrudTable from "./CrudTable";
 import { Categorie } from "../models/Categorie";
 import { CrudEventProps } from "./services/utile.service";
 import { useCategories } from "./hooks/categorie/manage-categorie";
+import { CrudTable } from "./CrudTable";
 
 const Categories: React.FC<CrudEventProps> = ({ onEvent }) => {
     const { categories, setCategories } = useCategories();

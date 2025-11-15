@@ -39,7 +39,7 @@ export interface ElectronAPI {
     updateContact: (contact: Contact) => Promise<Contact[]>;
     deleteContact: (id: number) => Promise<Contact[]>;
 
-    onEvent: (channel: string, callback: (data: any) => void) => void;
+    // onEvent: (channel: string, callback: (data: any) => void) => void;
 }
 
 declare global {

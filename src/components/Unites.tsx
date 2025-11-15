@@ -1,5 +1,5 @@
 import { Unite } from "../models/Unite";
-import CrudTable from "./CrudTable";
+import { CrudTable } from "./CrudTable";
 import { useUnites } from "./hooks/unite/manage-unite";
 import { CrudEventProps } from "./services/utile.service";
 

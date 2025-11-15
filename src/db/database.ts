@@ -1,7 +1,6 @@
 import Database, { RunResult } from 'better-sqlite3';
 import { app } from 'electron';
 import path from 'path';
-// import fs from 'fs';
 import fs from 'fs-extra';
 import log from 'electron-log';
 

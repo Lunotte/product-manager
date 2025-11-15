@@ -1,5 +1,4 @@
-import { useCallback } from "react";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { IdNom } from "../../models/IdNom";
 
 export type OnCrudEventType = (event: { type: 'add' | 'update' | 'delete'; message: string }) => void;
@@ -123,9 +122,6 @@ export function useCrudLogic<T extends IdNom>(
     deleteLabel: string,
     onReload?: () => void
 ) {
-    // const [queryItems, setQueryItems] = useState<string>("");
-    // const [query, setQuery] = useState<string>("");
-
     const [item, setItem] = useState<T>();
     const [openDialog, setOpenDialog] = useState(false);
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
@@ -134,7 +130,6 @@ export function useCrudLogic<T extends IdNom>(
     const addItem = useAdd(useAddApi, setItems, onEvent, addLabel, onReload);
     const updateItem = useUpdate(useUpdateApi, setItems, onEvent, updateLabel, onReload);
     const deleteItem = useDelete(useDeleteApi, setItems, onEvent, deleteLabel, onReload);
-    // const queryItems = useQueryItems(useQueryItemsApi, setItems);
 
     const handleAdd = (item: T) => {
         if (item.id) {
@@ -171,26 +166,6 @@ export function useCrudLogic<T extends IdNom>(
         setOpenDeleteDialog(false);
     };
 
-    // const reloadItems = useCallback(() => {
-    //     if (options?.query && options?.apiQueryItemsFn) {
-    //         options.apiQueryItemsFn(options.query)
-    //             .then(setItems)
-    //             .catch(window.electronAPI.logError);
-    //     } else if (options?.apiQueryItemsFn) {
-    //         options.apiQueryItemsFn()
-    //             .then(setItems)
-    //             .catch(window.electronAPI.logError);
-    //     }
-    // }, [options, setItems]);
-
-    // const reloadItems = () => {
-    //     if (queryItems.length === 0) {
-    //         reloadContacts();
-    //     } else {
-    //         queryItems(queryItems);
-    //     }
-    // }
-
     return {
         item,
         setItem,
@@ -206,6 +181,5 @@ export function useCrudLogic<T extends IdNom>(
         handleOpenDeleteDialog,
         handleCloseDeleteDialog,
         handleConfirmDelete,
-        // reloadItems
     };
-};
+}

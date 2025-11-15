@@ -44,6 +44,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateContact: (contact: Contact): Promise<Contact[]> => ipcRenderer.invoke('update-contact', contact),
   deleteContact: (id: number): Promise<Contact[]> => ipcRenderer.invoke('delete-contact', id),
 
-  onEvent: (channel: string, callback: (data: any) => void) => ipcRenderer.on(channel, (_event, data) => callback(data)),
+  // onEvent: (channel: string, callback: (data: any) => void) => ipcRenderer.on(channel, (_event, data) => callback(data)),
 });
 

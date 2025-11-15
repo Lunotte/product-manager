@@ -111,8 +111,6 @@ export const crudHandlers = () => {
 
     ipcMain.handle('import-produits', async (_, produits: Produit[]): Promise<void> => {
         log.info('Importation de produits:');
-
-        // console.log("Produits importés:", produits);
         db.addProduits(produits);
     });
 

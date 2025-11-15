@@ -1,6 +1,5 @@
 import { Produit } from "../../../models/Produit";
 
-
 export interface ProduitExport {
     readonly nom: string;
     readonly prixAchat: number;
