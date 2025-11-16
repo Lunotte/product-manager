@@ -2,7 +2,7 @@
   "name": "Product Manager - Electron/React Dev",
   "dockerComposeFile": ["../docker-compose.yml"],
   "service": "app",
-  "workspaceFolder": "/workspaces/product-manager",
+  "workspaceFolder": "/workspaces",
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
   },
