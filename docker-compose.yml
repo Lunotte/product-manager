@@ -5,10 +5,10 @@ services:
       dockerfile: .devcontainer/Dockerfile
     image: product-manager-dev:latest
     container_name: product-manager-dev
-    working_dir: /workspace/product-manager
+    working_dir: /workspaces/product-manager
     volumes:
-      - .:/workspace/product-manager
-      - /workspace/product-manager/node_modules
+      - .:/workspaces/product-manager
+      - /workspaces/product-manager/node_modules
     environment:
       - NODE_ENV=development
     ports:
