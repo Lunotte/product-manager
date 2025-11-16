@@ -2,7 +2,10 @@
   "name": "Product Manager - Electron/React Dev",
   "dockerComposeFile": ["../docker-compose.yml"],
   "service": "app",
-  "workspaceFolder": "/workspaces",
+  
+  // LE CHEMIN DOIT ÊTRE COHÉRENT. Utilisons la convention Dev Containers :
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}", 
+  
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
   },
@@ -30,6 +33,8 @@
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "npm ci",
+  
+  // 'npm ci' s'exécutera dans le /workspaces/... après le clonage.
+  "postCreateCommand": "npm ci", 
   "remoteUser": "node"
 }

@@ -5,15 +5,32 @@ services:
       dockerfile: .devcontainer/Dockerfile
     image: product-manager-dev:latest
     container_name: product-manager-dev
-    working_dir: /product-manager
-    volumes:
-      - .:/workspace
-      - /workspace/node_modules
+    
+    # REMPLACER ou SUPPRIMER l'ancienne ligne 'working_dir'
+    # La valeur par défaut sera celle définie par 'workspaceFolder' dans devcontainer.json.
+    # working_dir: /workspaces/${localWorkspaceFolderBasename}  # (Optionnel, si vous voulez être explicite)
+
+    # CRUCIAL : Supprimer le montage de volume local (./:/workspace)
+    # Le volume nommé de VS Code s'en chargera.
+    # volumes:
+    #   - .:/workspace  <-- SUPPRIMÉ
+    
+    # Garder le montage nommé pour node_modules est généralement inutile 
+    # pour cette commande, sauf si vous voulez conserver node_modules en dehors 
+    # du volume principal. Le répertoire cloné contiendra déjà les sources 
+    # et les node_modules installés par postCreateCommand.
+    # volumes:
+    #   - /workspace/node_modules <--- Optionnel, peut être supprimé.
+    
     environment:
       - NODE_ENV=development
     ports:
       - "3000:3000"
       - "5173:5173"
-    command: npm run start
+      
+    # Le 'command' doit être retiré pour permettre à VS Code 
+    # de prendre le contrôle et de rester ouvert pour le développement.
+    # command: npm run start  <-- SUPPRIMÉ
+
     stdin_open: true
     tty: true
