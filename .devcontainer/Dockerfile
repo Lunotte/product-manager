@@ -25,4 +25,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libglu1-mesa \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /workspace
+WORKDIR /workspace/product-manager

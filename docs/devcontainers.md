@@ -235,7 +235,7 @@ tail -f /root/.npm/_logs/* || true
 Notes et bonnes pratiques :
 - Docker Desktop conserve un cache de builds/images : `docker builder prune` et `docker image prune` peuvent aider.
 - Si vous avez des volumes persistants anciens, supprimez-les avec `docker volume rm` (inspectez d'abord).
-- Éviter de monter `node_modules` à la racine du workspace sans un volume (nous utilisons un volume dédié `/workspace/node_modules` dans `docker-compose.yml`).
+- Éviter de monter `node_modules` à la racine du workspace sans un volume (nous utilisons un volume dédié `/workspace/product-manager/node_modules` dans `docker-compose.yml`).
 
 ## Augmenter la taille du disque pour WSL / Docker Desktop
 
