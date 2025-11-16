@@ -185,6 +185,131 @@ docker-compose exec app cp public/database.db ./backup_$(date +%s).db
 cp public/database.db public/database.db.backup
 ```
 
+## Dépannage : "No space left on device" (erreur pendant le démarrage)
+
+Cause fréquente : l'erreur "tar: write error: No space left on device" dans les logs de Remote - Containers signifie que le disque **du backend Docker/WSL** s'est rempli pendant l'extraction du serveur VS Code ou pendant la construction de l'image.
+
+Points importants à savoir :
+- L'espace disque affiché sur Windows (ex. 300 GiB de libre) n'est pas forcément utilisable directement par le conteneur : Docker Desktop WSL2 utilise un disque virtuel (ext4.vhdx) qui peut être configuré ou limité dans Docker Desktop.
+- L'erreur s'est produite pendant l'extraction d'un archive tar vers `/root/.vscode-remote-containers/` dans la distribution `docker-desktop` (WSL) — c'est donc bien l'espace libre dans Docker/WSL qui manque.
+
+Étapes de diagnostic & résolution (non destructif):
+
+1. Vérifier l'espace disponible dans le backend Docker/WSL :
+
+```powershell
+# Vérifier occupation Docker
+docker system df
+
+# Vérifier taille du disque dans la distro docker-desktop (WSL)
+wsl -d docker-desktop -- df -h
+wsl -d docker-desktop -- du -sh /var/lib/docker || true
+```
+
+2. Si l'espace est faible, nettoyez les images/volumes non utilisées (privilégier d'abord l'inspection) :
+
+```powershell
+# Lister images et volumes volumineux
+docker images --format "table {{.Repository}}\t{{.Tag}}\t{{.Size}}\t{{.ID}}"
+docker volume ls
+docker volume inspect <volume>
+
+# Nettoyage rapide (destructif pour les images non référencées)
+docker system prune -a --volumes --force
+```
+
+3. Si Docker Desktop a une limite de disque (paramétrée), changez-la dans l'UI : `Settings -> Resources -> Advanced -> Disk image size` (augmenter si nécessaire), puis Redémarrer Docker Desktop.
+
+4. Si vous préférez ne pas tout supprimer, retirez uniquement les images ou volumes inutiles identifiés à l'étape 2.
+
+5. Relancer le dev container depuis VS Code : "Dev Containers: Reopen in Container".
+
+6. Si le message d'erreur se reproduit mais à un autre moment (ex. lors de `npm ci`), ouvrez un shell dans le container et regardez les logs npm :
+
+```powershell
+docker compose exec app bash
+# puis dans le container
+tail -f /root/.npm/_logs/* || true
+```
+
+Notes et bonnes pratiques :
+- Docker Desktop conserve un cache de builds/images : `docker builder prune` et `docker image prune` peuvent aider.
+- Si vous avez des volumes persistants anciens, supprimez-les avec `docker volume rm` (inspectez d'abord).
+- Éviter de monter `node_modules` à la racine du workspace sans un volume (nous utilisons un volume dédié `/workspace/node_modules` dans `docker-compose.yml`).
+
+## Augmenter la taille du disque pour WSL / Docker Desktop
+
+Si vous utilisez Docker Desktop avec backend WSL2, certaines opérations (extraction du serveur VS Code, build docker) peuvent échouer si la partition WSL associée (ex. `docker-desktop`) est pleine. Voici comment augmenter l'espace disponible :
+
+### 1) Méthode recommandée — utiliser Docker Desktop (facile)
+
+1. Ouvrez Docker Desktop
+2. Allez dans `Settings` → `Resources` → `Advanced`
+3. Ajustez **Disk image size** (ex: augmentez à 64 GiB selon vos besoins)
+4. Cliquez sur `Apply & Restart`
+
+Après redémarrage, la distribution `docker-desktop` disposera d'un plus grand disque virtuel et les extractions (`tar`) trop volumineuses ne devraient plus échouer.
+
+### 2) Méthode avancée — ré-importer / resize (si nécessaire)
+
+Attention : les commandes ci-dessous peuvent entraîner la perte de données non sauvegardées si vous ne prenez pas de précautions. Sauvegardez avant d'exécuter.
+
+1. Arrêtez WSL et Docker Desktop :
+
+```powershell
+wsl --shutdown
+```
+
+2. Exportez la distribution (exemple pour `docker-desktop-data`) :
+
+```powershell
+wsl --export docker-desktop-data C:\tmp\docker-desktop-data-backup.tar
+```
+
+3. Supprimez / désenregistrez la distribution :
+
+```powershell
+wsl --unregister docker-desktop-data
+```
+
+4. Ré-importez (le nouveau VHD prend souvent automatiquement plus d'espace) :
+
+```powershell
+wsl --import docker-desktop-data C:\wsl\docker-desktop-data C:\tmp\docker-desktop-data-backup.tar --version 2
+```
+
+5. Redémarrez Docker Desktop.
+
+Alternative (PowerShell + Hyper-V) — si vous préférez redimensionner le fichier `.vhdx` directement :
+
+1. Localisez le fichier (ex: `%USERPROFILE%\\AppData\\Local\\Docker\\wsl\\docker-desktop-data\\ext4.vhdx`)
+2. Ouvrez PowerShell en admin et exécutez :
+
+```powershell
+# Stop WSL first
+wsl --shutdown
+
+# Then expand the VHD size (example: 64GB)
+Resize-VHD -Path "$env:USERPROFILE\\AppData\\Local\\Docker\\wsl\\docker-desktop-data\\ext4.vhdx" -SizeBytes 64GB
+```
+
+Note: `Resize-VHD` nécessite le module Hyper-V (Install-WindowsFeature -Name Hyper-V) et privilèges admin; si vous n'avez pas Hyper-V, utilisez plutôt la méthode Docker Desktop UI.
+
+### 3) Après l'augmentation
+
+- Démarrez Docker Desktop
+- Vérifiez l'utilisation depuis PowerShell :
+
+```powershell
+# check WSL distro disk usage
+wsl -d docker-desktop -- df -h
+
+# check docker reclaimable space (optionnel)
+docker system df
+```
+
+Ces étapes vous permettent d'augmenter la taille du disque utilisé par Docker/WSL. Pour la plupart des utilisateurs, la méthode la plus simple et sûre est d'utiliser l'UI de Docker Desktop (option 1).
+
 ## Next Steps
 
 - Read `src/db/database.ts` to understand database initialization

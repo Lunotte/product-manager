@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libxext-dev \
     libxss-dev \
     libappindicator1 \
-    libindicator7 \
     gconf-service \
     libgconf-2-4 \
     libnotify-dev \
@@ -21,7 +20,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libnss3-dev \
     libxrandr-dev \
     libpango-1.0-0 \
-    libpango-gobject-0 \
     libgdk-pixbuf2.0-0 \
     libdrm-dev \
     libglu1-mesa \
