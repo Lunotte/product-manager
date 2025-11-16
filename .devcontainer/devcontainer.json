@@ -30,6 +30,6 @@
       "onAutoForward": "notify"
     }
   },
-  "postCreateCommand": "npm ci",
+  "postCreateCommand": "npm install",
   "remoteUser": "node"
 }
