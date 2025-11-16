@@ -7,8 +7,8 @@ services:
     container_name: product-manager-dev
     working_dir: /product-manager
     volumes:
-      - .:/workspace
-      - /workspace/node_modules
+      - .:/
+      - /node_modules
     environment:
       - NODE_ENV=development
     ports:
