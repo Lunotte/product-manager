@@ -21,7 +21,7 @@ function BarNavigation() {
 
   const [openDialog, setOpenDialog] = React.useState(false);
   const [eventImport, setEventImport] = React.useState<EventImportType>('NONE');
-  const [dataDialog, setDataDialog] = React.useState<DataDialog>(null);
+  const [dataDialog, setDataDialog] = React.useState<DataDialog | null>(null);
 
   const [anchorElExport, setAnchorElExport] = React.useState<null | HTMLElement>(null);
   const openExportMenu = Boolean(anchorElExport);
@@ -137,7 +137,15 @@ function BarNavigation() {
       case "BACKUP":
         setOpenDialog(false);
         await handleBackup();
-        ouvrirDialog("IMPORT", { message: "Backup terminé !", type: "success" });
+        // Affichage du message de backup désactivé pour l'instant.
+        // Lancer directement la purge et l'import (anciennement via le dialog "IMPORT")
+        try {
+          await window.electronAPI.purgeProduits();
+          console.log('Purge des produits avant importation terminée');
+          importFichierProduits();
+        } catch (purgeErr) {
+          window.electronAPI.logError(`Erreur lors de la purge après backup: ${purgeErr}`);
+        }
         break;
       case "IMPORT":
         setOpenDialog(false);
@@ -156,14 +164,36 @@ function BarNavigation() {
 
   const importFichierProduits = async () => {
     try {
-      await handleImportProduitsFileSelected(fileRef.current);
-      console.log('Importation des produits terminée');
-      ouvrirDialog("NONE", { message: "Importation terminée !", type: "success" });
-      window.dispatchEvent(new Event('produits-updated'));
+      // 1) Prévalidation côté client — parsing + erreurs détectées
+      const parseResult = await handleImportProduitsFileSelected(fileRef.current);
+
+      if (parseResult.erreursParse && parseResult.erreursParse.length > 0) {
+        // Afficher la liste des erreurs de parsing au user et arrêter
+        ouvrirDialog("NONE", { message: parseResult.erreursParse, type: "error" });
+        return;
+      }
+
+      // Si uniquement des warnings sont présents, les afficher mais ne pas bloquer l'import
+      if (parseResult.warnings && parseResult.warnings.length > 0) {
+        ouvrirDialog("NONE", { message: parseResult.warnings, type: "warning" });
+        // continuer l'import malgré les warnings
+      }
+
+      // 2) Si pas d'erreurs de parsing, lancer l'import côté main (sauvegarde)
+      try {
+        await window.electronAPI.importProduits(parseResult.produits);
+        console.log('Importation des produits terminée');
+        ouvrirDialog("NONE", { message: "Importation terminée !", type: "success" });
+        window.dispatchEvent(new Event('produits-updated'));
+      } catch (saveError: unknown) {
+        const saveMsg = saveError instanceof Error ? saveError.message : String(saveError);
+        // Afficher l'erreur de sauvegarde dans le modal sous forme de liste
+        ouvrirDialog("NONE", { message: [`Erreur lors de la sauvegarde : ${saveMsg}`], type: "error" });
+      }
     } catch (error: unknown) {
       setOpenDialog(false);
       const message = error instanceof Error ? error.message : String(error);
-      ouvrirDialog("NONE", { message, type: "error" });
+      ouvrirDialog("NONE", { message: [`Erreur lors de la lecture/parse du fichier : ${message}`], type: "error" });
     }
   }
 

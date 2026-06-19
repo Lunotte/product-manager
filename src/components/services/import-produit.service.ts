@@ -3,6 +3,7 @@ import { Produit } from "../../models/Produit";
 import { Fournisseur } from "../../models/Fournisseur";
 import { Unite } from "../../models/Unite";
 import { ConfigurationType, gestionImportProduits } from "./produit.service";
+import { importRules } from '../../../import-rules';
 
 
 const getErrorMessage = (error: unknown): string => {
@@ -18,7 +19,13 @@ const getErrorMessage = (error: unknown): string => {
  * - Détection du séparateur le plus probable (; , ou \t)
  * - Respect des espaces dans les champs quote-encapsulés
  */
-const parseCSVToProduits = async (csvData: string): Promise<Produit[]> => {
+type ParseResult = {
+    produits: Produit[];
+    erreursParse: string[];
+    warnings?: string[];
+};
+
+const parseCSVToProduits = async (csvData: string): Promise<ParseResult> => {
     const text = csvData.replace(/^\uFEFF/, ''); // Supprimer BOM
 
     // Choisit le séparateur en examinant la première ligne non vide (compte hors quotes)
@@ -121,8 +128,9 @@ const parseCSVToProduits = async (csvData: string): Promise<Produit[]> => {
     }
 
     if (headerRowIndex >= rows.length || rows.length < headerRowIndex + 2) {
-        console.warn('Le CSV ne contient pas assez de données (entêtes + au moins une ligne de données).');
-        return [];
+        const msg = 'Le CSV ne contient pas assez de données (entêtes + au moins une ligne de données).';
+        console.warn(msg);
+        return { produits: [], erreursParse: [msg] };
     }
 
     const headers = rows[headerRowIndex].map(h => (h ?? '').trim());
@@ -132,6 +140,8 @@ const parseCSVToProduits = async (csvData: string): Promise<Produit[]> => {
     const fournisseurs: Fournisseur[] = [];
     const unites: Unite[] = [];
     const produits: Produit[] = [];
+    const erreursParse: string[] = [];
+    const warnings: string[] = [];
 
     for (let i = headerRowIndex + 1; i < rows.length; i++) {
         const rowValues = rows[i];
@@ -142,22 +152,96 @@ const parseCSVToProduits = async (csvData: string): Promise<Produit[]> => {
         headers.forEach((header, index) => {
             produitData[header] = rowValues.length > index ? (rowValues[index] ?? '') : '';
         });
+        // Validation supplémentaire côté parsing pour détecter des erreurs
+        // qui provoqueront un échec côté base (ex: NOT NULL sur `prix_achat`).
+        // Cela permet de fournir des messages plus lisibles à l'utilisateur
+        // avant d'envoyer les données au process principal.
+        const rowErrors: string[] = [];
+
+        // Helper pour récupérer une valeur depuis produitData en testant
+        // plusieurs variantes de nom de colonne (camelCase, snake_case, espaces, tirets)
+        const getFieldValue = (keys: string[]): string | undefined => {
+            for (const k of keys) {
+                // recherche insensible à la casse
+                const foundKey = Object.keys(produitData).find(h => h.toLowerCase() === k.toLowerCase());
+                if (foundKey) return (produitData[foundKey] ?? '').trim();
+            }
+            return undefined;
+        };
+
+        // Champs obligatoires côté base à vérifier avant import
+        // Pour chaque champ on définit des variantes d'en-têtes courantes
+        const requiredDbFields = importRules.requiredDbFields;
+
+        for (const fieldSpec of requiredDbFields) {
+            const rawValue = getFieldValue(fieldSpec.variants);
+            const isMandatory = Array.isArray(importRules.mandatoryFields) && importRules.mandatoryFields.includes(fieldSpec.logicalName);
+
+            // Si le champ est obligatoire et manquant/vidE -> erreur
+            if (isMandatory && (rawValue === undefined || rawValue === '')) {
+                rowErrors.push(`Ligne ${i + 1} : champ requis '${fieldSpec.logicalName}' manquant ou vide.`);
+                continue;
+            }
+
+            // Si une valeur est fournie et doit être numérique, la valider
+            if (rawValue !== undefined && rawValue !== '' && fieldSpec.mustBeNumeric) {
+                const normalized = rawValue.replace(',', '.');
+                const numericValue = Number(normalized);
+                if (isNaN(numericValue)) {
+                    rowErrors.push(`Ligne ${i + 1} : valeur invalide pour '${fieldSpec.logicalName}' : '${rawValue}'. Attendu un nombre.`);
+                } else if (!importRules.allowNegativeNumbers && numericValue < 0) {
+                    rowErrors.push(`Ligne ${i + 1} : valeur négative interdite pour '${fieldSpec.logicalName}' : '${rawValue}'.`);
+                }
+            }
+        }
+
+        // Vérification métier spécifique : prixVente >= prixAchat (optionnelle)
+        if (importRules.enforcePrixVenteComparison) {
+            const prixAchatVal = getFieldValue(['prixAchat', 'prix_achat', 'prix achat', 'prix-achat']);
+            const prixVenteVal = getFieldValue(['prixVente', 'prix_vente', 'prix vente', 'prix-vente', 'prix de vente', 'prixdevente']);
+            if (prixAchatVal && prixVenteVal) {
+                const a = Number(prixAchatVal.replace(',', '.'));
+                const v = Number(prixVenteVal.replace(',', '.'));
+                if (!isNaN(a) && !isNaN(v)) {
+                    if (v < a) {
+                        const msg = `Ligne ${i + 1} : prixVente (${prixVenteVal}) inférieur au prixAchat (${prixAchatVal}).`;
+                        if (importRules.prixVenteLessIsWarning) {
+                            warnings.push(msg);
+                        } else {
+                            rowErrors.push(msg);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (rowErrors.length > 0) {
+            // Ne pas tenter d'ajouter cet item en base — on accumule les erreurs lisibles
+            erreursParse.push(...rowErrors);
+            // logger pour debug
+            rowErrors.forEach(msg => window.electronAPI.logError(msg));
+            continue;
+        }
 
         try {
             const produit: Produit = await gestionImportProduits(produitData, categories, fournisseurs, unites, listIndexCache);
             produits.push(produit);
         } catch (error: unknown) {
             const errText = getErrorMessage(error);
+            const message = `Ligne ${i + 1} : ${errText}`;
+            erreursParse.push(message);
             window.electronAPI.logError(`Erreur lors du traitement du produit à la ligne ${i + 1}: ${errText}`);
             // continuer le traitement des autres lignes
         }
     }
 
-    return produits;
+    const result: ParseResult = { produits, erreursParse };
+    if (warnings.length > 0) result.warnings = warnings;
+    return result;
 }
 
 
-export const handleImportProduitsFileSelected = async (event: React.ChangeEvent<HTMLInputElement>): Promise<boolean> => {
+export const handleImportProduitsFileSelected = async (event: React.ChangeEvent<HTMLInputElement>): Promise<ParseResult> => {
     const input = (event.currentTarget || event.target) as HTMLInputElement | null;
     const file = input?.files?.[0];
     if (!file) throw new Error("Aucun fichier sélectionné pour l'import.");
@@ -190,21 +274,11 @@ export const handleImportProduitsFileSelected = async (event: React.ChangeEvent<
             }
         });
 
-        // 2. Parser le CSV
-        const importedProduits = await parseCSVToProduits(text);
+        // 2. Parser le CSV (prévalidation côté client)
+        const parseResult = await parseCSVToProduits(text);
 
-        if (importedProduits.length > 0) {
-            // 3. Attendre l'import Electron
-            try {
-                await window.electronAPI.importProduits(importedProduits);
-            } catch (error: unknown) {
-                const errMsg = getErrorMessage(error);
-                throw new Error(`Erreur lors de l'import des produits en base de données : ${errMsg}`);
-            }
-            return true;
-        } else {
-            throw new Error("Aucun produit valide trouvé dans le fichier ou fichier vide.");
-        }
+        // Ne pas lancer l'import ici — le caller décidera s'il souhaite continuer après inspection des erreurs
+        return parseResult;
     } catch (error: unknown) {
         const errText = getErrorMessage(error);
         window.electronAPI.logError(`Erreur importation CSV Produits: ${errText}`);

@@ -11,14 +11,15 @@ import Alert from '@mui/material/Alert';
 export type TypeAlert = "success" | "info" | "warning" | "error";
 
 export type DataDialog = {
-  message: string;
+  // `message` peut être un texte unique ou une liste d'erreurs à afficher
+  message: string | string[];
   type: TypeAlert;
 }
 
 interface AlerteDialogProps {
   open: boolean;
   onClose: () => void;
-  data: DataDialog;
+  data: DataDialog | null;
 }
 
 const AlerteDialog: React.FC<AlerteDialogProps> = ({ open, onClose, data }) => {
@@ -27,7 +28,16 @@ const AlerteDialog: React.FC<AlerteDialogProps> = ({ open, onClose, data }) => {
       <DialogTitle>Information importante</DialogTitle>
       <DialogContent>
         <Alert severity={data.type}>
-          {data.message}
+          {Array.isArray(data.message) ? (
+            <div>
+              <div>Liste des erreurs :</div>
+              <ul>
+                {data.message.map((msg, idx) => <li key={idx}>{msg}</li>)}
+              </ul>
+            </div>
+          ) : (
+            data.message
+          )}
         </Alert>
       </DialogContent>
       <DialogActions>

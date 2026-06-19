@@ -70,6 +70,12 @@ const addItem = async <T extends ConfigurationType>(nom: string, liste: T[], lis
       liste.push(newItem);
       index.set(nom, newItem);
       existingItem = await addFn(newItem as IdNom);
+      // Mettre à jour l'index avec l'item renvoyé par la base (contenant l'id)
+      try {
+        index.set(nom, existingItem as T);
+      } catch (_) {
+        // pas critique — l'index reste cohérent pour les recherches futures
+      }
     }
     return existingItem;
   } catch (error) {

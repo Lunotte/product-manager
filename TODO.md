@@ -3,7 +3,7 @@
 ## À faire
 Centraliser les règles
 Mettre en ordre
-Gèrer l’affichage du modale pour lister les erreur en cas d’echec de l’import
+Gèrer l’affichage du modale pour lister les erreur en cas d’echec de l’import (lecture du fichier et/ou sauvegarde).
 
 
 ## Réalisés
