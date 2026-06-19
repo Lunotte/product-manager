@@ -65,7 +65,7 @@ const Produits: React.FC = () => {
     useEffect(() => {
         const onProduitsUpdated = async () => {
             try {
-                console.log("Produit ajouté dans une autre IHM :");
+                //console.log("Produit ajouté dans une autre IHM :");
                 const result = await window.electronAPI.getProduits();
                 setProduits(result);
             } catch (err) {

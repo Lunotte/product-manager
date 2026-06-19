@@ -173,7 +173,7 @@ function BarNavigation() {
    * @param event Le fichier
    */
   const handleOpenDialog = (event: React.ChangeEvent<HTMLInputElement>) => {
-    ouvrirDialog("BACKUP", { message: "Les données seront supprimées définitivement. Un backup est réalisé avant l'importation !", type: "warning" });
+    ouvrirDialog("BACKUP", { message: "Les données seront supprimées définitivement. Une sauvegarde est réalisée avant l'importation !", type: "warning" });
     fileRef.current = event;
   };
 
