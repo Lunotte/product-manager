@@ -7,6 +7,10 @@ import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
 import { IdNom } from "../models/IdNom";
 import { CrudProps, useCrudLogic } from "./services/utile.service";
 
+/**
+ * Composant générique affichant une table CRUD pour des entités `IdNom`.
+ * @param props Propriétés de configuration et callbacks fournis par `CrudProps`.
+ */
 export function CrudTable<T extends IdNom>(props: CrudProps<T>) {
     const {
         label, items, setItems,

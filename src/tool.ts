@@ -1,3 +1,7 @@
+/**
+ * Génère une date formatée en français pour l'instant présent.
+ * @returns Une chaîne représentant la date au format local français.
+ */
 export const genererDate = () => {
   const date = new Date();
   return new Intl.DateTimeFormat('fr-FR', { dateStyle: 'long', timeZone: 'Europe/Paris' }).format(date);

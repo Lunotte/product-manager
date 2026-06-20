@@ -14,6 +14,10 @@ interface TabPanelProps {
   value: number;
 }
 
+/**
+ * Panneau utilisé pour l'affichage conditionnel du contenu d'un onglet.
+ * @param props `children`, `value` et `index` pour contrôler l'affichage.
+ */
 function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
@@ -30,6 +34,11 @@ function CustomTabPanel(props: TabPanelProps) {
   );
 }
 
+/**
+ * Génère les attributs d'accessibilité pour un onglet donné.
+ * @param index Index de l'onglet.
+ * @returns Objet contenant `id` et `aria-controls`.
+ */
 function a11yProps(index: number) {
   return {
     id: `simple-tab-${index}`,
@@ -37,6 +46,9 @@ function a11yProps(index: number) {
   };
 }
 
+/**
+ * Composant de la page de configuration regroupant catégories, fournisseurs, unités et contacts.
+ */
 export default function Configurer() {
   const [value, setValue] = React.useState(0);
   const [snackbar, setSnackbar] = React.useState<{ open: boolean; message: string }>({ open: false, message: "" });

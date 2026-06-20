@@ -11,6 +11,9 @@ export const ProduitContext = createContext(null);
 export const ProduitFactureContext = createContext(null);
 export const ContactContext = createContext(null);
 
+/**
+ * Composant racine affichant la navigation et les routes principales de l'application.
+ */
 export function Home() {
 
   const [produitsGlobal, setProduitsGlobal] = useState([]);

@@ -11,12 +11,20 @@ import { Unite } from "../models/Unite";
 import { Contact } from '../models/Contact';
 import { IdNom } from '../models/IdNom';
 
+/**
+ * Retourne le chemin du fichier de base de données selon le mode (packagé ou dev).
+ * @returns Chemin absolu vers le fichier SQLite utilisé par l'application.
+ */
 export const dbPath = () => {
   return app.isPackaged
     ? path.join(app.getPath('userData'), 'database.db')
     : path.join(__dirname, '../../', 'public/database.db')
 }
 
+/**
+ * Établit une connexion à la base de données SQLite.
+ * @returns Une instance de la base de données ouverte.
+ */
 function connect() {
   return Database(
     dbPath(), { fileMustExist: false },
@@ -41,12 +49,21 @@ db.exec(`
  * @param scriptName 
  * @returns 
  */
+/**
+ * Vérifie si un script de migration a déjà été enregistré dans l'historique.
+ * @param scriptName Nom du script SQL à vérifier.
+ * @returns `true` si le script a déjà été exécuté, sinon `false`.
+ */
 function hasScriptBeenExecuted(scriptName: string) {
   const row = db.prepare('SELECT 1 FROM migration_history WHERE script_name = ?').get(scriptName);
   return !!row;
 }
 
 // Fonction pour exécuter un script SQL
+/**
+ * Exécute un fichier SQL et enregistre son exécution dans l'historique des migrations.
+ * @param scriptPath Chemin vers le fichier SQL à exécuter.
+ */
 function executeScript(scriptPath: string) {
   const script = fs.readFileSync(scriptPath, 'utf8');
   db.exec(script);

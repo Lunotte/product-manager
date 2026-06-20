@@ -8,6 +8,10 @@ import { Contact } from '../models/Contact';
 import log from 'electron-log';
 import { IdNom } from '../models/IdNom';
 
+/**
+ * Enregistre les handlers IPC pour les opérations CRUD exposées au renderer.
+ * Appelle les méthodes de `db` pour effectuer les opérations demandées.
+ */
 export const crudHandlers = () => {
 
     /****************************/

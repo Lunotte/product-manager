@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Contact } from "../../models/Contact";
 
+/**
+ * Hook React pour charger et recharger la liste des contacts depuis le main process.
+ * @returns `{ contacts, setContacts, loading, reloadContacts }`.
+ */
 export function useContacts() {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);

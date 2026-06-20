@@ -11,6 +11,11 @@ export interface ProduitExport {
     readonly uniteNom: string;
 }
 
+/**
+ * Convertit un tableau de `Produit` en format `ProduitExport` destiné à l'export CSV.
+ * @param produits Liste des produits à convertir.
+ * @returns Liste des produits au format d'export.
+ */
 export const convertProduitsToProduitExport = (produits: Produit[]): ProduitExport[] => {
     return produits.map(produit => ({
         nom: produit.nom,

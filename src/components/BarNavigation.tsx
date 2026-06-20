@@ -15,6 +15,10 @@ import { convertProduitsToProduitExport, ProduitExport } from './services/export
 
 type EventImportType = 'NONE' | 'BACKUP' | 'PURGE' | 'IMPORT';
 
+/**
+ * Barre de navigation principale affichant les actions globales (navigation, export, import, backup).
+ * Gère également l'ouverture des dialogues et le déclenchement des imports/exports.
+ */
 function BarNavigation() {
 
   const navigate = useNavigate();
