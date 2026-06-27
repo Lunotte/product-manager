@@ -11,11 +11,14 @@ export const ProduitContext = createContext(null);
 export const ProduitFactureContext = createContext(null);
 export const ContactContext = createContext(null);
 
+/**
+ * Composant racine affichant la navigation et les routes principales de l'application.
+ */
 export function Home() {
- 
-  const [produitsGlobal, setProduitsGlobal ] = useState([]);
-  const [produitsFactureGlobal, setProduitsFactureGlobal ] = useState([]);
-  const [contactGlobal, setContactGlobal ] = useState(null);
+
+  const [produitsGlobal, setProduitsGlobal] = useState([]);
+  const [produitsFactureGlobal, setProduitsFactureGlobal] = useState([]);
+  const [contactGlobal, setContactGlobal] = useState(null);
 
   const savedInvoice = window.localStorage.getItem('invoiceData')
   let data = null
@@ -24,9 +27,9 @@ export function Home() {
     if (savedInvoice) {
       data = JSON.parse(savedInvoice)
     }
-  } catch (_e) {}
+  } catch (_e) { }
 
-  // const onInvoiceUpdated = (invoice: Invoice) => {
+  // const onInvoiceUpdated = (invoice: Invoice) => { 
   //   window.localStorage.setItem('invoiceData', JSON.stringify(invoice))
   // }
 
@@ -50,8 +53,8 @@ export function Home() {
               setContactGlobal,
             }}
           >
-            <BarNavigation/>
-            <br/>
+            <BarNavigation />
+            <br />
             <Container>
               <Routes>
                 <Route path="/main_window" element={<Produits />} />

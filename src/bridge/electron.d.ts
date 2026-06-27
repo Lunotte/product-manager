@@ -1,4 +1,3 @@
-import { Contact } from "src/models/Contact";
 import { Categorie } from "../models/Categorie";
 import { Fournisseur } from "../models/Fournisseur";
 import { Produit } from "../models/Produit";
@@ -6,23 +5,28 @@ import { Produit } from "../models/Produit";
 export interface ElectronAPI {
 
     logError: (message: string) => void;
-    backup: () => void;
-    
+    backup: () => Promise<void>;
+
     getCategories: () => Promise<Categorie[]>;
-    addCategorie: (nom: string) => Promise<Categorie[]>;
-    updateCategorie: (id: number, nom: string) => Promise<Categorie[]>;
+    addCategorie: (categorie: IdNom) => Promise<Categorie[]>;
+    addAndGetCategorie: (categorie: IdNom) => Promise<Categorie>;
+    updateCategorie: (categorie: IdNom) => Promise<Categorie[]>;
     deleteCategorie: (id: number) => Promise<Categorie[]>;
 
     getFournisseurs: () => Promise<Fournisseur[]>;
-    addFournisseur: (nom: string) => Promise<Fournisseur[]>;
-    updateFournisseur: (id: number, nom: string) => Promise<Fournisseur[]>;
+    addFournisseur: (fournisseur: IdNom) => Promise<Fournisseur[]>;
+    addAndGetFournisseur: (fournisseur: IdNom) => Promise<Fournisseur>;
+    updateFournisseur: (fournisseur: IdNom) => Promise<Fournisseur[]>;
     deleteFournisseur: (id: number) => Promise<Fournisseur[]>;
 
     getUnites: () => Promise<Unite[]>;
-    addUnite: (nom: string) => Promise<Unite[]>;
-    updateUnite: (id: number, nom: string) => Promise<Unite[]>;
+    addUnite: (unite: IdNom) => Promise<Unite[]>;
+    addAndGetUnite: (unite: IdNom) => Promise<Unite>;
+    updateUnite: (unite: IdNom) => Promise<Unite[]>;
     deleteUnite: (id: number) => Promise<Unite[]>;
 
+    importProduits: (produits: Produit[]) => Promise<Produit[]>;
+    purgeProduits: () => Promise<void>;
     getProduits: () => Promise<Produit[]>;
     rechercherProduits: (query: string) => Promise<Produit[]>;
     addProduit: (produit: Produit) => Promise<void>;
@@ -31,11 +35,13 @@ export interface ElectronAPI {
 
     getContacts: () => Promise<Contact[]>;
     rechercherContacts: (query: string) => Promise<Contact[]>;
-    addContact: (contact: Contact) => Promise<void>;
-    updateContact: (contact: Contact) => Promise<void>;
-    deleteContact: (id: number) => Promise<void>;
+    addContact: (contact: Contact) => Promise<Contact[]>;
+    updateContact: (contact: Contact) => Promise<Contact[]>;
+    deleteContact: (id: number) => Promise<Contact[]>;
+
+    // onEvent: (channel: string, callback: (data: any) => void) => void;
 }
-  
+
 declare global {
     interface Window {
         electronAPI: ElectronAPI;

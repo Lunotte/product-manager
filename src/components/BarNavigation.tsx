@@ -9,38 +9,60 @@ import { useNavigate } from 'react-router-dom';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Contact } from '../models/Contact';
-import { Produit } from '../models/Produit';
+import { handleImportProduitsFileSelected } from './services/import-produit.service';
+import DialogDialog, { DataDialog } from './dialogs/AlerteDialog';
+import { convertProduitsToProduitExport, ProduitExport } from './services/exports/ProduitExport';
 
+type EventImportType = 'NONE' | 'BACKUP' | 'PURGE' | 'IMPORT';
+
+/**
+ * Barre de navigation principale affichant les actions globales (navigation, export, import, backup).
+ * Gère également l'ouverture des dialogues et le déclenchement des imports/exports.
+ */
 function BarNavigation() {
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [eventImport, setEventImport] = React.useState<EventImportType>('NONE');
+  const [dataDialog, setDataDialog] = React.useState<DataDialog | null>(null);
+
+  const [anchorElExport, setAnchorElExport] = React.useState<null | HTMLElement>(null);
+  const openExportMenu = Boolean(anchorElExport);
+
+  const [anchorElImport, setAnchorElImport] = React.useState<null | HTMLElement>(null);
+  const openImportMenu = Boolean(anchorElImport);
+
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const fileRef = React.useRef<React.ChangeEvent<HTMLInputElement>>(null);
 
   const handleCloseNavMenu = (page: string) => {
     navigate(page);
   };
 
-  const handleBackup =() => {
-    window.electronAPI.backup();
-  }
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+  const handleBackup = async () => {
+    try {
+      await window.electronAPI.backup();
+    } catch (err) {
+      window.electronAPI.logError(`Erreur backup avant import: ${err.message || err}`);
+    }
   };
-  const handleClose = () => {
-    setAnchorEl(null);
+
+  const handleClickExport = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElExport(event.currentTarget);
+  };
+  const handleCloseExportMenu = () => {
+    setAnchorElExport(null);
   };
 
   const exportProduits = () => {
     window.electronAPI.getProduits().then((result) => {
-      const csvData = convertToCSV(result);
+      const csvData = convertToCSV(convertProduitsToProduitExport(result));
       downloadCSV(csvData, 'Produits.csv');
     }).catch((err) => {
-        window.electronAPI.logError(err);
+      window.electronAPI.logError(err);
     });
-}
+  }
 
   const handleExportProduits = () => {
     exportProduits();
@@ -59,92 +81,241 @@ function BarNavigation() {
     exportContacts();
   }
 
-  const convertToCSV = (data: Contact[] | Produit[]): any => {
+  const convertToCSV = (data: Contact[] | ProduitExport[]): string => {
+    if (!data || data.length === 0) return '';
     const headers = Object.keys(data[0]).join(";") + "\n";
     const rows = data.map(row => Object.values(row).join(";")).join("\n");
     return headers + rows;
   };
-  
-  const downloadCSV = (csvData: any, filename = "data.csv") => {
+
+  const downloadCSV = (csvData: string, filename = "data.csv") => {
     const bom = "\uFEFF";
     const blob = new Blob([bom + csvData], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
-  
+
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-  
+
     URL.revokeObjectURL(url); // Libérer la mémoire
   };
-  
+
+  /**********************************
+   * 
+   *    Importation de produits 
+   * 
+   ***********************************/
+
+  const handleClickImport = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorElImport(event.currentTarget);
+  };
+
+  const handleCloseImportMenu = () => {
+    setAnchorElImport(null);
+  };
+
+  /**
+   *  Fermer le menu d'abord
+   * Puis déclencher l'input de fichier
+   */
+  const triggerProduitsImportInput = () => {
+    handleCloseImportMenu();
+    fileInputRef.current?.click();
+  };
+
+  const ouvrirDialog = (event: EventImportType, data: DataDialog) => {
+    setEventImport(event);
+    setDataDialog(data);
+    setOpenDialog(true);
+  };
+
+  // const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+  const closeDialog = async () => {
+    console.log(eventImport);
+
+    switch (eventImport) {
+      case "BACKUP":
+        setOpenDialog(false);
+        await handleBackup();
+        // Affichage du message de backup désactivé pour l'instant.
+        // Lancer directement la purge et l'import (anciennement via le dialog "IMPORT")
+        try {
+          await window.electronAPI.purgeProduits();
+          console.log('Purge des produits avant importation terminée');
+          importFichierProduits();
+        } catch (purgeErr) {
+          window.electronAPI.logError(`Erreur lors de la purge après backup: ${purgeErr}`);
+        }
+        break;
+      case "IMPORT":
+        setOpenDialog(false);
+        await window.electronAPI.purgeProduits();
+        console.log('Purge des produits avant importation terminée');
+        importFichierProduits();
+        break;
+      default:
+        setOpenDialog(false);
+        setEventImport("NONE");
+        setDataDialog(null);
+        break;
+    }
+
+  }
+
+  const importFichierProduits = async () => {
+    try {
+      // 1) Prévalidation côté client — parsing + erreurs détectées
+      const parseResult = await handleImportProduitsFileSelected(fileRef.current);
+
+      if (parseResult.erreursParse && parseResult.erreursParse.length > 0) {
+        // Afficher la liste des erreurs de parsing au user et arrêter
+        ouvrirDialog("NONE", { message: parseResult.erreursParse, type: "error" });
+        return;
+      }
+
+      // Si uniquement des warnings sont présents, les afficher mais ne pas bloquer l'import
+      if (parseResult.warnings && parseResult.warnings.length > 0) {
+        ouvrirDialog("NONE", { message: parseResult.warnings, type: "warning" });
+        // continuer l'import malgré les warnings
+      }
+
+      // 2) Si pas d'erreurs de parsing, lancer l'import côté main (sauvegarde)
+      try {
+        await window.electronAPI.importProduits(parseResult.produits);
+        console.log('Importation des produits terminée');
+        ouvrirDialog("NONE", { message: "Importation terminée !", type: "success" });
+        window.dispatchEvent(new Event('produits-updated'));
+      } catch (saveError: unknown) {
+        const saveMsg = saveError instanceof Error ? saveError.message : String(saveError);
+        // Afficher l'erreur de sauvegarde dans le modal sous forme de liste
+        ouvrirDialog("NONE", { message: [`Erreur lors de la sauvegarde : ${saveMsg}`], type: "error" });
+      }
+    } catch (error: unknown) {
+      setOpenDialog(false);
+      const message = error instanceof Error ? error.message : String(error);
+      ouvrirDialog("NONE", { message: [`Erreur lors de la lecture/parse du fichier : ${message}`], type: "error" });
+    }
+  }
+
+
+  /**
+   * Ouvre le dialog pour notifier l’utilisateur
+   * @param event Le fichier
+   */
+  const handleOpenDialog = (event: React.ChangeEvent<HTMLInputElement>) => {
+    ouvrirDialog("BACKUP", { message: "Les données seront supprimées définitivement. Une sauvegarde est réalisée avant l'importation !", type: "warning" });
+    fileRef.current = event;
+  };
+
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-        <Inventory2OutlinedIcon 
-          onClick={() => handleCloseNavMenu('/main_window')}
-          style={{cursor: 'pointer'}}
-          sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} 
-        />
+          <Inventory2OutlinedIcon
+            onClick={() => handleCloseNavMenu('/main_window')}
+            style={{ cursor: 'pointer' }}
+            sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }}
+          />
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'flex' } }}>
             <Button
-                onClick={() => handleCloseNavMenu('/main_window')}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Catalogue
+              onClick={() => handleCloseNavMenu('/main_window')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Catalogue
             </Button>
             <Button
-                onClick={() => handleCloseNavMenu('/configurer')}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Configurer
+              onClick={() => handleCloseNavMenu('/configurer')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Configurer
             </Button>
             <Button
-                onClick={() => handleCloseNavMenu('/panier')}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                Facture
+              onClick={() => handleCloseNavMenu('/panier')}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Facture
             </Button>
-            <Tooltip title="Faire une sauvegarde" arrow>
-              <Button
-                  onClick={() => handleBackup()}
-                  sx={{ my: 2, color: 'white', display: 'block' }}
-                >
-                  Backup
-              </Button>
-            </Tooltip>
 
-            <Tooltip title="Faire un export CSV" arrow>
-              <Button
-                sx={{ my: 2, color: 'white', display: 'block' }}
-                aria-controls={open ? 'basic-menu' : undefined}
-                aria-haspopup="true"
-                aria-expanded={open ? 'true' : undefined}
-                onClick={handleClick}
-              >
-                Exports
-              </Button>
-            </Tooltip>
+            <Button
+              onClick={() => handleBackup()}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              <Tooltip title="Faire une sauvegarde" arrow>
+                <span>Backup</span>
+              </Tooltip>
+            </Button>
+
+            <Button
+              sx={{ my: 2, color: 'white', display: 'block' }}
+              aria-controls={openExportMenu ? 'export-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={openExportMenu ? 'true' : undefined}
+              onClick={handleClickExport}
+            >
+              <Tooltip title="Faire un export CSV" arrow>
+                <span>Exports</span>
+              </Tooltip>
+            </Button>
+
             <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
+              id="export-menu"
+              anchorEl={anchorElExport}
+              open={openExportMenu}
+              onClose={handleCloseExportMenu}
               MenuListProps={{
-                'aria-labelledby': 'basic-button',
+                'aria-labelledby': 'export-button',
               }}
             >
               <MenuItem onClick={handleExportProduits}>Produits</MenuItem>
               <MenuItem onClick={handleExportContacts}>Contacts</MenuItem>
             </Menu>
-           
+
+
+            <Button
+              sx={{ my: 2, color: 'white', display: 'block' }}
+              aria-controls={openImportMenu ? 'import-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={openImportMenu ? 'true' : undefined}
+              onClick={handleClickImport}
+            >
+              <Tooltip title="Importer des données CSV" arrow>
+                <span>Imports</span>
+              </Tooltip>
+            </Button>
+
+            <Menu
+              id="import-menu"
+              anchorEl={anchorElImport}
+              open={openImportMenu}
+              onClose={handleCloseImportMenu}
+              MenuListProps={{
+                'aria-labelledby': 'import-button',
+              }}
+            >
+              <MenuItem onClick={triggerProduitsImportInput}>Importer Produits (CSV)</MenuItem>
+            </Menu>
+
           </Box>
         </Toolbar>
       </Container>
+      {/* Input de fichier caché pour l'importation CSV */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        accept=".csv"
+        onChange={e => handleOpenDialog(e)}
+      />
+      <DialogDialog
+        open={openDialog}
+        onClose={() => closeDialog()}
+        data={dataDialog}
+      />
     </AppBar>
   );
 }

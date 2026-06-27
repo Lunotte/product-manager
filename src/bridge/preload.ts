@@ -4,26 +4,33 @@ import { contextBridge, ipcRenderer } from 'electron';
 
 import { Produit } from "../models/Produit";
 import { Contact } from '../models/Contact';
+import { IdNom } from '../models/IdNom';
 
 contextBridge.exposeInMainWorld('electronAPI', {
 
   logError: (message: string) => ipcRenderer.send('log-error', message),
-  backup: () => ipcRenderer.send('backup'),
+  backup: (): Promise<void> => ipcRenderer.invoke('backup'),
 
   getCategories: () => ipcRenderer.invoke('get-categories'),
-  addCategorie: (nom: string) => ipcRenderer.invoke('add-categorie', nom),
-  updateCategorie: (id: number, nom: string) => ipcRenderer.invoke('update-categorie', id, nom),
+  addCategorie: (categorie: IdNom) => ipcRenderer.invoke('add-categorie', categorie),
+  addAndGetCategorie: (categorie: IdNom) => ipcRenderer.invoke('add-get-categorie', categorie),
+  updateCategorie: (categorie: IdNom) => ipcRenderer.invoke('update-categorie', categorie),
   deleteCategorie: (id: number) => ipcRenderer.invoke('delete-categorie', id),
 
   getFournisseurs: () => ipcRenderer.invoke('get-fournisseurs'),
-  addFournisseur: (nom: string) => ipcRenderer.invoke('add-fournisseur', nom),
-  updateFournisseur: (id: number, nom: string) => ipcRenderer.invoke('update-fournisseur', id, nom),
+  addFournisseur: (fournisseur: IdNom) => ipcRenderer.invoke('add-fournisseur', fournisseur),
+  addAndGetFournisseur: (fournisseur: IdNom) => ipcRenderer.invoke('add-get-fournisseur', fournisseur),
+  updateFournisseur: (fournisseur: IdNom) => ipcRenderer.invoke('update-fournisseur', fournisseur),
   deleteFournisseur: (id: number) => ipcRenderer.invoke('delete-fournisseur', id),
 
   getUnites: () => ipcRenderer.invoke('get-unites'),
-  addUnite: (nom: string) => ipcRenderer.invoke('add-unite', nom),
-  updateUnite: (id: number, nom: string) => ipcRenderer.invoke('update-unite', id, nom),
+  addUnite: (unite: IdNom) => ipcRenderer.invoke('add-unite', unite),
+  addAndGetUnite: (unite: IdNom) => ipcRenderer.invoke('add-get-unite', unite),
+  updateUnite: (unite: IdNom) => ipcRenderer.invoke('update-unite', unite),
   deleteUnite: (id: number) => ipcRenderer.invoke('delete-unite', id),
+
+  importProduits: (produits: Produit[]) => ipcRenderer.invoke('import-produits', produits),
+  purgeProduits: () => ipcRenderer.invoke('purge-produits'),
 
   getProduits: () => ipcRenderer.invoke('get-produits'),
   rechercherProduits: (query: string) => ipcRenderer.invoke('rechercher-produit', query),
@@ -33,7 +40,10 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   getContacts: () => ipcRenderer.invoke('get-contacts'),
   rechercherContacts: (query: string) => ipcRenderer.invoke('rechercher-contacts', query),
-  addContact: (contact: Contact) => ipcRenderer.invoke('add-contact', contact),
-  updateContact: (contact: Contact) => ipcRenderer.invoke('update-contact', contact),
-  deleteContact: (id: number) => ipcRenderer.invoke('delete-contact', id),
+  addContact: (contact: Contact): Promise<Contact[]> => ipcRenderer.invoke('add-contact', contact),
+  updateContact: (contact: Contact): Promise<Contact[]> => ipcRenderer.invoke('update-contact', contact),
+  deleteContact: (id: number): Promise<Contact[]> => ipcRenderer.invoke('delete-contact', id),
+
+  // onEvent: (channel: string, callback: (data: any) => void) => ipcRenderer.on(channel, (_event, data) => callback(data)),
 });
+

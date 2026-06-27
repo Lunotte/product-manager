@@ -34,7 +34,6 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
   render() {
     if (this.state.hasError) {
-      // Interface utilisateur de repli
       return (
         <div>
           <h2>Quelque chose s'est mal passé.</h2>

@@ -40,11 +40,14 @@ const EditableSelect: FC<Props> = ({
               onBlur={() => setIsEditing(false)}
               autoFocus={true}
             >
-              {options?.map((option) => (
-                <option key={option.text} value={option.value}>
-                  {option.text}
-                </option>
-              ))}
+              {options?.map((option, index) => {
+                const optionKey = `${option.value ?? 'value'}-${option.text ?? 'text'}-${index}`;
+                return (
+                  <option key={optionKey} value={option.value}>
+                    {option.text}
+                  </option>
+                );
+              })}
             </select>
           ) : (
             <input

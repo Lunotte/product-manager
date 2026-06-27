@@ -6,6 +6,9 @@ import { useContext } from 'react';
 import { ContactContext, ProduitContext, ProduitFactureContext } from './home';
 import SelectionnerContact from './facture/SelectionnerContact';
 
+/**
+ * Composant affichant la page de facturation / panier avec prévisualisation de la facture.
+ */
 export function Panier() {
 
   const {produitsGlobal, setProduitsGlobal} = useContext(ProduitContext);

@@ -1,39 +1,33 @@
 import { IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
-import { Contact } from "../models/Contact";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ConfirmDeleteDialog from "./dialogs/ConfirmDeleteDialog";
-import { IdNom } from "../models/IdNom";
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditContactDialog from "./dialogs/EditContactDialog";
+import { useContacts } from "./services/contact.service";
+import { CrudEventProps, useCrudLogic } from "./services/utile.service";
 
-const Contacts = () => {
+const Contacts: React.FC<CrudEventProps> = ({ onEvent }) => {
 
-    const [contact, setContact] = useState<Contact>();
-    const [rechercheContact, setRechercheContact] = useState<string>(""); 
-    const [query, setQuery] = useState("");
-    const [contacts, setContacts] = useState<Contact[]>([]);
-    const [openContactDialog, setOpenContactDialog] = useState(false);
-    const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false);
-    const [itemToDelete, setItemToDelete] = useState<IdNom>(null);
+    const [rechercheContact, setRechercheContact] = useState<string>("");
+    const rechercheContactRef = useRef<string>("");
+
+    const [query, setQuery] = useState<string>("");
+    const { contacts, setContacts, reloadContacts } = useContacts();
 
     useEffect(() => {
-        chargerContacts();
-    }, []);
+        const timeOutId = setTimeout(() => rechercherContacts(query), 500);
+        return () => clearTimeout(timeOutId);
+    }, [query]);
 
-
-    const chargerContacts = () => {
-        window.electronAPI.getContacts().then((result) => {
-            setContacts(result);
-        }).catch((err) => {
-          window.electronAPI.logError(err);
-        });
-    }
+    useEffect(() => {
+        // Pour garder la valeur actuelle de rechercheContact dans la ref, sinon problème avec le callback du hook
+        rechercheContactRef.current = rechercheContact;
+    }, [rechercheContact]);
 
     const rechercherContacts = (query: string) => {
         setRechercheContact(query);
-
         window.electronAPI.rechercherContacts(query).then((result) => {
             setContacts(result);
         }).catch((err) => {
@@ -41,136 +35,118 @@ const Contacts = () => {
         });
     };
 
-    const rechargerContacts = () => {
-        if(rechercheContact.length === 0) {
-            chargerContacts();
+    /**
+     * Recharge les contacts en fonction de la valeur actuelle de rechercheContact.
+     * Si rechercheContact est vide, recharge tous les contacts.
+     */
+    const rechargerContacts = useCallback(() => {
+
+        const currentRecherche = rechercheContactRef.current;
+
+        if (!!currentRecherche) {
+            rechercherContacts(currentRecherche);
         } else {
-            rechercherContacts(rechercheContact);
+            reloadContacts();
         }
-    }
+    }, [reloadContacts, rechercherContacts, query]);
 
-    const handleAddContact = (contact: Contact) => {
-        if(contact.id){
-            window.electronAPI.updateContact(contact).then(() => {
-                rechargerContacts();
-            }).catch((err) => {
-                window.electronAPI.logError(err);
-            });
-        } else {
-            window.electronAPI.addContact(contact).then(() => {
-                rechargerContacts();
-            }).catch((err) => {
-                window.electronAPI.logError(err);
-            });
-        }
-    };
+    const {
+        item,
+        openDialog,
+        setOpenDialog,
+        openDeleteDialog,
+        itemToDelete,
+        handleAdd,
+        editItem,
+        closeDialog,
+        handleOpenDeleteDialog,
+        handleCloseDeleteDialog,
+        handleConfirmDelete,
+    } =
+        useCrudLogic(
+            window.electronAPI.addContact,
+            window.electronAPI.updateContact,
+            window.electronAPI.deleteContact,
+            setContacts,
+            onEvent,
+            "Contact ajouté",
+            "Contact modifié",
+            "Contact supprimé",
+            rechargerContacts
+        );
 
-    const editContact = (contact: Contact) => {
-        setOpenContactDialog(true);
-        setContact(contact);
-    }
-
-    const closeContact = () => {
-        setOpenContactDialog(false)
-        setContact(null);
-    }
-
-    const handleOpenDialog = (item: IdNom) => {
-        setItemToDelete(item);
-        setOpenConfirmationDelete(true);
-    };
-    
-    const handleCloseDialog = () => {
-        setOpenConfirmationDelete(false);
-    };
-    
-    const handleConfirmDelete = () => {
-        window.electronAPI.deleteContact(itemToDelete.id).then(() => {
-            rechargerContacts();
-        }).catch((err) => {
-            window.electronAPI.logError(err);
-        });
-        setItemToDelete(null);
-        setOpenConfirmationDelete(false);
-    };
-
-    useEffect(() => {
-        const timeOutId = setTimeout(() => rechercherContacts(query), 500);
-        return () => clearTimeout(timeOutId);
-    }, [query]);
-      
     return (
         <div>
-             <div className={'right mr-20'}>
+            <div className={'right mr-20'}>
                 <Tooltip title="Ajouter une unité" arrow>
-                    <IconButton aria-label="add" size="large" onClick={() => setOpenContactDialog(true)}>
+                    <IconButton aria-label="add" size="large" onClick={() => setOpenDialog(true)}>
                         <AddIcon fontSize="inherit" />
                     </IconButton>
                 </Tooltip>
             </div>
-            <TextField 
-                style={{backgroundColor:"white"}}
+            <TextField
+                style={{ backgroundColor: "white" }}
                 margin="dense"
                 label="Rechercher par nom / prénom"
                 type="text"
                 fullWidth
                 onChange={event => setQuery(event.target.value)} />
             <EditContactDialog
-                open={openContactDialog}
-                onClose={() => closeContact()}
-                onAdd={handleAddContact}
-                contactToEdit={contact}
+                open={openDialog}
+                onClose={() => closeDialog()}
+                onAdd={handleAdd}
+                contactToEdit={item}
             />
             <ConfirmDeleteDialog
-                open={openConfirmationDelete}
-                onClose={handleCloseDialog}
+                open={openDeleteDialog}
+                onClose={handleCloseDeleteDialog}
                 onConfirm={handleConfirmDelete}
                 itemName={itemToDelete}
             />
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                <TableHead>
-                    <TableRow>
-                        <TableCell style={{ fontWeight: 600, width:"10%"}}>Civilité</TableCell>
-                        <TableCell style={{ fontWeight: 600, width:"20%"}}>Nom</TableCell>
-                        <TableCell style={{ fontWeight: 600, width:"20%"}}>Prénom</TableCell>
-                        <TableCell style={{ fontWeight: 600, width:"20%"}}>Téléphone</TableCell>
-                        <TableCell style={{ fontWeight: 600, width:"15%"}}>Ville</TableCell>
-                        <TableCell style={{ width:"15%"}}></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {contacts.map((contact) => (
-                    <TableRow
-                        key={contact.nom}
-                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                    >
-                        <TableCell component="th" scope="row">
-                            {contact.civilite}
-                        </TableCell>
-                        <TableCell>{contact.nom}</TableCell>
-                        <TableCell>{contact.prenom}</TableCell>
-                        <TableCell>{contact.telephone}</TableCell>
-                        <TableCell>{contact.ville}</TableCell>
-                        <TableCell align="right">
-                            <Tooltip title="Modifier une unité" arrow>
-                                <IconButton aria-label="update" size="large" onClick={() => editContact(contact)}>
-                                    <EditIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Supprimer une unité" arrow>
-                                <IconButton aria-label="delete" size="large" onClick={() => handleOpenDialog(contact)}>
-                                    <DeleteIcon fontSize="inherit" />
-                                </IconButton>
-                            </Tooltip>
-                        </TableCell>
-                    </TableRow>
-                    ))}
-                </TableBody>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell style={{ fontWeight: 600, width: "10%" }}>Civilité</TableCell>
+                            <TableCell style={{ fontWeight: 600, width: "20%" }}>Nom</TableCell>
+                            <TableCell style={{ fontWeight: 600, width: "20%" }}>Prénom</TableCell>
+                            <TableCell style={{ fontWeight: 600, width: "20%" }}>Téléphone</TableCell>
+                            <TableCell style={{ fontWeight: 600, width: "15%" }}>Ville</TableCell>
+                            <TableCell style={{ width: "15%" }}></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {contacts.map((contact, index) => (
+                            <TableRow
+                                key={`${contact.nom}-${index}`}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell component="th" scope="row">
+                                    {contact.civilite}
+                                </TableCell>
+                                <TableCell>{contact.nom}</TableCell>
+                                <TableCell>{contact.prenom}</TableCell>
+                                <TableCell>{contact.telephone}</TableCell>
+                                <TableCell>{contact.ville}</TableCell>
+                                <TableCell align="right">
+                                    <Tooltip title="Modifier une unité" arrow>
+                                        <IconButton aria-label="update" size="large" onClick={() => editItem(contact)}>
+                                            <EditIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </Tooltip>
+                                    <Tooltip title="Supprimer une unité" arrow>
+                                        <IconButton aria-label="delete" size="large" onClick={() => handleOpenDeleteDialog(contact)}>
+                                            <DeleteIcon fontSize="inherit" />
+                                        </IconButton>
+                                    </Tooltip>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
                 </Table>
             </TableContainer>
         </div>
     );
-  }
+}
 
-  export default Contacts;
+export default Contacts;

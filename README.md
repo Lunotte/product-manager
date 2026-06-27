@@ -19,3 +19,6 @@
 - Pour la génération de la facture, fortement inspiré de : [https://github.com/tuanpham-dev/react-invoice-generator](https://github.com/tuanpham-dev/react-invoice-generator)
 - Pour le Github Action : [https://github.com/erikhofer/electron-publish-example](https://github.com/erikhofer/electron-publish-example)
 - La génération de PDF : [https://react-pdf.org/](https://react-pdf.org/)
+
+## Démarrer
+```npm run start```

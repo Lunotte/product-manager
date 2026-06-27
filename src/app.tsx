@@ -4,29 +4,37 @@ import React from 'react';
 import { Home } from './components/home';
 import '../public/assets/scss/main.scss'
 
-// Capturer les erreurs non gérées dans le processus renderer
+/**
+ * Capturer les erreurs non gérées dans le processus renderer
+ * 
+ * @param message 
+ * @param source 
+ * @param lineno 
+ * @param colno 
+ * @param error 
+ */
 window.onerror = (message, source, lineno, colno, error) => {
-   const errorLog = `Erreur capturée par window.onerror :
+  const errorLog = `Erreur capturée par window.onerror :
    Message: ${message}
    Source: ${source}
    Ligne: ${lineno}
    Colonne: ${colno}
    Erreur: ${error?.stack || error}`;  // Si `error` est défini, affiche le stack trace sinon juste l'objet error.
 
-   window.electronAPI.logError(errorLog);
- };
- 
- window.onunhandledrejection = (event) => {
-   const rejectionLog = `Rejet de promesse non géré :
+  window.electronAPI.logError(errorLog);
+};
+
+window.onunhandledrejection = (event) => {
+  const rejectionLog = `Rejet de promesse non géré :
    Raison: ${event.reason?.message || event.reason}`;
- 
-   window.electronAPI.logError(rejectionLog);
- };
+
+  window.electronAPI.logError(rejectionLog);
+};
 
 const root = createRoot(document.getElementById('root'));
 root.render(<React.StrictMode>
-   <HashRouter>
-      <Home />
-   </HashRouter>
- </React.StrictMode>
+  <HashRouter>
+    <Home />
+  </HashRouter>
+</React.StrictMode>
 );

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
-import { Categorie } from '../../models/Categorie';
-import { IdNom } from '../../models/IdNom';
-import { Fournisseur } from '../../models/Fournisseur';
-import { Unite } from '../../models/Unite';
 import { Produit } from '../../models/Produit';
 import { cleanStartAndEndString } from '../divers/Utils';
+import { useCategories } from '../hooks/categorie/manage-categorie';
+import { useFournisseurs } from '../hooks/fournisseur/manage-fournisseur';
+import { useUnites } from '../hooks/unite/manage-unite';
 
 interface EditProduitDialogProps {
   open: boolean;
@@ -23,32 +22,12 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
   const [fournisseur, setFournisseur] = useState('');
   const [unite, setUnite] = useState('');
 
-  const [categories, setCategories] = useState<Categorie[]>([]);
-  const [fournisseurs, setFournisseurs] = useState<Fournisseur[]>([]);
-  const [unites, setUnites] = useState<Unite[]>([]);
+  const { categories } = useCategories();
+  const { fournisseurs } = useFournisseurs();
+  const { unites } = useUnites();
 
   const [edition, setEdition] = useState(true);
   const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    window.electronAPI.getCategories().then((result) => {
-      setCategories(result);
-    }).catch((err) => {
-      window.electronAPI.logError(err);
-    });
-
-    window.electronAPI.getFournisseurs().then((result) => {
-      setFournisseurs(result);
-    }).catch((err) => {
-      window.electronAPI.logError(err);
-    });
-
-    window.electronAPI.getUnites().then((result) => {
-      setUnites(result);
-    }).catch((err) => {
-      window.electronAPI.logError(err);
-    });
-  }, []);
 
   useEffect(() => {
     if (produitToEdit) {
@@ -70,7 +49,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
 
   const calculerMontantTTC = () => {
     const prixVente = parseFloat(prixAchat) * (1 + (taux / 100));
-    setPrixVente(prixVente.toFixed(2));
+    setPrixVente(isNaN(prixVente) ? "0.00" : prixVente.toFixed(2));
   }
 
   const reset = () => {
@@ -91,7 +70,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
   }
 
   const handleAdd = () => {
-    if(!nom.trim() || !prixAchat || !prixVente || !taux || !categorie || !fournisseur || !unite){
+    if (!nom.trim() || !prixAchat || !prixVente || !taux || !categorie || !fournisseur || !unite) {
       setMessage('Veuillez saisir tous les champs');
       return;
     }
@@ -99,12 +78,16 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
     let produit: Produit;
     const nomCleaned = cleanStartAndEndString(nom);
 
-    if(produitToEdit) {
-      produit = {...produitToEdit, nom: nomCleaned, prixAchat: parseFloat(prixAchat), taux, prixVente: parseFloat(prixVente),
-        categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)};
+    if (produitToEdit) {
+      produit = {
+        ...produitToEdit, nom: nomCleaned, prixAchat: parseFloat(prixAchat), taux, prixVente: parseFloat(prixVente),
+        categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)
+      };
     } else {
-      produit = {id: null, nom: nomCleaned, prixAchat: parseFloat(prixAchat), taux, prixVente: parseFloat(prixVente),
-        categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)};
+      produit = {
+        id: null, nom: nomCleaned, prixAchat: parseFloat(prixAchat), taux, prixVente: parseFloat(prixVente),
+        categorieId: parseInt(categorie), fournisseurId: parseInt(fournisseur), uniteId: parseInt(unite)
+      };
     }
     onAdd(produit);
     onClose();
@@ -117,7 +100,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
       {edition && <DialogTitle>Modifier</DialogTitle>}
       {!edition && <DialogTitle>Ajouter</DialogTitle>}
       <DialogContent>
-        <p style={{color: 'red'}}>{message}</p>
+        <p style={{ color: 'red' }}>{message}</p>
         <TextField
           autoFocus
           required={true}
@@ -138,7 +121,7 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
           value={prixAchat}
           onChange={(event: any) => setPrixAchat(event.target.value)}
         />
-         <TextField
+        <TextField
           required={true}
           margin="dense"
           label="Taux"
@@ -168,8 +151,8 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
             label="Categorie"
             onChange={(event: any) => setCategorie(event.target.value)}
           >
-            {categories.map((categorie) => (
-              <MenuItem key={categorie.id} value={categorie.id}>{categorie.nom}</MenuItem>
+            {categories.map((categorie, index) => (
+              <MenuItem key={`${categorie.nom}-${index}`} value={categorie.id}>{categorie.nom}</MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -183,8 +166,8 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
             label="Fournisseur"
             onChange={(event: any) => setFournisseur(event.target.value)}
           >
-             {fournisseurs.map((fournisseur) => (
-              <MenuItem key={fournisseur.id} value={fournisseur.id}>{fournisseur.nom}</MenuItem>
+            {fournisseurs.map((fournisseur, index) => (
+              <MenuItem key={`${fournisseur.nom}-${index}`} value={fournisseur.id}>{fournisseur.nom}</MenuItem>
             ))}
           </Select>
         </FormControl>
@@ -198,17 +181,17 @@ const EditProduitDialog: React.FC<EditProduitDialogProps> = ({ open, onClose, on
             label="Unite"
             onChange={(event: any) => setUnite(event.target.value)}
           >
-            {unites.map((unite) => (
-              <MenuItem key={unite.id} value={unite.id}>{unite.nom}</MenuItem>
+            {unites.map((unite, index) => (
+              <MenuItem key={`${unite.nom}-${index}`} value={unite.id}>{unite.nom}</MenuItem>
             ))}
           </Select>
         </FormControl>
       </DialogContent>
       <DialogActions>
         <Button variant="outlined" onClick={onCloseDialog}>Annuler</Button>
-        <Button variant="outlined" onClick={handleAdd}>{edition ? <span>Modifier</span> : <span>Ajouter</span> }</Button>
+        <Button variant="outlined" onClick={handleAdd}>{edition ? <span>Modifier</span> : <span>Ajouter</span>}</Button>
       </DialogActions>
-    </Dialog> 
+    </Dialog>
   );
 };
 
